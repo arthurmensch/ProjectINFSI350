@@ -42,25 +42,23 @@ public:
         v[0] = t.v[0];
         v[1] = t.v[1];
         v[2] = t.v[2];
-        computeNormal();
     }
     inline Triangle (unsigned int v0, unsigned int v1, unsigned int v2) {
         v[0] = v0;
         v[1] = v1;
         v[2] = v2;
-        computeNormal();
     }
     inline virtual ~Triangle () {}
     inline Triangle & operator= (const Triangle & t) {
         v[0] = t.v[0];
         v[1] = t.v[1];
         v[2] = t.v[2];
-        computeNormal();
         return (*this);
     }
 
-    inline void computeNormal() {
-
+    inline Vec3f computeNormal(Mesh & m) {
+        normal = cross(V[T[i].v[1]].p -  V[T[i].v[0]].p,V[T[i].v[2]].p -  V[T[i].v[0]].p);
+        return normal;
     }
     unsigned int v[3];
     Vec3f normal;
