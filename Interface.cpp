@@ -24,6 +24,7 @@ else{
 }
 Interface::Interface() {
 	glutMotionFunc (motion);
+    glutPassiveMotionFunc (passiveMotion);
 	glutReshapeFunc (reshape);
     glutKeyboardFunc (keyDown);
     glutKeyboardUpFunc(keyUp);
@@ -133,8 +134,12 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 }
 
 void Interface::motion (int x, int y) {
+    camera.handleMouseMoveEvent (x, y);
+}
+
+void Interface::passiveMotion (int x, int y) {
     if (translate) {//translation
-	translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,false);
+    translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,false);
     }
 
     if (rotate) {

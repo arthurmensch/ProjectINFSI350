@@ -34,6 +34,7 @@ class Interface {
 public:
 	Interface();
 	static void motion (int x, int y);
+	static void passiveMotion (int x, int y);
 	static void reshape(int w, int h) {camera.resize (w, h);}
 	static void keyDown (unsigned char keyPressed, int x, int y);
 	static void keyUp(unsigned char keyReleased, int x, int y);
