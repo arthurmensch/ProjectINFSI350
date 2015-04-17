@@ -18,6 +18,7 @@
 #include "Vec3.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "BSHNode.h"
 
 using namespace std;
 
