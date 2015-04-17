@@ -21,6 +21,7 @@
 #include <vector>
 #include "Vec3.h"
 
+class Triangle;
 /// A simple vertex class storing position and normal
 class Vertex {
 public:
@@ -30,6 +31,27 @@ public:
     Vec3f p;
     Vec3f n;
 
+};
+
+class Mesh {
+public:
+	std::vector<Vertex> V;
+	std::vector<Triangle> T;
+
+    /// Loads the mesh from a <file>.off
+	void loadOFF (const std::string & filename);
+
+    /// Compute smooth per-vertex normals
+    void recomputeNormals ();
+
+    /// scale to the unit cube and center at original
+    void centerAndScaleToUnit ();
+
+    void smooth();
+
+    void smoothGeom();
+
+    void simplifyMesh(unsigned int r);
 };
 
 /// A Triangle class expressed as a triplet of indices (over an external vertex list)
@@ -57,7 +79,7 @@ public:
     }
 
     inline Vec3f computeNormal(Mesh & m) {
-        normal = cross(V[T[i].v[1]].p -  V[T[i].v[0]].p,V[T[i].v[2]].p -  V[T[i].v[0]].p);
+        normal = cross(m.V[v[1]].p -  m.V[v[0]].p,m.V[v[2]].p -  m.V[v[0]].p);
         return normal;
     }
     unsigned int v[3];
@@ -65,23 +87,3 @@ public:
 };
 
 /// A Mesh class, storing a list of vertices and a list of triangles indexed over it.
-class Mesh {
-public:
-	std::vector<Vertex> V;
-	std::vector<Triangle> T;
-
-    /// Loads the mesh from a <file>.off
-	void loadOFF (const std::string & filename);
-
-    /// Compute smooth per-vertex normals
-    void recomputeNormals ();
-
-    /// scale to the unit cube and center at original
-    void centerAndScaleToUnit ();
-
-    void smooth();
-
-    void smoothGeom();
-
-    void simplifyMesh(unsigned int r);
-};

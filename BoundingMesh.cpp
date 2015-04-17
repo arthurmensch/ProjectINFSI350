@@ -56,3 +56,4 @@ BoundingMesh::computeCoordinates() {
         }
     }
 }
+
