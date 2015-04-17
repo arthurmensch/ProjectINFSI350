@@ -1,7 +1,8 @@
 #include "Utils.h"
 #include "Camera.h"
 #include "Vec3.h"
-#include <cstdlib>
+#include <GL/glut.h>
+#include <cmath>
 
 void grabber(int x, int y) {
     Camera camera;
@@ -15,11 +16,6 @@ void grabber(int x, int y) {
 
     Vec3f ray = Vec3f(x,y,camera.getNearPlane());
 }
-
-#include "Utils.h"
-#include <cmath>
-#include <GL/glut.h>
-#include "Camera.h"
 
 void glSphere (float x, float y, float z, float radius,int rgb)
 {
