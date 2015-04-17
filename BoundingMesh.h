@@ -2,6 +2,8 @@
 #define BOUNDINGMESH_H
 
 #include "Mesh.h"
+#include <map>
+#include <vector>
 
 
 class BoundingMesh
@@ -12,6 +14,7 @@ class BoundingMesh
         void computeCoordinates();
         void updateBoundedMesh();
         void updateCage();
+        float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
     protected:
     private:
         Mesh * bounded;
