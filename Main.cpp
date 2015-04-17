@@ -135,7 +135,7 @@ void key (unsigned char keyPressed, int x, int y) {
     switch (keyPressed) {
     case 'f':
         if (fullScreen) {
-/media/data/Documents/Courses/Telecom/INFSI350/TP_rendu/src            glutReshapeWindow (camera.getScreenWidth (), camera.getScreenHeight ());
+            glutReshapeWindow (camera.getScreenWidth (), camera.getScreenHeight ());
             fullScreen = false;
         } else {
             glutFullScreen ();
@@ -174,7 +174,6 @@ void mouse (int button, int state, int x, int y) {
         camera.handleMouseClickEvent (button, state, x, y);
     }
     else {
-        grabber(int x, int y);
     }
 }
 

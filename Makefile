@@ -1,5 +1,5 @@
 CIBLE = main
-SRCS =  Main.cpp Camera.cpp Mesh.cpp Utils.cpp
+SRCS =  Main.cpp Camera.cpp Mesh.cpp Utils.cpp BSHNode.cpp Ray.cpp
 LIBS =  -lglut -lGLU -lGL -lm
 
 CC = g++
@@ -19,8 +19,10 @@ clean:
 
 Camera.o: Camera.cpp Camera.h Vec3.h
 Mesh.o: Mesh.cpp Mesh.h Vec3.h
-Main.o: Main.cpp Vec3.h Camera.h Mesh.h
-Utils.o: Utils.cpp Utils.h
+Main.o: Main.cpp Vec3.h Camera.h Mesh.h Utils.h
+Utils.o: Utils.cpp Utils.h Mesh.h
+BSHNode.o : BSHNode.cpp BSHNode.h Mesh.h Vec3.h Utils.h Camera.h
+Ray.o : Ray.cpp Ray.h Mesh.h Vec3.h
 
 
 
