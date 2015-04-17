@@ -1,5 +1,5 @@
 CIBLE = main
-SRCS =  Main.cpp Camera.cpp Mesh.cpp Utils.cpp BSHNode.cpp Ray.cpp
+SRCS =  Main.cpp Camera.cpp Mesh.cpp  BSHNode.cpp Ray.cpp
 LIBS =  -lglut -lGLU -lGL -lm
 
 CC = g++
