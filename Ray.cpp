@@ -6,7 +6,7 @@
 #include "Ray.h"
 #include <iostream>
 
-Ray::Ray(Vec3f origin,Vec3f direction){
+Ray::Ray(Vec3f &origin,Vec3f &direction){
 	this->origin=origin;
 	this->direction=direction;
 }
