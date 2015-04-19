@@ -33,6 +33,8 @@
 		</Compiler>
 		<Unit filename="BSHNode.cpp" />
 		<Unit filename="BSHNode.h" />
+		<Unit filename="BoundingMesh.cpp" />
+		<Unit filename="BoundingMesh.h" />
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.h" />
 		<Unit filename="Main.cpp" />
