@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <map>
 #include <set>
+#include <GL/glut.h>
 
 using namespace std;
 
@@ -43,7 +44,7 @@ void Mesh::loadOFF (const std::string & filename) {
             in >> T[i].v[j];
     }
     in.close ();
-    centerAndScaleToUnit ();
+    //centerAndScaleToUnit ();
     recomputeNormals ();
 }
 
@@ -138,6 +139,17 @@ void Mesh::smoothGeom() {
         V[j].p -= sumNeighbours[j] / area[j];
     }
     recomputeNormals();
+}
+
+void Mesh::draw() {
+    glBegin (GL_TRIANGLES);
+    for (unsigned int i = 0; i < T.size (); i++)
+        for (unsigned int j = 0; j < 3; j++) {
+            const Vertex & v = V[T[i].v[j]];
+            glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
+            glVertex3f (v.p[0], v.p[1], v.p[2]); // Emit a vertex (one triangle is emitted each time 3 vertices are emitted)
+        }
+    glEnd ();
 }
 
 void Mesh::simplifyMesh(unsigned int r) {

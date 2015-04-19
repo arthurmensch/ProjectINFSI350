@@ -20,11 +20,13 @@
 #include "Mesh.h"
 #include "BSHNode.h"
 
+#include "BoundingMesh.h"
+
 using namespace std;
 
 static const unsigned int DEFAULT_SCREENWIDTH = 1024;
 static const unsigned int DEFAULT_SCREENHEIGHT = 768;
-static const string DEFAULT_MESH_FILE ("models/max_50K.off");
+static const string DEFAULT_MESH_FILE ("models/horsebounding.off");
 
 static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement Géométrique");
 static GLint window;
@@ -35,6 +37,7 @@ static string globalName;
 
 static Camera camera;
 static Mesh mesh;
+static BoundingMesh * boundingMesh;
 
 void printUsage () {
 	std::cerr << std::endl
@@ -105,19 +108,12 @@ void init (const char * modelFilename) {
 	initMaterial ();
 	glDisable (GL_COLOR_MATERIAL);
 
-	mesh.loadOFF (modelFilename);
+    boundingMesh = BoundingMesh::generate();
     camera.resize (DEFAULT_SCREENWIDTH, DEFAULT_SCREENHEIGHT);
 }
 
 void drawScene () {
-    glBegin (GL_TRIANGLES);
-    for (unsigned int i = 0; i < mesh.T.size (); i++)
-        for (unsigned int j = 0; j < 3; j++) {
-            const Vertex & v = mesh.V[mesh.T[i].v[j]];
-            glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
-            glVertex3f (v.p[0], v.p[1], v.p[2]); // Emit a vertex (one triangle is emitted each time 3 vertices are emitted)
-        }
-    glEnd ();
+    boundingMesh->draw();
 }
 
 void reshape(int w, int h) {

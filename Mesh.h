@@ -47,6 +47,8 @@ public:
     /// scale to the unit cube and center at original
     void centerAndScaleToUnit ();
 
+    void draw();
+
     void smooth();
 
     void smoothGeom();
@@ -80,6 +82,7 @@ public:
 
     inline Vec3f computeNormal(Mesh & m) {
         normal = cross(m.V[v[1]].p -  m.V[v[0]].p,m.V[v[2]].p -  m.V[v[0]].p);
+        normal.normalize();
         return normal;
     }
     unsigned int v[3];

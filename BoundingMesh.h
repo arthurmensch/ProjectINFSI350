@@ -9,12 +9,15 @@
 class BoundingMesh
 {
     public:
-        BoundingMesh(Mesh & m_bounded, Mesh & m_cage);
+        BoundingMesh();
+        BoundingMesh(Mesh * m_bounded, Mesh * m_cage);
         virtual ~BoundingMesh();
         void computeCoordinates();
         void updateBoundedMesh();
         void updateCage();
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
+        void draw();
+        static BoundingMesh * generate();
     protected:
     private:
         Mesh * bounded;
