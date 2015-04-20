@@ -41,7 +41,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	return numTriangle;
 }
 
-int grabberVertex(int x, int y,Mesh &cage,Camera &camera) {
+int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> selectedTriangle) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -62,17 +62,21 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera) {
 	Ray boundFinder=Ray(origin,direction);
 	float profondeur=(float) (origin-direction).length();
 	float dist;
-	int numTriangle=-1;
-	for (unsigned int i=0;i<cage.T.size();i++){
-		bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
-		if (intersect){
-			if(dist<profondeur){
-				numTriangle=i;
-				profondeur=dist;
+	int numVertex=-1;
+	for (unsigned int i=0;i<selectedTriangle.size();i++){
+		if(selectedTriangle[i]){
+			for (int j=0;j<3;j++){
+				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.055,dist);
+				if (intersect){
+					if(dist<profondeur){
+						numVertex=cage.T[i].v[j];
+						profondeur=dist;
+					}
+				}
 			}
 		}
 	}
-	return numTriangle;
+	return numVertex;
 }
 void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,float x,float y,float lastX,float lastY){
 //au début du click
