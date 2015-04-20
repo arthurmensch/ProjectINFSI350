@@ -10,6 +10,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera);
 
 void modifyBoundingMesh();
 
+void glSphereWithMat(float x,float y,float z,float r,float difR,float difB,float difG,float specR,float specG,float specB,float shininess, int color);
 void glSphere (float x, float y, float z, float radius, int rgb);
 
 void glTriangles(std::vector<Vertex> &V, std::vector<Triangle> &T, Vec3f & camPos);

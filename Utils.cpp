@@ -5,7 +5,6 @@
 #include <cmath>
 #include "Mesh.h"
 #include "Ray.h"
-
 //#include <glm/glm.hpp>
 
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
@@ -47,13 +46,30 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 
 void modifyBoundingMesh() {}
 
-void glSphere (float x, float y, float z, float radius,int rgb)
-{
-    int n = 50;
-    int m = 50;
+
+void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
+glEnable(GL_COLOR_MATERIAL);
+GLfloat material_color[4] ={difR,difG,difB,1.0f};
+GLfloat material_specular[4]={specR,specG,specB,1.0f};
+glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,material_specular);
+glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,material_color);
+glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess);
+glSphere(x,y,z,r,color);
+GLfloat material_color_init [4] = {1,1,1,1.0f};
+GLfloat material_specular_init [4] = {0.85,0.85,0.85,1.0};
+glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, material_specular_init);
+glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, material_color_init);
+glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
+glDisable(GL_COLOR_MATERIAL);
+
+}
+
+void glSphere(float x,float y,float z, float radius,int rgb){
+    int n = 20;
+    int m = 10;
     rgb = rgb % 3;
     float c[3] = {0,0,0};
-    c[rgb] = 1;
+    c[rgb] = 100.0f;
     float coordinates[n][m][5];
     for(int i = 0; i < n; i++)
     {
@@ -68,44 +84,41 @@ void glSphere (float x, float y, float z, float radius,int rgb)
     glMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
     glTranslatef (x, y, z);
-
-    glColor3f (0.0, 1.0, 0.0);
     glBegin(GL_TRIANGLES);
     for(int i = 0; i < n-1; i++)
     {
         for(int j = 0; j < m-1; j++)
         {
-
-            glTexCoord2f (coordinates[i][j][3], coordinates[i][j][4]),
-                         glColor3f(1, 1, 1);
+           // glTexCoord2f (coordinates[i][j][3], coordinates[i][j][4]),
+            //glColor3f(c[0], c[1], c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
 
-            glTexCoord2f (coordinates[i+1][j][3], coordinates[i+1][j][4]);
-            glColor3f(c[0],c[1],c[2]);
+            //glTexCoord2f (coordinates[i+1][j][3], coordinates[i+1][j][4]);
+            //glColor3f(c[0],c[1],c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i+1][j][0], coordinates[i+1][j][1], coordinates[i+1][j][2]);
 
-            glTexCoord2f (coordinates[i][j+1][3], coordinates[i][j+1][4]);
-            glColor3f(c[0],c[1],c[2]);
+            //glTexCoord2f (coordinates[i][j+1][3], coordinates[i][j+1][4]);
+            //glColor3f(c[0],c[1],c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i][j+1][0], coordinates[i][j+1][1], coordinates[i][j+1][2]);
 
-            glTexCoord2f (coordinates[i][j+1][3], coordinates[i][j+1][4]);
-            glColor3f(c[0],c[1],c[2]);
+            //glTexCoord2f (coordinates[i][j+1][3], coordinates[i][j+1][4]);
+            //glColor3f(c[0],c[1],c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i][j+1][0], coordinates[i][j+1][1], coordinates[i][j+1][2]);
 
-            glTexCoord2f (coordinates[i+1][j][3], coordinates[i+1][j][4]);
-            glColor3f(c[0],c[1],c[2]);
+            //glTexCoord2f (coordinates[i+1][j][3], coordinates[i+1][j][4]);
+            //glColor3f(c[0],c[1],c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i+1][j][0], coordinates[i+1][j][1], coordinates[i+1][j][2]);
 
-            glTexCoord2f (coordinates[i+1][j+1][3], coordinates[i+1][j+1][4]);
-            glColor3f(c[0],c[1],c[2]);
+            //glTexCoord2f (coordinates[i+1][j+1][3], coordinates[i+1][j+1][4]);
+            //glColor3f(c[0],c[1],c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i+1][j+1][0], coordinates[i+1][j+1][1], coordinates[i+1][j+1][2]);
-        }
+	}
     }
     glEnd();
     glPopMatrix ();
