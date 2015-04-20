@@ -36,21 +36,35 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'r':
         if (!rotate) {
-        	if (translate)
-        		translate = false;
+        	if (translate) {
+                translation(beginTransformX,lastX,beginTransformY,lastY);
+                translate = false;
+            }
+
+            beginTransformX = lastX;
+            beginTransformY = lastY;
         	rotate = true;
         }
-        else
+        else {
+            rotation(beginTransformX,lastX,beginTransformY,lastY);
         	rotate = false;
+        }
         break;
     case 't':
     	if (!translate) {
-    		if (rotate)
-    			rotate = false;
+    		if (rotate) {
+                rotation(beginTransformX,lastX,beginTransformY,lastY);
+                rotate = false;
+            }
+
+            beginTransformX = lastX;
+            beginTransformY = lastY;
     		translate = true;
     	}
-    	else
+    	else {
     		translate = false;
+            translation(beginTransformX,lastX,beginTransformY,lastY);
+        }
     	break;
     case 's':
     	selectionMode = true;
@@ -79,22 +93,52 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 
 }
 
+void Interface::motion (int x, int y) {
+    if (translate) {
+        translation(lastX, x, lastY, y);
+    }
+
+    if (rotate) {
+        rotation(lastX, x, lastY, y);
+    }
+
+    camera.handleMouseMoveEvent (x, y);
+    
+    lastX = x;
+    lastY = y;
+}
+
 void Interface::mouse (int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON) {
+        if (translate)
+            translate = false;
+        else if (rotate)
+            rotate = false;
+    }
+
+    else if (button == GLUT_RIGHT_BUTTON) {
+        if (translate) {
+            translation(beginTransformX,lastX,beginTransformY,lastY);
+            translate = false;
+        }
+
+        else if (rotate) {
+            rotation(beginTransformX,lastX,beginTransformY,lastY);
+            rotate = false;
+        }
+    }
+
 	if(selectionMode){
 		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
 
-		if(triangle>-1){
-			selectionMode=true;
+		if(triangle>-1)
 			selectedTriangle[(unsigned int)triangle]=true;
-		}
-//		}
-//	}
-//	if(rotate||translate){
-//	modifyBoundingMesh();
 	}
+    
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
         camera.handleMouseClickEvent (button, state, x, y);
     }
+    
     else {
     }
 }
