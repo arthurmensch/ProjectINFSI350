@@ -29,6 +29,10 @@ using namespace std;
 Mesh::Mesh() {
 }
 
+Mesh::~Mesh() {
+
+}
+
 Mesh::Mesh(const Mesh & mesh) {
     T = mesh.T;
     V = mesh.V;

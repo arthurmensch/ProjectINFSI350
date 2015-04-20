@@ -59,6 +59,11 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case '3':
         mesh.simplifyMesh(12);
         break;
+    case 'u':
+        boundingMesh->updateCage();
+        break;
+    case 'i':
+        boundingMesh->reset();
     default:
         break;
     }
@@ -77,17 +82,18 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 void Interface::mouse (int button, int state, int x, int y) {
 	if(selectionMode){
 		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
-	
+
 		if(triangle>-1){
 			selectionMode=true;
 			selectedTriangle[(unsigned int)triangle]=true;
-		}	
-	}
-	if(rotate||translate){
-	modifyBoundingMesh();
+		}
+//		}
+//	}
+//	if(rotate||translate){
+//	modifyBoundingMesh();
 	}
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
-        camera.handleMouseClickEvent (button, state, x, y);	
+        camera.handleMouseClickEvent (button, state, x, y);
     }
     else {
     }
