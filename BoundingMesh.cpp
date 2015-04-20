@@ -38,7 +38,7 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
 
 void BoundingMesh::updateCage() {
     moveCageVertexIncr(10,Vec3f(0,-0.5,0));
-    makeChangeFull();
+    makeChange();
 }
 
 float sign(float x) {
@@ -153,7 +153,7 @@ void BoundingMesh::moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVert
 void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {
     verticesToChange.push_back(vertexIndex);
     cage->V[vertexIndex].p = targetVertex;
-    auto t_init = oldCage->T.begin();
+    auto t_init = cageInitial->T.begin();
     auto s_it = s.begin();
     int j = 0;
     for(auto t = cage->T.begin(); t != cage->T.end(); ++t) {
@@ -178,14 +178,13 @@ void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) 
 void BoundingMesh::makeChange() {
     while(!trianglesToChange.empty()){
         int j = trianglesToChange.front();
-        verticesToChange.pop_front();
+        trianglesToChange.pop_front();
         auto coord_v = normalCoordinates.begin();
         for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
             v->p += (*coord_v)[j] * (cage->T[j].computeNormal(*cage)*s[j]- oldCage->T[j].computeNormal(*oldCage)*olds[j]);
-            olds[j] = s[j];
             ++coord_v;
         }
-        std::cerr << "out " << j << std::endl;
+        olds[j] = s[j];
     }
     while(!verticesToChange.empty()){
         int j = verticesToChange.front();
@@ -193,9 +192,10 @@ void BoundingMesh::makeChange() {
         auto coord_v = vertexCoordinates.begin();
         for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
             v->p += (*coord_v)[j] * (cage->V[j].p - oldCage->V[j].p);
-            oldCage->V[j] = cage->V[j];
             ++coord_v;
         }
+        oldCage->V[j] = cage->V[j];
+
     }
     bounded->recomputeNormals();
 }
