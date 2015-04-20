@@ -85,7 +85,6 @@ void initLighting () {
 		glEnable (GL_LIGHT1);
         glEnable (GL_LIGHT2);
         glEnable (GL_LIGHT3);
-		glDisable (GL_LIGHT0);
 		glEnable (GL_LIGHTING);
 }
 
@@ -105,12 +104,10 @@ void init (const char * modelFilename) {
     glEnable (GL_CULL_FACE); // Enables face culling (based on the orientation defined by the CW/CCW enumeration).
     glDepthFunc (GL_LESS); // Specify the depth test for the z-buffer
     glEnable (GL_DEPTH_TEST); // Enable the z-buffer in the rasterization
-	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-
 	initLighting ();
+	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
 	initMaterial ();
+    glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
 	glDisable (GL_COLOR_MATERIAL);
 
     boundingMesh = BoundingMesh::generate();
@@ -122,20 +119,21 @@ void init (const char * modelFilename) {
 }
 
 void drawScene () {
-    boundingMesh->draw();
+	 boundingMesh->draw();
+
 	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
 				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-				glSphere(center[0],center[1],center[2],0.05,1);
+				glSphereWithMat(center[0],center[1],center[2],0.05,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,0);
 			}
 		}
 	}
 }
 
 void display () {
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     camera.apply ();
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
     drawScene ();
     glFlush ();
     glutSwapBuffers ();
