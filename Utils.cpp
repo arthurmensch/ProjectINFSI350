@@ -46,6 +46,22 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 
 void modifyBoundingMesh() {}
 
+void translation(int x, int lastX, int y, int lastY) {}
+
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY) {
+    int vec0x = lastX - beginTransformX;
+    int vec0y = lastY - beginTransformY;
+    int vec1x = x - beginTransformX;
+    int vec1y = y - beginTransformY;
+    int sign = vec0x * vec1y - vec0y * vec1x >= 0 ? 1 : -1;
+
+    float angle = sign * acos((vec0x*vec1x + vec0y*vec1y) / (sqrt(vec0x*vec0x + vec0y*vec0y) * sqrt(vec1x*vec1x + vec1y*vec1y)));
+    
+    glMatrixMode (GL_MODELVIEW);
+    glPushMatrix ();
+    glRotatef(angle,0,0,1);
+    glPopMatrix ();
+}
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
 glEnable(GL_COLOR_MATERIAL);

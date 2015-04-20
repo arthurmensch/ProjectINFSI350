@@ -46,14 +46,14 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         	rotate = true;
         }
         else {
-            rotation(beginTransformX,lastX,beginTransformY,lastY);
+            rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
         	rotate = false;
         }
         break;
     case 't':
     	if (!translate) {
     		if (rotate) {
-                rotation(beginTransformX,lastX,beginTransformY,lastY);
+                rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
                 rotate = false;
             }
 
@@ -100,7 +100,7 @@ void Interface::motion (int x, int y) {
     }
 
     if (rotate) {
-        rotation(lastX, x, lastY, y);
+        rotation(lastX, x, lastY, y,beginTransformX,beginTransformY);
     }
 
     camera.handleMouseMoveEvent (x, y);
@@ -124,7 +124,7 @@ void Interface::mouse (int button, int state, int x, int y) {
         }
 
         else if (rotate) {
-            rotation(beginTransformX,lastX,beginTransformY,lastY);
+            rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
             rotate = false;
         }
     }

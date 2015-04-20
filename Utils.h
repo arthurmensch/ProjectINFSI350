@@ -10,6 +10,9 @@ int grabber(int x, int y,Mesh &cage,Camera &camera);
 
 void modifyBoundingMesh();
 
+void translation(int x, int lastX, int y, int lastY);
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY);
+
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difB,float difG,float specR,float specG,float specB,float shininess, int color);
 void glSphere (float x, float y, float z, float radius, int rgb);
 
