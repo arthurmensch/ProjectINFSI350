@@ -64,6 +64,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'i':
         boundingMesh->reset();
+        break;
     default:
         break;
     }

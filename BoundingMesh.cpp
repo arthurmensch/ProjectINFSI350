@@ -6,13 +6,11 @@ BoundingMesh::BoundingMesh() {
 }
 
 BoundingMesh * BoundingMesh::generate() {
-    Mesh * bounded = new Mesh();
-    bounded->loadOFF("models/horse.off");
-    Mesh * cage = new Mesh();
-    cage->loadOFF("models/horsebounding2.off");
-    BoundingMesh * boundingMesh = new BoundingMesh(bounded, cage);
-    boundingMesh->computeCoordinates();
-    boundingMesh->updateBoundedMesh();
+    Mesh bounded = Mesh();
+    bounded.loadOFF("models/horse.off");
+    Mesh cage = Mesh();
+    cage.loadOFF("models/horsebounding2.off");
+    BoundingMesh * boundingMesh = new BoundingMesh(&bounded, &cage);
     return boundingMesh;
 }
 
@@ -21,26 +19,26 @@ BoundingMesh::~BoundingMesh()
     delete cageInitial;
     delete bounded;
     delete cage;
+    delete oldCage;
 }
 
 
 BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
     bounded = new Mesh(*m_bounded);
     cage = new Mesh(*m_cage);
+    oldCage = new Mesh(*cage);
     cageInitial = new Mesh(*cage);
+    s = std::vector<float>(cage->T.size(),1.);
+    olds = s;
+    trianglesToChange = std::list<int>();
+    verticesToChange = std::list<int>();
+    computeCoordinates();
+    makeChangeFull();
 }
 
 void BoundingMesh::updateCage() {
-    cage->V[2].p += Vec3f(0.5,0,0);
-    cage->V[4].p += Vec3f(-0.5,0,0);
-    cage->V[6].p += Vec3f(0,0.5,0);
-    cage->V[19].p += Vec3f(0,3,0);
-    cage->V[18].p += Vec3f(0,3,3);
-    cage->V[17].p += Vec3f(0,3,3);
-    cage->V[16].p += Vec3f(0,3,3);
-
-    cage->recomputeNormals();
-    updateBoundedMesh();
+    moveCageVertexIncr(10,Vec3f(0,-0.5,0));
+    makeChangeFull();
 }
 
 float sign(float x) {
@@ -148,33 +146,89 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
     return (float) res;
 }
 
-void BoundingMesh::updateBoundedMesh() {
-    for(unsigned int i = 0; i < bounded->V.size(); i++) {
-        bounded->V[i].p = Vec3f(0,0,0);
-        for(unsigned int j = 0; j < cage->T.size(); j++) {
-            Vec3f u = cage->V[cage->T[j].v[1]].p - cage->V[cage->T[j].v[0]].p;
-            Vec3f v = cage->V[cage->T[j].v[2]].p - cage->V[cage->T[j].v[0]].p;
-            Vec3f ui = cageInitial->V[cage->T[j].v[1]].p - cage->V[cage->T[j].v[0]].p;
-            Vec3f vi = cageInitial->V[cage->T[j].v[2]].p - cage->V[cage->T[j].v[0]].p;
+void BoundingMesh::moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex) {
+    moveCageVertex(vertexIndex, cage->V[vertexIndex].p + targetVertex);
+}
 
-            float s = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
-            bounded->V[i].p += normalCoordinates[i][j] * cage->T[j].computeNormal(*cage) * s;
+void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {
+    verticesToChange.push_back(vertexIndex);
+    cage->V[vertexIndex].p = targetVertex;
+    auto t_init = oldCage->T.begin();
+    auto s_it = s.begin();
+    int j = 0;
+    for(auto t = cage->T.begin(); t != cage->T.end(); ++t) {
+        bool ownVertex = false;
+        for(unsigned int l = 0; l < 3; l++)
+            ownVertex |= (t->v[l] == vertexIndex);
+        if (ownVertex) {
+            trianglesToChange.push_back(j);
+            Vec3f u = cage->V[t->v[1]].p - cage->V[t->v[0]].p;
+            Vec3f v = cage->V[t->v[2]].p - cage->V[t->v[0]].p;
+            Vec3f ui = cageInitial->V[t_init->v[1]].p - cageInitial->V[t_init->v[0]].p;
+            Vec3f vi = cageInitial->V[t_init->v[2]].p - cageInitial->V[t_init->v[0]].p;
+            *s_it = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
         }
-        for(unsigned int j = 0; j < cage->V.size(); j++) {
-            bounded->V[i].p += vertexCoordinates[i][j] * cage->V[j].p;
+        ++t_init;
+        ++s_it;
+        ++j;
+    }
+    cage->recomputeNormals();
+}
+
+void BoundingMesh::makeChange() {
+    while(!trianglesToChange.empty()){
+        int j = trianglesToChange.front();
+        verticesToChange.pop_front();
+        auto coord_v = normalCoordinates.begin();
+        for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
+            v->p += (*coord_v)[j] * (cage->T[j].computeNormal(*cage)*s[j]- oldCage->T[j].computeNormal(*oldCage)*olds[j]);
+            olds[j] = s[j];
+            ++coord_v;
+        }
+        std::cerr << "out " << j << std::endl;
+    }
+    while(!verticesToChange.empty()){
+        int j = verticesToChange.front();
+        verticesToChange.pop_front();
+        auto coord_v = vertexCoordinates.begin();
+        for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
+            v->p += (*coord_v)[j] * (cage->V[j].p - oldCage->V[j].p);
+            oldCage->V[j] = cage->V[j];
+            ++coord_v;
         }
     }
     bounded->recomputeNormals();
-   // bounded->centerAndScaleToUnit();
-//   for (Vertex v : bounded->V)
-//    std::cerr << v.p << std::endl;
+}
+
+void BoundingMesh::makeChangeFull() {
+    auto coord_v_normal = normalCoordinates.begin();
+    auto coord_v_vertex = vertexCoordinates.begin();
+    for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
+        v->p = Vec3f(0,0,0);
+        for(unsigned int j = 0; j < cage->T.size(); j++) {
+                v->p += (*coord_v_normal)[j] * (cage->T[j].computeNormal(*cage)*s[j]);
+                olds[j] = s[j];
+        }
+        for(unsigned int j = 0; j < cage->V.size(); j++) {
+            v->p += (*coord_v_vertex)[j] * (cage->V[j].p);
+            oldCage->V[j] = cage->V[j];
+        }
+        ++coord_v_normal;
+        ++coord_v_vertex;
+    }
+    bounded->recomputeNormals();
 }
 
 void BoundingMesh::reset() {
-    Mesh * caged = cage;
+    Mesh * cageDelete = cage;
+    Mesh * oldCageDelete = oldCage;
     cage = new Mesh(*cageInitial);
-    delete caged;
-    updateBoundedMesh();
+    oldCage = new Mesh(*cage);
+    s = std::vector<float>(cage->T.size(),1.);
+    olds = s;
+    delete cageDelete;
+    delete oldCageDelete;
+    makeChangeFull();
 }
 
 void BoundingMesh::draw() {
