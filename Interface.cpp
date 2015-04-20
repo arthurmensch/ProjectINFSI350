@@ -37,7 +37,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'r':
         if (!rotate) {
-        	if (translate) {	       	
+        	if (translate) {
 			if(vertexMoving){//Bring back to original vertex place
 				translateVertex(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
 				vertexMoving=false;
@@ -62,22 +62,22 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     		if (rotate) {
                 	rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
                 	rotate = false;
-            	}
-		indexMoving=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
-		if(indexMoving>-1)//vertex grabbed
-			vertexMoving=true;
-		else{//if no vertex grabbed try grab trianle
-			indexMoving=grabber(x,y,*(boundingMesh->cage),camera);
-		}
-		if(indexMoving>-1){//triangle grabbed
-           		beginTransformX = x;
-            		beginTransformY = y;
-    			translate = true;
-		}
-		else{//nothing grabbed, you should aim properly dude
-			translate=false;
-			glutSetWindowTitle("Nothing selected, try again");
-		}
+            }
+            indexMoving=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
+            if(indexMoving>-1)//vertex grabbed
+                vertexMoving=true;
+            else{//if no vertex grabbed try grab trianle
+                indexMoving=grabber(x,y,*(boundingMesh->cage),camera);
+            }
+            if(indexMoving>-1){//triangle grabbed
+                    beginTransformX = x;
+                        beginTransformY = y;
+                    translate = true;
+            }
+            else{//nothing grabbed, you should aim properly dude
+                translate=false;
+                glutSetWindowTitle("Nothing selected, try again");
+            }
     	}
     	else {//cancel translation
 		if(vertexMoving){//Bring back to original vertex place

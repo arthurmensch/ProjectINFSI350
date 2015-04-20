@@ -79,47 +79,47 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	return numVertex;
 }
 void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,int x,int y,int lastX,int lastY){
-Vec3f camPos;
-camera.getPos(camPos);
-GLint viewport[4];
-glGetIntegerv(GL_VIEWPORT,viewport);
-GLdouble projection[16];
-glGetDoublev(GL_PROJECTION_MATRIX,projection);
-GLdouble modelview[16];
-glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+    Vec3f camPos;
+    camera.getPos(camPos);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 
-double startX,startY,startZ;
-double endX,endY,endZ;
-gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
-gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
-Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
-Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[0]].p).length();
-Vec3f translation=rapport*(endPoint-startPoint);
-for (unsigned int i =0;i<3;i++){
-	boundingMesh.moveCageVertexIncr(boundingMesh.cage->T[triangle].v[i],translation);
-}
+    double startX,startY,startZ;
+    double endX,endY,endZ;
+    gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+    gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+    Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+    Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[0]].p).length();
+    Vec3f translation=rapport*(endPoint-startPoint);
+    for (unsigned int i =0;i<3;i++){
+        boundingMesh.moveCageVertexIncr(boundingMesh.cage->T[triangle].v[i],translation);
+    }
 }
 
 void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertex,int x,int y,int lastX,int lastY){
-Vec3f camPos;
-camera.getPos(camPos);
-GLint viewport[4];
-glGetIntegerv(GL_VIEWPORT,viewport);
-GLdouble projection[16];
-glGetDoublev(GL_PROJECTION_MATRIX,projection);
-GLdouble modelview[16];
-glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+    Vec3f camPos;
+    camera.getPos(camPos);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 
-double startX,startY,startZ;
-double endX,endY,endZ;
-gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
-gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
-Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
-Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertex].p).length();
-Vec3f translation=rapport*(endPoint-startPoint);
-boundingMesh.moveCageVertexIncr(vertex,translation);
+    double startX,startY,startZ;
+    double endX,endY,endZ;
+    gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+    gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+    Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+    Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertex].p).length();
+    Vec3f translation=rapport*(endPoint-startPoint);
+    boundingMesh.moveCageVertexIncr(vertex,translation);
 }
 
 void modifyBoundingMesh() {}
@@ -292,4 +292,3 @@ void getColor(Vec3f & position, Vec3f & normal, Vec3f & camPos, float * c) {
 }
 
 void translation(int x, int lastX, int y, int lastY) {}
-void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY) {}
