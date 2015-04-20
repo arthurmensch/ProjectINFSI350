@@ -3,11 +3,12 @@
 Interface::Interface() {
 	glutMotionFunc (motion);
 	glutReshapeFunc (reshape);
-    glutKeyboardFunc (key);
+    glutKeyboardFunc (keyDown);
+    glutKeyboardUpFunc(keyUp);
     glutMouseFunc (mouse);
 }
 
-void Interface::key (unsigned char keyPressed, int x, int y) {
+void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     switch (keyPressed) {
     case 'f':
         if (fullScreen) {
@@ -34,14 +35,43 @@ void Interface::key (unsigned char keyPressed, int x, int y) {
         mesh.smoothGeom();
         break;
     case 'r':
-        mesh.loadOFF(globalName);
+        if (!rotate) {
+        	if (translate)
+        		translate = false;
+        	rotate = true;
+        }
+        else
+        	rotate = false;
         break;
+    case 't':
+    	if (!translate) {
+    		if (rotate)
+    			rotate = false;
+    		translate = true;
+    	}
+    	else
+    		translate = false;
+    	break;
+    case 's':
+    	selectionMode = true;
+    	glutSetWindowTitle ("Selection");
+    	break;
     case '3':
         mesh.simplifyMesh(12);
         break;
     default:
         break;
     }
+}
+
+void Interface::keyUp(unsigned char keyReleased, int x, int y) {
+	switch(keyReleased) {
+	case 's':
+		selectionMode = false;
+		glutSetWindowTitle ("Plus Selection");
+		break;
+	}
+
 }
 
 void Interface::mouse (int button, int state, int x, int y) {
