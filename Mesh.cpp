@@ -26,6 +26,15 @@
 
 using namespace std;
 
+Mesh::Mesh() {
+}
+
+Mesh::Mesh(const Mesh & mesh) {
+    T = mesh.T;
+    V = mesh.V;
+    recomputeNormals();
+}
+
 void Mesh::loadOFF (const std::string & filename) {
 	ifstream in (filename.c_str ());
     if (!in)

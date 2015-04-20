@@ -22,6 +22,7 @@ class BoundingMesh
     protected:
     private:
         Mesh * bounded;
+        Mesh * cageInitial;
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T

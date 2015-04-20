@@ -18,6 +18,7 @@ BoundingMesh * BoundingMesh::generate() {
 
 BoundingMesh::~BoundingMesh()
 {
+    delete cageInitial;
     delete bounded;
     delete cage;
 }
@@ -26,6 +27,7 @@ BoundingMesh::~BoundingMesh()
 BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
     bounded = m_bounded;
     cage = m_cage;
+    cageInitial = new Mesh(*cage);
 }
 
 void BoundingMesh::updateCage() {
@@ -37,7 +39,7 @@ float sign(float x) {
 }
 
 void BoundingMesh::computeCoordinates() {
-    float eps = 1e-10;
+    float eps = 1e-6;
     int Vsize_b = bounded->V.size();
     int Vsize_c = cage->V.size();
     int Tsize_c = cage->T.size();
@@ -97,34 +99,41 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
     v1mp.normalize();
     v2mp.normalize();
 
-    float cosalpha = dot(v2mv1,pmv1);
-    if (cosalpha > 1)
-        cosalpha = 1;
-    if(cosalpha < -1)
-        cosalpha = -1;
-    float alpha = acos(cosalpha);
-    float cosbeta = dot(v1mp,v2mp);
-    if (cosbeta > 1)
-        cosbeta = 1;
-    if(cosbeta < -1)
-        cosbeta = -1;
+    double cosalpha = (double) dot(v2mv1,pmv1);
+    if (cosalpha > 1-1e-6)
+        return 0;
+    if(cosalpha < -1+1e-6)
+         return 0;
+    double cosbeta = (double) dot(v1mp,v2mp);
+    if (cosbeta > 1-1e-6)
+         return 0;
+    if(cosbeta < -1-1e-6)
+         return 0;
 
-    float beta = acos(cosbeta);
-    float lambda = (p-v1).squaredLength()*sin(alpha)*sin(alpha);
-    float c = (p-eta).squaredLength();
-    float theta[2] = {(float)M_PI-alpha,(float)M_PI-alpha-beta};
-    float I[2];
+    //float alpha = acos(cosalpha);
+    double beta = std::acos(cosbeta);
+    double sinalpha = std::sqrt(1-cosalpha*cosalpha);
+    double sinbeta = std::sqrt(1-cosbeta*cosbeta);
+
+    double lambda = (p-v1).squaredLength()*(1-cosalpha*cosalpha);
+    double c = (p-eta).squaredLength();
+    //float theta[2] = {(float)M_PI-alpha,(float)M_PI-alpha-beta};
+    double I[2];
+    double Sa[2] = {sinalpha, sinalpha*cosbeta+cosalpha*sinbeta};
+    double Ca[2] = {-cosalpha, -cosalpha*cosbeta+sinalpha*sinbeta};
     for(int i = 0; i < 2; i++) {
-        float S = sin(theta[i]);
-        float C = cos(theta[i]);
+        double S = Sa[i];//sin(theta[i]);
+        double C = Ca[i];//cos(theta[i]);
         I[i] = 0;
-        float logt = sqrt(lambda) * log(2*sqrt(lambda)*S*S/((1-C)*(1-C))*(1-2*c*C/(c*(1+C)+lambda + sqrt(lambda*lambda+lambda*c*S*S))));
-        float atant = 2*sqrt(c)*atan(sqrt(c)*C / (sqrt(lambda + S*S*c)));
-        I[i] =  (logt + atant)* (- sign(S) / 2);
+        double logt = std::sqrt(lambda) * (std::log(2*sqrt(lambda)*S*S/((1-C)*(1-C)))+std::log(1-2*c*C/(c*(1+C)+lambda + std::sqrt(lambda*lambda+lambda*c*S*S))));
+        double atant = std::atan(sqrt(c)*C / (std::sqrt(lambda + S*S*c)));
+        if (isnan(logt))
+            logt = 0;
+        I[i] =  (logt + 2*std::sqrt(c)*atant)* (- sign(S) / 2);
     }
-    float res = - 1 / (4*M_PI)* fabs (I[0]-I[1]-sqrt(c)*beta);
+    double res = - 1 / (4*M_PI)* fabs (I[0]-I[1]-std::sqrt(c)*beta);
 
-    return res;
+    return (float) res;
 }
 
 void BoundingMesh::updateBoundedMesh() {
@@ -133,8 +142,10 @@ void BoundingMesh::updateBoundedMesh() {
         for(unsigned int j = 0; j < cage->T.size(); j++) {
             Vec3f u = cage->V[cage->T[j].v[1]].p - cage->V[cage->T[j].v[0]].p;
             Vec3f v = cage->V[cage->T[j].v[2]].p - cage->V[cage->T[j].v[0]].p;
+            Vec3f ui = cageInitial->V[cage->T[j].v[1]].p - cage->V[cage->T[j].v[0]].p;
+            Vec3f vi = cageInitial->V[cage->T[j].v[2]].p - cage->V[cage->T[j].v[0]].p;
 
-            float s = sqrt(2*u.squaredLength()*v.squaredLength()-2*(dot(u,v)*dot(u,v)))/(sqrt(2*cross(u,v).squaredLength()));
+            float s = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
             bounded->V[i].p += normalCoordinates[i][j] * cage->T[j].computeNormal(*cage) * s;
         }
         for(unsigned int j = 0; j < cage->V.size(); j++) {

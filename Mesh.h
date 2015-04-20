@@ -39,6 +39,9 @@ public:
 	std::vector<Triangle> T;
 
     /// Loads the mesh from a <file>.off
+    Mesh();
+    Mesh(const Mesh &);
+
 	void loadOFF (const std::string & filename);
 
     /// Compute smooth per-vertex normals
