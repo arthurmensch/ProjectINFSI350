@@ -11,7 +11,7 @@ Ray::Ray(Vec3f &origin,Vec3f &direction){
 	this->direction=direction;
 }
 
-bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T){
+bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T,float &dist){
 	
 	Vec3f normal=normalize(cross(mesh.V[T.v[0]].p-mesh.V[T.v[1]].p,mesh.V[T.v[0]].p-mesh.V[T.v[2]].p));
 	Vec3f point=mesh.V[T.v[0]].p;
@@ -19,8 +19,14 @@ bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T){
 	float constanteDir=dot(this->direction,normal);
 	if(std::abs(dot(normal,normalize(direction-origin)))<0.00001){//normale triangle et rayon sont perpendiculaires
 	//tester si direction est dans le bon plan
-		if(std::abs(constanteDir-constante)<0.00001)
+		if(std::abs(constanteDir-constante)<0.00001){
+			dist=(this->direction-point).length();
+			for (int i=1;i<3;i++){
+				if((this->direction-mesh.V[T.v[i]].p).length()<dist)
+					dist=(this->direction-mesh.V[T.v[i]].p).length();
+			}
 			return true;
+		}
 		return false;
 	}
 	float lambda=(constante-constanteDir)/dot(normal,this->origin-this->direction);
@@ -33,6 +39,7 @@ bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T){
 		Vec3f u=mesh.V[T.v[1]].p-point;
 		Vec3f v=mesh.V[T.v[2]].p-point;
 		Vec3f w=pointIntersect-point;
+		dist=(pointIntersect-this->direction).length();
 		float denom=(dot(u,v)*dot(u,v)-dot(u,u)*dot(v,v));
 		float s=(dot(u,v)*dot(w,v)-dot(v,v)*dot(w,u))/denom;
 		if (s<-0.0001)

@@ -8,6 +8,6 @@ public:
 	Vec3f origin;
 	Vec3f direction;
 	Ray(Vec3f &origin, Vec3f &direction);
-	bool intersectTriangle(Mesh &mesh,Triangle &T);
+	bool intersectTriangle(Mesh &mesh,Triangle &T, float &dist);
 
 };

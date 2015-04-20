@@ -3,52 +3,55 @@
 #include "Vec3.h"
 #include <GL/glut.h>
 #include <cmath>
+#include "Mesh.h"
+#include "Ray.h"
+
 //#include <glm/glm.hpp>
 
-void grabber(Mesh &cage,Camera &camera) {
-    Vec3f camPos;
+int grabber(int x, int y,Mesh &cage,Camera &camera) {
+	Vec3f camPos;
 	camera.getPos(camPos);
 //    float scale_x = camera.getNearPlane() *tan(camera.getFovAngle()*M_PI/180);
 //    float scale_y = scale_x / camera.getAspectRatio();
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
-	GLfloat projection[16];
-	glGetFloatv(GL_PROJECTION_MATRIX,projection);
-	GLfloat modelview[16];
-	glGetFloatv(GL_MODELVIEW_MATRIX,modelview);
-	POINT mouse;
-	GetCursorPos(&mouse);
-	ScreenToClient(hWnd,&mouse);
-	GLfloat winX,winY,winZ;
-	winX=(float)mouse.x;
-	winY=(float)mouse.y
+	GLdouble projection[16];
+	glGetDoublev(GL_PROJECTION_MATRIX,projection);
+	GLdouble modelview[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+	GLdouble winX,winY,winZ;
+	winX=(double)x;
+	winY=(double)y;
 	winY=viewport[3]-winY;
-	float nearX,nearY,nearZ;
-	float farX,farY,farZ;
-	gluUnProject(winX,winY,0.0f,modelview,projection,viewPort,&nearX,&nearY,&nearZ);
-	gluUnProject(winX,winY,1.0f,modelview,projection,viewPort,&farX,&farY,&farZ);
+	double nearX,nearY,nearZ;
+	double farX,farY,farZ;
+	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
+	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
 	
 	Vec3f origin=Vec3f(farX,farY,farZ);
 	Vec3f direction=Vec3f(nearX,nearY,nearZ);
 	Ray boundFinder=Ray(origin,direction);
-	float profondeur=length(origin-direction)
-	int numTriangle=0;
-	for (int i=0;i<cage.T.size();i++){
-		bool intersect=boundFinder.intersectTriangle(cage,cage.T[i])
+	float profondeur=(float) (origin-direction).length();
+	float dist;
+	int numTriangle=-1;
+	for (unsigned int i=0;i<cage.T.size();i++){
+		bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
 		if (intersect){
-			dist=length(direction-mesh.V[cage.T[i].v[0]].p);
 			if(dist<profondeur){
 				numTriangle=i;
 				profondeur=dist;
 			}
 		}
 	}
+	return numTriangle;
 //	glm::vec3 posNearPlane=g;
 //    x = (2*x/width -1) * scale_x;
 //    y = (2*y/width -1) * scale_y;
 
-    Vec3f ray = Vec3f(x,y,camera.getNearPlane());
 }
+
+
+void modifyBoundingMesh(){}
 
 void glSphere (float x, float y, float z, float radius,int rgb)
 {

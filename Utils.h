@@ -4,8 +4,11 @@
 #include <vector>
 #include "Vec3.h"
 #include "Mesh.h"
+#include "Camera.h"
 
-void grabber(int x, int y);
+int grabber(int x, int y,Mesh &cage,Camera &camera);
+
+void modifyBoundingMesh();
 
 void glSphere (float x, float y, float z, float radius, int rgb);
 

@@ -19,7 +19,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "BSHNode.h"
-
+#include "Utils.h"
 #include "BoundingMesh.h"
 
 using namespace std;
@@ -37,7 +37,9 @@ static string globalName;
 
 static Camera camera;
 static Mesh mesh;
-static BoundingMesh * boundingMesh;
+static BoundingMesh *boundingMesh;
+std::vector<bool> selectedTriangle;
+bool selectionMode;
 
 void printUsage () {
 	std::cerr << std::endl
@@ -109,11 +111,24 @@ void init (const char * modelFilename) {
 	glDisable (GL_COLOR_MATERIAL);
 
     boundingMesh = BoundingMesh::generate();
+	//initiate selection of triangle
+	selectionMode=false;
+	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
+	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
+		selectedTriangle[i]=false;
     camera.resize (DEFAULT_SCREENWIDTH, DEFAULT_SCREENHEIGHT);
 }
 
 void drawScene () {
     boundingMesh->draw();
+	for (unsigned int i=0;i<selectedTriangle.size();i++){
+		if(selectedTriangle[i]){
+			for(unsigned int j=0;j<3;j++){
+				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
+				glSphere(center[0],center[1],center[2],0.5,1);
+			}
+		}
+	}
 }
 
 void reshape(int w, int h) {
@@ -167,8 +182,20 @@ void key (unsigned char keyPressed, int x, int y) {
 }
 
 void mouse (int button, int state, int x, int y) {
+	if(selectionMode){
+		modifyBoundingMesh();
+	}
+	else{
+		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
+	
+		if(triangle>-1){
+			selectionMode=true;
+			selectedTriangle[(unsigned int)triangle]=true;
+		}
+			
+	}
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
-        camera.handleMouseClickEvent (button, state, x, y);
+        camera.handleMouseClickEvent (button, state, x, y);	
     }
     else {
     }
