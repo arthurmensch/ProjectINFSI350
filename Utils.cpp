@@ -51,7 +51,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 }
 
 
-void modifyBoundingMesh(){}
+void modifyBoundingMesh() {}
 
 void glSphere (float x, float y, float z, float radius,int rgb)
 {

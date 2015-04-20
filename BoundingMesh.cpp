@@ -1,5 +1,6 @@
 #include "BoundingMesh.h"
 #include <cmath>
+#include <GL/glut.h>
 
 BoundingMesh::BoundingMesh() {
 }
@@ -149,7 +150,9 @@ void BoundingMesh::updateBoundedMesh() {
 }
 
 void BoundingMesh::draw() {
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // Wireframe for the bounding box
     cage->draw();
       // std::cerr << v.p << std::endl;
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     bounded->draw();
 }

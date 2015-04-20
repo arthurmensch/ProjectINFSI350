@@ -21,6 +21,7 @@
 #include "BSHNode.h"
 #include "Utils.h"
 #include "BoundingMesh.h"
+#include "Interface.h"
 
 using namespace std;
 
@@ -31,15 +32,14 @@ static const string DEFAULT_MESH_FILE ("models/horsebounding.off");
 static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement Géométrique");
 static GLint window;
 static unsigned int FPS = 0;
-static bool fullScreen = false;
 
-static string globalName;
+string globalName;
 
-static Camera camera;
-static Mesh mesh;
-static BoundingMesh *boundingMesh;
+Camera camera;
+Mesh mesh;
+BoundingMesh *boundingMesh;
+
 std::vector<bool> selectedTriangle;
-bool selectionMode;
 
 void printUsage () {
 	std::cerr << std::endl
@@ -112,7 +112,6 @@ void init (const char * modelFilename) {
 
     boundingMesh = BoundingMesh::generate();
 	//initiate selection of triangle
-	selectionMode=false;
 	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
 	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
 		selectedTriangle[i]=false;
@@ -131,78 +130,12 @@ void drawScene () {
 	}
 }
 
-void reshape(int w, int h) {
-    camera.resize (w, h);
-}
-
 void display () {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     camera.apply ();
     drawScene ();
     glFlush ();
     glutSwapBuffers ();
-}
-
-void key (unsigned char keyPressed, int x, int y) {
-    switch (keyPressed) {
-    case 'f':
-        if (fullScreen) {
-            glutReshapeWindow (camera.getScreenWidth (), camera.getScreenHeight ());
-            fullScreen = false;
-        } else {
-            glutFullScreen ();
-            fullScreen = true;
-        }
-        break;
-    case 'q':
-    case 27:
-        exit (0);
-        break;
-    case 'w':
-        GLint mode[2];
-		glGetIntegerv (GL_POLYGON_MODE, mode);
-		glPolygonMode (GL_FRONT_AND_BACK, mode[1] ==  GL_FILL ? GL_LINE : GL_FILL);
-        break;
-    case 'l':
-        mesh.smooth();
-        break;
-    case 'g':
-        mesh.smoothGeom();
-        break;
-    case 'r':
-        mesh.loadOFF(globalName);
-        break;
-    case '3':
-        mesh.simplifyMesh(12);
-        break;
-    default:
-        printUsage ();
-        break;
-    }
-}
-
-void mouse (int button, int state, int x, int y) {
-	if(selectionMode){
-		modifyBoundingMesh();
-	}
-	else{
-		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
-	
-		if(triangle>-1){
-			selectionMode=true;
-			selectedTriangle[(unsigned int)triangle]=true;
-		}
-			
-	}
-    if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
-        camera.handleMouseClickEvent (button, state, x, y);	
-    }
-    else {
-    }
-}
-
-void motion (int x, int y) {
-    camera.handleMouseMoveEvent (x, y);
 }
 
 void idle () {
@@ -233,11 +166,11 @@ int main (int argc, char ** argv) {
     window = glutCreateWindow (appTitle.c_str ());
     init (argc == 2 ? argv[1] : DEFAULT_MESH_FILE.c_str ());
     glutIdleFunc (idle);
-    glutReshapeFunc (reshape);
+
+    Interface interface;
+    
     glutDisplayFunc (display);
-    glutKeyboardFunc (key);
-    glutMotionFunc (motion);
-    glutMouseFunc (mouse);
+
     printUsage ();
     glutMainLoop ();
     return 0;

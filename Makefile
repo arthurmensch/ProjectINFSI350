@@ -1,5 +1,5 @@
 CIBLE = main
-SRCS =  Main.cpp Camera.cpp Mesh.cpp Ray.cpp BoundingMesh.cpp Utils.cpp
+SRCS =  Main.cpp Camera.cpp Mesh.cpp Ray.cpp BoundingMesh.cpp Utils.cpp Interface.cpp
 LIBS =  -lglut -lGLU -lGL -lm
 
 CC = g++
@@ -24,6 +24,6 @@ Utils.o: Utils.cpp Utils.h Mesh.h
 BSHNode.o : BSHNode.cpp BSHNode.h Mesh.h Vec3.h Utils.h Camera.h
 Ray.o : Ray.cpp Ray.h Mesh.h Vec3.h
 BoundingMesh.o : BoundingMesh.cpp BoundingMesh.h Mesh.h Vec3.h
-
+Interface.o : Interface.cpp Interface.h
 
 
