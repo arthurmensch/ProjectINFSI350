@@ -22,6 +22,7 @@ class BoundingMesh
         void reset();
         void moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex);
+        void moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex);
         void makeChange();
         void makeChangeFull();
 

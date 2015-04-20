@@ -22,7 +22,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	double farX,farY,farZ;
 	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
 	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
-	
+
 	Vec3f origin=Vec3f(farX,farY,farZ);
 	Vec3f direction=Vec3f(nearX,nearY,nearZ);
 	Ray boundFinder=Ray(origin,direction);
@@ -56,7 +56,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> selec
 	double farX,farY,farZ;
 	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
 	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
-	
+
 	Vec3f origin=Vec3f(farX,farY,farZ);
 	Vec3f direction=Vec3f(nearX,nearY,nearZ);
 	Ray boundFinder=Ray(origin,direction);
@@ -302,3 +302,6 @@ void getColor(Vec3f & position, Vec3f & normal, Vec3f & camPos, float * c) {
         c[k] = 5 * f *dot(w0,normal) / (dist_source+1)/ (dist_source+1);
     }
 }
+
+void translation(int x, int lastX, int y, int lastY) {}
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY) {}

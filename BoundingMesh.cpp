@@ -37,7 +37,7 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
 }
 
 void BoundingMesh::updateCage() {
-    moveCageVertexIncr(10,Vec3f(0,-0.5,0));
+    moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
     makeChange();
 }
 
@@ -61,11 +61,9 @@ void BoundingMesh::computeCoordinates() {
         for(unsigned int j = 0; j< cage->T.size(); j++) {
             Triangle t = cage->T[j];
             Vec3f v[3];
-            for(int l= 0; l < 3; l++) {
+            for(int l= 0; l < 3; l++)
                 v[l] = cage->V[t.v[l]].p-eta.p;
-            }
             Vec3f n = t.computeNormal(*cage);
-            //std::cerr << "n " << n << std::endl;
             Vec3f p = dot(v[0],n) * n;
             float s[3];
             float I[3];
@@ -78,25 +76,17 @@ void BoundingMesh::computeCoordinates() {
                 N[l] = cross(v[(l+1) % 3],v[l]);
                 N[l].normalize();
             }
-            //std::cerr << "I " << I[0] << " " << I[1] << " "  << I[2] << std::endl;
-            //std::cerr << "II " << II[0] << " " << II[1] << " "  << II[2] << std::endl;
-
             float Is= - fabs(s[0]*I[0]+s[1]*I[1]+s[2]*I[2]);
-          //  std::cerr << "Normal" << Is << std::endl;
             normalCoordinates[i][j] = - Is;
             Vec3f w = n*Is + N[0] * II[0] + N[1] * II[1] + N[2] * II[2];
-            if (w.squaredLength() > eps) {
-                for(int l= 0; l < 3; l++) {
-                    //std::cerr << "Vertex" << dot(N[(l+1) % 3],w)/dot(N[(l+1) % 3],v[l]) << std::endl;
+            if (w.squaredLength() > eps)
+                for(int l= 0; l < 3; l++)
                     vertexCoordinates[i][t.v[l]] += dot(N[(l+1) % 3],w)/dot(N[(l+1) % 3],v[l]);
-                }
-            }
         }
     }
 }
 
 float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
-    //std::cerr << " v1 " << v1 << " v2 " << v2 << std::endl;
     Vec3f v2mv1 = v2 - v1;
     Vec3f pmv1 = p - v1;
     Vec3f v1mp = v1 - p;
@@ -107,38 +97,35 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
     v2mp.normalize();
 
     double cosalpha = (double) dot(v2mv1,pmv1);
-    if (cosalpha > 1-1e-6)
+    if (cosalpha > 1-1e-5)
         return 0;
-    if(cosalpha < -1+1e-6)
+    if(cosalpha < -1+1e-5)
          return 0;
     double cosbeta = (double) dot(v1mp,v2mp);
-    if (cosbeta > 1-1e-6)
+    if (cosbeta > 1-1e-5)
          return 0;
-    if(cosbeta < -1-1e-6)
+    if(cosbeta < -1+1e-5)
          return 0;
 
-    //float alpha = acos(cosalpha);
     double beta = std::acos(cosbeta);
     double sinalpha = std::sqrt(1-cosalpha*cosalpha);
     double sinbeta = std::sqrt(1-cosbeta*cosbeta);
 
     double lambda = (p-v1).squaredLength()*(1-cosalpha*cosalpha);
     double c = (p-eta).squaredLength();
-    //float theta[2] = {(float)M_PI-alpha,(float)M_PI-alpha-beta};
     double I[2];
     double Sa[2] = {sinalpha, sinalpha*cosbeta+cosalpha*sinbeta};
     double Ca[2] = {-cosalpha, -cosalpha*cosbeta+sinalpha*sinbeta};
     for(int i = 0; i < 2; i++) {
-        double S = Sa[i];//sin(theta[i]);
-        double C = Ca[i];//cos(theta[i]);
+        double S = Sa[i];
+        double C = Ca[i];
         I[i] = 0;
         double logt = std::sqrt(lambda) * (std::log(2*sqrt(lambda)*S*S/((1-C)*(1-C)))+std::log(1-2*c*C/(c*(1+C)+lambda + std::sqrt(lambda*lambda+lambda*c*S*S))));
         double atant = std::atan(sqrt(c)*C / (std::sqrt(lambda + S*S*c)));
-        if (isnan(logt)) {
-            return 0;
-            std::cerr << "nan ";
-            logt = 0;
-        }
+//        if (isnan(logt)) {
+//            std::cerr << "nan ";
+//            return 0;
+//        }
         I[i] =  (logt + 2*std::sqrt(c)*atant)* (- sign(S) / 2);
     }
     double res = - 1 / (4*M_PI)* fabs (I[0]-I[1]-std::sqrt(c)*beta);
@@ -148,6 +135,11 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
 
 void BoundingMesh::moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex) {
     moveCageVertex(vertexIndex, cage->V[vertexIndex].p + targetVertex);
+}
+
+void BoundingMesh::moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex) {
+    for(unsigned int i = 0; i < 3; i++)
+        moveCageVertexIncr(cage->T[triangleIndex].v[i], targetVertex);
 }
 
 void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {
@@ -195,7 +187,6 @@ void BoundingMesh::makeChange() {
             ++coord_v;
         }
         oldCage->V[j] = cage->V[j];
-
     }
     bounded->recomputeNormals();
 }

@@ -37,6 +37,8 @@
 		<Unit filename="BoundingMesh.h" />
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.h" />
+		<Unit filename="Interface.cpp" />
+		<Unit filename="Interface.h" />
 		<Unit filename="Main.cpp" />
 		<Unit filename="Makefile" />
 		<Unit filename="Mesh.cpp" />

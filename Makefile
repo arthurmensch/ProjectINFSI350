@@ -5,7 +5,7 @@ LIBS =  -lglut -lGLU -lGL -lm
 CC = g++
 CPP = g++
 
-FLAGS = -Wall -O0 -std=c++11 -g
+FLAGS = -Wall -O2 -std=c++11 -g
 
 CFLAGS = $(FLAGS)
 CXXFLAGS = $(FLAGS)
@@ -24,6 +24,6 @@ Utils.o: Utils.cpp Utils.h Mesh.h
 BSHNode.o : BSHNode.cpp BSHNode.h Mesh.h Vec3.h Utils.h Camera.h
 Ray.o : Ray.cpp Ray.h Mesh.h Vec3.h
 BoundingMesh.o : BoundingMesh.cpp BoundingMesh.h Mesh.h Vec3.h
-Interface.o : Interface.cpp Interface.h
+Interface.o : Interface.cpp Interface.h Utils.h
 
 

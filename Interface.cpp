@@ -1,4 +1,5 @@
 #include "Interface.h"
+#include "Utils.h"
 
 Interface::Interface() {
 	glutMotionFunc (motion);
@@ -104,7 +105,7 @@ void Interface::motion (int x, int y) {
     }
 
     camera.handleMouseMoveEvent (x, y);
-    
+
     lastX = x;
     lastY = y;
 }
@@ -135,11 +136,11 @@ void Interface::mouse (int button, int state, int x, int y) {
 		if(triangle>-1)
 			selectedTriangle[(unsigned int)triangle]=true;
 	}
-    
+
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
         camera.handleMouseClickEvent (button, state, x, y);
     }
-    
+
     else {
     }
 }
