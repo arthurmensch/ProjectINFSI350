@@ -85,6 +85,7 @@ public:
         normal.normalize();
         return normal;
     }
+
     unsigned int v[3];
     Vec3f normal;
 };

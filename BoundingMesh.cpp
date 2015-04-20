@@ -72,7 +72,7 @@ void BoundingMesh::computeCoordinates() {
             //std::cerr << "I " << I[0] << " " << I[1] << " "  << I[2] << std::endl;
             //std::cerr << "II " << II[0] << " " << II[1] << " "  << II[2] << std::endl;
 
-            float Is= - fabs(s[0]*I[0]-s[1]*I[1]-s[2]*I[2]);
+            float Is= - fabs(s[0]*I[0]+s[1]*I[1]+s[2]*I[2]);
           //  std::cerr << "Normal" << Is << std::endl;
             normalCoordinates[i][j] = - Is;
             Vec3f w = n*Is + N[0] * II[0] + N[1] * II[1] + N[2] * II[2];
@@ -120,13 +120,7 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
         I[i] = 0;
         float logt = sqrt(lambda) * log(2*sqrt(lambda)*S*S/((1-C)*(1-C))*(1-2*c*C/(c*(1+C)+lambda + sqrt(lambda*lambda+lambda*c*S*S))));
         float atant = 2*sqrt(c)*atan(sqrt(c)*C / (sqrt(lambda + S*S*c)));
-        if (isnan(logt))
-            logt = 0;
-        if (isnan(atant))
-            atant = 2 * sqrt(c) * M_PI / 2 * sign(C);
-        I[i] =  (logt + atant)* - sign(S) / 2;
-        if (isnan(I[i]))
-            std::cerr << "Nan error";
+        I[i] =  (logt + atant)* (- sign(S) / 2);
     }
     float res = - 1 / (4*M_PI)* fabs (I[0]-I[1]-sqrt(c)*beta);
 
@@ -137,7 +131,11 @@ void BoundingMesh::updateBoundedMesh() {
     for(unsigned int i = 0; i < bounded->V.size(); i++) {
         bounded->V[i].p = Vec3f(0,0,0);
         for(unsigned int j = 0; j < cage->T.size(); j++) {
-            bounded->V[i].p += normalCoordinates[i][j] * cage->T[j].computeNormal(*cage);
+            Vec3f u = cage->V[cage->T[j].v[1]].p - cage->V[cage->T[j].v[0]].p;
+            Vec3f v = cage->V[cage->T[j].v[2]].p - cage->V[cage->T[j].v[0]].p;
+
+            float s = sqrt(2*u.squaredLength()*v.squaredLength()-2*(dot(u,v)*dot(u,v)))/(sqrt(2*cross(u,v).squaredLength()));
+            bounded->V[i].p += normalCoordinates[i][j] * cage->T[j].computeNormal(*cage) * s;
         }
         for(unsigned int j = 0; j < cage->V.size(); j++) {
             bounded->V[i].p += vertexCoordinates[i][j] * cage->V[j].p;
@@ -145,8 +143,8 @@ void BoundingMesh::updateBoundedMesh() {
     }
     bounded->recomputeNormals();
    // bounded->centerAndScaleToUnit();
-   for (Vertex v : bounded->V)
-    std::cerr << v.p << std::endl;
+//   for (Vertex v : bounded->V)
+//    std::cerr << v.p << std::endl;
 }
 
 void BoundingMesh::draw() {
