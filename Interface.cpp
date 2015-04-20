@@ -3,6 +3,7 @@
 
 Interface::Interface() {
 	glutMotionFunc (motion);
+    glutPassiveMotionFunc(passiveMotion);
 	glutReshapeFunc (reshape);
     glutKeyboardFunc (keyDown);
     glutKeyboardUpFunc(keyUp);
@@ -121,39 +122,35 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 
 }
 
-void Interface::motion (int x, int y) {
-    /*if (translate) {
-	if(vertexMoving){//Bring back to original vertex place
-		translateVertex(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
-	}
-	else{//bring back to original triangle place
-		translateTriangle(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
-	}
-    }*/
+void Interface::passiveMotion (int x, int y) {
+    if (translate) {
+       if(vertexMoving){//Bring back to original vertex place
+           translateVertex(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
+       }
+
+       else{//bring back to original triangle place
+           translateTriangle(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
+       }
+    }
 
     if (rotate) {
         rotation(lastX, x, lastY, y,beginTransformX,beginTransformY);
     }
-
-    camera.handleMouseMoveEvent (x, y);
     
-    //lastX = x;
-    //lastY = y;
+    lastX = x;
+    lastY = y;
 }
 
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (translate){
-		if(vertexMoving){//Bring back to original vertex place
-			translateVertex(camera,*boundingMesh,indexMoving,x,y,beginTransformX,beginTransformY);
-			vertexMoving=false;
-		}
-		else{//bring back to original triangle place
-			translateTriangle(camera,*boundingMesh,indexMoving,x,y,beginTransformX,beginTransformY);
-		}
-            	translate = false;
+            if(vertexMoving)
+                vertexMoving=false;
+            
+            translate = false;
         }
-	else if (rotate)
+
+        else if (rotate)
             rotate = false;
     }
 
