@@ -6,7 +6,6 @@
 #include "Mesh.h"
 #include "Ray.h"
 
-void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){}
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
@@ -78,6 +77,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	}
 	return numVertex;
 }
+
 void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,int x,int y,int lastX,int lastY){
     Vec3f camPos;
     camera.getPos(camPos);
@@ -123,7 +123,21 @@ Vec3f translation=rapport*(endPoint-startPoint);
 boundingMesh.moveCageVertexIncr(vertex,translation);
 }
 
-void modifyBoundingMesh() {}
+
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){
+    int vec0x = lastX - beginTransformX;
+    int vec0y = lastY - beginTransformY;
+    int vec1x = x - beginTransformX;
+    int vec1y = y - beginTransformY;
+    int sign = vec0x * vec1y - vec0y * vec1x >= 0 ? 1 : -1;
+
+    float angle = sign * acos((vec0x*vec1x + vec0y*vec1y) / (sqrt(vec0x*vec0x + vec0y*vec0y) * sqrt(vec1x*vec1x + vec1y*vec1y)));
+    
+    glMatrixMode (GL_MODELVIEW);
+    glPushMatrix ();
+    glRotatef(angle,0,0,1);
+    glPopMatrix ();
+}
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
 glEnable(GL_COLOR_MATERIAL);
