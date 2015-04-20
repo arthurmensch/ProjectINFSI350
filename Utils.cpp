@@ -8,8 +8,6 @@
 //#include <glm/glm.hpp>
 
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
-	Vec3f camPos;
-	camera.getPos(camPos);
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -43,6 +41,34 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	return numTriangle;
 }
 
+void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,float x,float y,float lastX,float lastY){
+//au début du click
+//lastX
+//lastY
+//pendant le click on a X,Y
+//-> il faut le renvoyer a x,y,z dnas le plan orthogonal a camera
+Vec3f camPos;
+camera.getPos(camPos);
+GLint viewport[4];
+glGetIntegerv(GL_VIEWPORT,viewport);
+GLdouble projection[16];
+glGetDoublev(GL_PROJECTION_MATRIX,projection);
+GLdouble modelview[16];
+glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+
+double startX,startY,startZ;
+double endX,endY,endZ;
+gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[0]].p).length();
+Vec3f translation=rapport*(endPoint-startPoint);
+for (unsigned int i =0;i<3;i++){
+	Vec3f pointToUpdate=boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[i]].p;
+	//boundingMesh->updateMesh(triangle,i,pointToUpdate[0]+translation[0],pointToUpdate[1]+translation[1],pointToUpdate[2]+translation[2]);
+}
+}
 
 void modifyBoundingMesh() {}
 
