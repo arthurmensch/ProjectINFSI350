@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include <map>
 #include <vector>
+#include <list>
 
 
 class BoundingMesh
@@ -12,21 +13,32 @@ class BoundingMesh
         BoundingMesh();
         BoundingMesh(Mesh * m_bounded, Mesh * m_cage);
         virtual ~BoundingMesh();
+        static BoundingMesh * generate();
+
+
         void computeCoordinates();
-        void updateBoundedMesh();
         void updateCage();
-        float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
         void draw();
         void reset();
-        static BoundingMesh * generate();
+        void moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex);
+        void moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex);
+        void makeChange();
+        void makeChangeFull();
+
 	Mesh *cage;
-    protected:
     private:
+        float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
+
         Mesh * bounded;
         Mesh * cageInitial;
+        Mesh * oldCage;
+        std::vector<float> s;
+        std::vector<float> olds;
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
+        std::list<int> trianglesToChange;
+        std::list<int> verticesToChange;
 };
 
 #endif // BOUNDINGMESH_H

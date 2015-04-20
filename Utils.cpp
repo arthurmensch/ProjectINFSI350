@@ -130,7 +130,6 @@ Vec3f pointToUpdate=boundingMesh.cage->V[vertex].p;
 //boundingMesh.updateMesh(triangle,i,pointToUpdate[0]+translation[0],pointToUpdate[1]+translation[1],pointToUpdate[2]+translation[2]);
 }
 
-
 void modifyBoundingMesh() {}
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){

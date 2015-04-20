@@ -14,6 +14,9 @@ void translateTriangle(Camera &camera,BoundingMesh &boundingMesh, int triangle,f
 void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertex,float x, float y, float lastX, float lastY);
 void modifyBoundingMesh();
 
+void translation(int x, int lastX, int y, int lastY);
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY);
+
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difB,float difG,float specR,float specG,float specB,float shininess, int color);
 void glSphere (float x, float y, float z, float radius, int rgb);
 
