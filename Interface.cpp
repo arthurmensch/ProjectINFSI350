@@ -37,13 +37,19 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'r':
         if (!rotate) {
-        	if (translate) {
-                translation(beginTransformX,lastX,beginTransformY,lastY);
-                translate = false;
-            }
+        	if (translate) {	       	
+			if(vertexMoving){//Bring back to original vertex place
+				translateVertex(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
+				vertexMoving=false;
+			}
+			else{//bring back to original triangle place
+				translateTriangle(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
+            		}
+	 	  	 translate = false;
+            	}
 
-            beginTransformX = lastX;
-            beginTransformY = lastY;
+            beginTransformX = x;
+            beginTransformY = y;
         	rotate = true;
         }
         else {
@@ -54,17 +60,34 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 't':
     	if (!translate) {
     		if (rotate) {
-                rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
-                rotate = false;
-            }
-
-            beginTransformX = lastX;
-            beginTransformY = lastY;
-    		translate = true;
+                	rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
+                	rotate = false;
+            	}
+		indexMoving=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
+		if(indexMoving>-1)//vertex grabbed
+			vertexMoving=true;
+		else{//if no vertex grabbed try grab trianle
+			indexMoving=grabber(x,y,*(boundingMesh->cage),camera);
+		}
+		if(indexMoving>-1){//triangle grabbed
+           		beginTransformX = x;
+            		beginTransformY = y;
+    			translate = true;
+		}
+		else{//nothing grabbed, you should aim properly dude
+			translate=false;
+			glutSetWindowTitle("Nothing selected, try again");
+		}
     	}
-    	else {
-    		translate = false;
-            translation(beginTransformX,lastX,beginTransformY,lastY);
+    	else {//cancel translation
+		if(vertexMoving){//Bring back to original vertex place
+			translateVertex(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
+			vertexMoving=false;
+		}
+		else{//bring back to original triangle place
+			translateTriangle(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
+            	}
+		translate = false;
         }
     	break;
     case 's':
@@ -97,7 +120,12 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 
 void Interface::motion (int x, int y) {
     if (translate) {
-        translation(lastX, x, lastY, y);
+	if(vertexMoving){//Bring back to original vertex place
+		translateVertex(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
+	}
+	else{//bring back to original triangle place
+		translateTriangle(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
+	}
     }
 
     if (rotate) {
@@ -112,16 +140,30 @@ void Interface::motion (int x, int y) {
 
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
-        if (translate)
-            translate = false;
-        else if (rotate)
+        if (translate){
+		if(vertexMoving){//Bring back to original vertex place
+			translateVertex(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
+			vertexMoving=false;
+		}
+		else{//bring back to original triangle place
+			translateTriangle(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
+		}
+            	translate = false;
+        }
+	else if (rotate)
             rotate = false;
     }
 
     else if (button == GLUT_RIGHT_BUTTON) {
         if (translate) {
-            translation(beginTransformX,lastX,beginTransformY,lastY);
-            translate = false;
+		if(vertexMoving){//Bring back to original vertex place
+			translateVertex(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
+			vertexMoving=false;
+		}
+		else{//bring back to original triangle place
+			translateTriangle(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
+		}
+            	translate = false;
         }
 
         else if (rotate) {

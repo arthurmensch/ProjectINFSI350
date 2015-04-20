@@ -5,8 +5,8 @@
 #include <cmath>
 #include "Mesh.h"
 #include "Ray.h"
-//#include <glm/glm.hpp>
 
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){}
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
@@ -41,7 +41,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	return numTriangle;
 }
 
-int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> selectedTriangle) {
+int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -66,7 +66,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> selec
 	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for (int j=0;j<3;j++){
-				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.055,dist);
+				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.1,dist);
 				if (intersect){
 					if(dist<profondeur){
 						numVertex=cage.T[i].v[j];
@@ -78,12 +78,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> selec
 	}
 	return numVertex;
 }
-void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,float x,float y,float lastX,float lastY){
-//au début du click
-//lastX
-//lastY
-//pendant le click on a X,Y
-//-> il faut le renvoyer a x,y,z dnas le plan orthogonal a camera
+void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,int x,int y,int lastX,int lastY){
 Vec3f camPos;
 camera.getPos(camPos);
 GLint viewport[4];
@@ -102,17 +97,11 @@ Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
 float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[0]].p).length();
 Vec3f translation=rapport*(endPoint-startPoint);
 for (unsigned int i =0;i<3;i++){
-	Vec3f pointToUpdate=boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[i]].p;
-	//boundingMesh->updateMesh(triangle,i,pointToUpdate[0]+translation[0],pointToUpdate[1]+translation[1],pointToUpdate[2]+translation[2]);
+	boundingMesh.moveCageVertexIncr(boundingMesh.cage->T[triangle].v[i],translation);
 }
 }
 
-void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertex,float x,float y,float lastX,float lastY){
-//au début du click
-//lastX
-//lastY
-//pendant le click on a X,Y
-//-> il faut le renvoyer a x,y,z dnas le plan orthogonal a camera
+void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertex,int x,int y,int lastX,int lastY){
 Vec3f camPos;
 camera.getPos(camPos);
 GLint viewport[4];
@@ -130,8 +119,7 @@ Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
 Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
 float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertex].p).length();
 Vec3f translation=rapport*(endPoint-startPoint);
-Vec3f pointToUpdate=boundingMesh.cage->V[vertex].p;
-//boundingMesh.updateMesh(triangle,i,pointToUpdate[0]+translation[0],pointToUpdate[1]+translation[1],pointToUpdate[2]+translation[2]);
+boundingMesh.moveCageVertexIncr(vertex,translation);
 }
 
 void modifyBoundingMesh() {}
