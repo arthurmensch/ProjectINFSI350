@@ -1,5 +1,4 @@
 #include "Interface.h"
-#include "Utils.h"
 
 Interface::Interface() {
 	glutMotionFunc (motion);
@@ -66,12 +65,14 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 		indexMoving=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
 		if(indexMoving>-1)//vertex grabbed
 			vertexMoving=true;
-		else{//if no vertex grabbed try grab trianle
+		else{//if no vertex grabbed try grab triangle
 			indexMoving=grabber(x,y,*(boundingMesh->cage),camera);
 		}
 		if(indexMoving>-1){//triangle grabbed
            		beginTransformX = x;
             		beginTransformY = y;
+			lastX=x;
+			lastY=y;
     			translate = true;
 		}
 		else{//nothing grabbed, you should aim properly dude
@@ -120,10 +121,10 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 
 void Interface::motion (int x, int y) {
     if (translate) {
-	if(vertexMoving){//Bring back to original vertex place
+	if(vertexMoving){
 		translateVertex(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
 	}
-	else{//bring back to original triangle place
+	else{
 		translateTriangle(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
 	}
     }
@@ -141,14 +142,15 @@ void Interface::motion (int x, int y) {
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (translate){
-		if(vertexMoving){//Bring back to original vertex place
+		if(vertexMoving){
 			translateVertex(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
 			vertexMoving=false;
 		}
-		else{//bring back to original triangle place
+		else{
 			translateTriangle(camera,*boundingMesh,indexMoving,x,y,lastX,lastY);
 		}
             	translate = false;
+		boundingMesh->makeChange();
         }
 	else if (rotate)
             rotate = false;
