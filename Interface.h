@@ -21,7 +21,8 @@ static bool translate = false;
 
 static int beginTransformX;
 static int beginTransformY;
-
+static bool vertexMoving=false;
+static int indexMoving;
 static int lastX;
 static int lastY;
 

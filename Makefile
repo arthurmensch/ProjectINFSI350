@@ -24,6 +24,6 @@ Utils.o: Utils.cpp Utils.h Mesh.h
 BSHNode.o : BSHNode.cpp BSHNode.h Mesh.h Vec3.h Utils.h Camera.h
 Ray.o : Ray.cpp Ray.h Mesh.h Vec3.h
 BoundingMesh.o : BoundingMesh.cpp BoundingMesh.h Mesh.h Vec3.h
-Interface.o : Interface.cpp Interface.h
+Interface.o : Interface.cpp Interface.h Utils.h
 
 
