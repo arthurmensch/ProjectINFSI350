@@ -54,3 +54,20 @@ bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T,float &dist){
 	}
 	return false;
 }
+
+bool Ray::intersectVertex(Mesh &mesh, int vertex,float radius,float &dist){
+	
+Vec3f normal=normalize(this->origin-this->direction);
+Vec3f point=mesh.V[vertex].p;
+float constante=dot(point,normal);
+float constanteDir=dot(this->direction,normal);
+dist=constante-constanteDir;
+Vec3f pointIntersect=this->direction+dist*normal;
+
+float distRay=(point-pointIntersect).length();
+if(distRay<radius)
+	return true;
+return false;
+
+
+}

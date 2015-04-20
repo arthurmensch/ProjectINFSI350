@@ -9,5 +9,5 @@ public:
 	Vec3f direction;
 	Ray(Vec3f &origin, Vec3f &direction);
 	bool intersectTriangle(Mesh &mesh,Triangle &T, float &dist);
-
+	bool intersectVertex(Mesh &mesh,int vertex, float radius, float &dist);
 };
