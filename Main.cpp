@@ -53,7 +53,10 @@ void printUsage () {
          << " <drag>+<left button>: rotate model" << std::endl
          << " <drag>+<right button>: move model" << std::endl
          << " <drag>+<middle button>: zoom" << std::endl
-         << " q, <esc>: Quit" << std::endl << std::endl;
+         << " q, <esc>: Quit" << std::endl << std::endl
+         << " s : Select" << std::endl
+         << " t : Translate selection in a plan parallel to the camera" << std::endl
+         << " r : Rotate selection in a plan parallel to the camera" << std::endl;
 }
 
 void initLighting () {
@@ -124,7 +127,7 @@ void drawScene () {
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
 				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-				glSphere(center[0],center[1],center[2],0.5,1);
+				glSphere(center[0],center[1],center[2],0.05,1);
 			}
 		}
 	}

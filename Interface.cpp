@@ -3,11 +3,12 @@
 Interface::Interface() {
 	glutMotionFunc (motion);
 	glutReshapeFunc (reshape);
-    glutKeyboardFunc (key);
+    glutKeyboardFunc (keyDown);
+    glutKeyboardUpFunc(keyUp);
     glutMouseFunc (mouse);
 }
 
-void Interface::key (unsigned char keyPressed, int x, int y) {
+void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     switch (keyPressed) {
     case 'f':
         if (fullScreen) {
@@ -34,32 +35,62 @@ void Interface::key (unsigned char keyPressed, int x, int y) {
         mesh.smoothGeom();
         break;
     case 'r':
-        boundingMesh->reset();
+        if (!rotate) {
+        	if (translate)
+        		translate = false;
+        	rotate = true;
+        }
+        else
+        	rotate = false;
         break;
+    case 't':
+    	if (!translate) {
+    		if (rotate)
+    			rotate = false;
+    		translate = true;
+    	}
+    	else
+    		translate = false;
+    	break;
+    case 's':
+    	selectionMode = true;
+    	glutSetWindowTitle ("Selection");
+    	break;
     case '3':
         mesh.simplifyMesh(12);
         break;
     case 'u':
         boundingMesh->updateCage();
         break;
+    case 'i':
+        boundingMesh->reset();
     default:
         break;
     }
 }
 
-void Interface::mouse (int button, int state, int x, int y) {
-	if(selectionMode){
-		modifyBoundingMesh();
+void Interface::keyUp(unsigned char keyReleased, int x, int y) {
+	switch(keyReleased) {
+	case 's':
+		selectionMode = false;
+		glutSetWindowTitle ("Plus Selection");
+		break;
 	}
 
-	else{
+}
+
+void Interface::mouse (int button, int state, int x, int y) {
+	if(selectionMode){
 		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
 
 		if(triangle>-1){
 			selectionMode=true;
 			selectedTriangle[(unsigned int)triangle]=true;
 		}
-
+//		}
+//	}
+//	if(rotate||translate){
+//	modifyBoundingMesh();
 	}
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
         camera.handleMouseClickEvent (button, state, x, y);
