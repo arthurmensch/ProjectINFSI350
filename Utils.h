@@ -8,8 +8,10 @@
 #include "BoundingMesh.h"
 
 int grabber(int x, int y,Mesh &cage,Camera &camera);
+int grabberVertex(int x, int y,Mesh &cage,Camera &camera);
 
 void translateTriangle(Camera &camera,BoundingMesh &boundingMesh, int triangle,float x, float y, float lastX, float lastY);
+void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertex,float x, float y, float lastX, float lastY);
 void modifyBoundingMesh();
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difB,float difG,float specR,float specG,float specB,float shininess, int color);

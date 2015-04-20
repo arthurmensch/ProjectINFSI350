@@ -41,6 +41,39 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	return numTriangle;
 }
 
+int grabberVertex(int x, int y,Mesh &cage,Camera &camera) {
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT,viewport);
+	GLdouble projection[16];
+	glGetDoublev(GL_PROJECTION_MATRIX,projection);
+	GLdouble modelview[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+	GLdouble winX,winY,winZ;
+	winX=(double)x;
+	winY=(double)y;
+	winY=viewport[3]-winY;
+	double nearX,nearY,nearZ;
+	double farX,farY,farZ;
+	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
+	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
+	
+	Vec3f origin=Vec3f(farX,farY,farZ);
+	Vec3f direction=Vec3f(nearX,nearY,nearZ);
+	Ray boundFinder=Ray(origin,direction);
+	float profondeur=(float) (origin-direction).length();
+	float dist;
+	int numTriangle=-1;
+	for (unsigned int i=0;i<cage.T.size();i++){
+		bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
+		if (intersect){
+			if(dist<profondeur){
+				numTriangle=i;
+				profondeur=dist;
+			}
+		}
+	}
+	return numTriangle;
+}
 void translateTriangle(Camera &camera,BoundingMesh &boundingMesh,int triangle,float x,float y,float lastX,float lastY){
 //au début du click
 //lastX
@@ -70,8 +103,35 @@ for (unsigned int i =0;i<3;i++){
 }
 }
 
-void modifyBoundingMesh() {}
+void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertex,float x,float y,float lastX,float lastY){
+//au début du click
+//lastX
+//lastY
+//pendant le click on a X,Y
+//-> il faut le renvoyer a x,y,z dnas le plan orthogonal a camera
+Vec3f camPos;
+camera.getPos(camPos);
+GLint viewport[4];
+glGetIntegerv(GL_VIEWPORT,viewport);
+GLdouble projection[16];
+glGetDoublev(GL_PROJECTION_MATRIX,projection);
+GLdouble modelview[16];
+glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 
+double startX,startY,startZ;
+double endX,endY,endZ;
+gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertex].p).length();
+Vec3f translation=rapport*(endPoint-startPoint);
+Vec3f pointToUpdate=boundingMesh.cage->V[vertex].p;
+//boundingMesh.updateMesh(triangle,i,pointToUpdate[0]+translation[0],pointToUpdate[1]+translation[1],pointToUpdate[2]+translation[2]);
+}
+
+
+void modifyBoundingMesh() {}
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
 glEnable(GL_COLOR_MATERIAL);
