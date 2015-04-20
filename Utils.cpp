@@ -66,7 +66,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for (int j=0;j<3;j++){
-				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.055,dist);
+				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.1,dist);
 				if (intersect){
 					if(dist<profondeur){
 						numVertex=cage.T[i].v[j];
@@ -97,7 +97,7 @@ Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
 float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangle].v[0]].p).length();
 Vec3f translation=rapport*(endPoint-startPoint);
 for (unsigned int i =0;i<3;i++){
-	boundingMesh.moveCageVertex(boundingMesh.cage->T[triangle].v[i],translation);
+	boundingMesh.moveCageVertexIncr(boundingMesh.cage->T[triangle].v[i],translation);
 }
 }
 
@@ -119,7 +119,7 @@ Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
 Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
 float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertex].p).length();
 Vec3f translation=rapport*(endPoint-startPoint);
-boundingMesh.moveCageVertex(vertex,translation);
+boundingMesh.moveCageVertexIncr(vertex,translation);
 }
 
 void modifyBoundingMesh() {}
