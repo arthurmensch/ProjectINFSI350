@@ -9,7 +9,7 @@ BoundingMesh * BoundingMesh::generate() {
     Mesh * bounded = new Mesh();
     bounded->loadOFF("models/horse.off");
     Mesh * cage = new Mesh();
-    cage->loadOFF("models/square.off");
+    cage->loadOFF("models/horsebounding2.off");
     BoundingMesh * boundingMesh = new BoundingMesh(bounded, cage);
     boundingMesh->computeCoordinates();
     boundingMesh->updateBoundedMesh();
@@ -25,13 +25,22 @@ BoundingMesh::~BoundingMesh()
 
 
 BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
-    bounded = m_bounded;
-    cage = m_cage;
+    bounded = new Mesh(*m_bounded);
+    cage = new Mesh(*m_cage);
     cageInitial = new Mesh(*cage);
 }
 
 void BoundingMesh::updateCage() {
+    cage->V[2].p += Vec3f(0.5,0,0);
+    cage->V[4].p += Vec3f(-0.5,0,0);
+    cage->V[6].p += Vec3f(0,0.5,0);
+    cage->V[19].p += Vec3f(0,3,0);
+    cage->V[18].p += Vec3f(0,3,3);
+    cage->V[17].p += Vec3f(0,3,3);
+    cage->V[16].p += Vec3f(0,3,3);
 
+    cage->recomputeNormals();
+    updateBoundedMesh();
 }
 
 float sign(float x) {
@@ -127,8 +136,11 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
         I[i] = 0;
         double logt = std::sqrt(lambda) * (std::log(2*sqrt(lambda)*S*S/((1-C)*(1-C)))+std::log(1-2*c*C/(c*(1+C)+lambda + std::sqrt(lambda*lambda+lambda*c*S*S))));
         double atant = std::atan(sqrt(c)*C / (std::sqrt(lambda + S*S*c)));
-        if (isnan(logt))
+        if (isnan(logt)) {
+            return 0;
+            std::cerr << "nan ";
             logt = 0;
+        }
         I[i] =  (logt + 2*std::sqrt(c)*atant)* (- sign(S) / 2);
     }
     double res = - 1 / (4*M_PI)* fabs (I[0]-I[1]-std::sqrt(c)*beta);
@@ -156,6 +168,13 @@ void BoundingMesh::updateBoundedMesh() {
    // bounded->centerAndScaleToUnit();
 //   for (Vertex v : bounded->V)
 //    std::cerr << v.p << std::endl;
+}
+
+void BoundingMesh::reset() {
+    Mesh * caged = cage;
+    cage = new Mesh(*cageInitial);
+    delete caged;
+    updateBoundedMesh();
 }
 
 void BoundingMesh::draw() {

@@ -41,6 +41,7 @@ public:
     /// Loads the mesh from a <file>.off
     Mesh();
     Mesh(const Mesh &);
+    ~Mesh();
 
 	void loadOFF (const std::string & filename);
 

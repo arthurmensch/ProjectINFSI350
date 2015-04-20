@@ -168,7 +168,7 @@ int main (int argc, char ** argv) {
     glutIdleFunc (idle);
 
     Interface interface;
-    
+
     glutDisplayFunc (display);
 
     printUsage ();

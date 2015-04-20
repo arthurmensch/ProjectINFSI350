@@ -34,10 +34,13 @@ void Interface::key (unsigned char keyPressed, int x, int y) {
         mesh.smoothGeom();
         break;
     case 'r':
-        mesh.loadOFF(globalName);
+        boundingMesh->reset();
         break;
     case '3':
         mesh.simplifyMesh(12);
+        break;
+    case 'u':
+        boundingMesh->updateCage();
         break;
     default:
         break;
@@ -51,15 +54,15 @@ void Interface::mouse (int button, int state, int x, int y) {
 
 	else{
 		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
-	
+
 		if(triangle>-1){
 			selectionMode=true;
 			selectedTriangle[(unsigned int)triangle]=true;
 		}
-			
+
 	}
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
-        camera.handleMouseClickEvent (button, state, x, y);	
+        camera.handleMouseClickEvent (button, state, x, y);
     }
     else {
     }

@@ -17,6 +17,7 @@ class BoundingMesh
         void updateCage();
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
         void draw();
+        void reset();
         static BoundingMesh * generate();
 	Mesh *cage;
     protected:
