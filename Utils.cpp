@@ -11,8 +11,6 @@
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	Vec3f camPos;
 	camera.getPos(camPos);
-//    float scale_x = camera.getNearPlane() *tan(camera.getFovAngle()*M_PI/180);
-//    float scale_y = scale_x / camera.getAspectRatio();
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -44,10 +42,6 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 		}
 	}
 	return numTriangle;
-//	glm::vec3 posNearPlane=g;
-//    x = (2*x/width -1) * scale_x;
-//    y = (2*y/width -1) * scale_y;
-
 }
 
 

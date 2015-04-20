@@ -76,17 +76,15 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 
 void Interface::mouse (int button, int state, int x, int y) {
 	if(selectionMode){
-		modifyBoundingMesh();
-	}
-
-	else{
 		int triangle=grabber(x,y,*(boundingMesh->cage),camera);
 	
 		if(triangle>-1){
 			selectionMode=true;
 			selectedTriangle[(unsigned int)triangle]=true;
-		}
-			
+		}	
+	}
+	if(rotate||translate){
+	modifyBoundingMesh();
 	}
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
         camera.handleMouseClickEvent (button, state, x, y);	
