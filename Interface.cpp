@@ -59,16 +59,9 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 'r':
         if (!rotate) {
         	if (translate) {
-                if(vertexMoving){//Bring back to original vertex place
-                    translateVertex(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
-                    vertexMoving=false;
-                }
-                else{//bring back to original triangle place
-                    translateTriangle(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
-                    }
-                 translate = false;
+			translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+	 		translate = false;
             }
-
             beginTransformX = x;
             beginTransformY = y;
         	rotate = true;
@@ -81,36 +74,36 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 't':
     	if (!translate) {
     		if (rotate) {
-                rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
-                rotate = false;
-            }
-            indexAimed=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
-            if(indexAimed>-1)//vertex grabbed
-                vertexMoving=true;
-            else{//if no vertex grabbed try grab triangle
-                indexAimed=grabber(x,y,*(boundingMesh->cage),camera);
-            }
-            if(indexAimed>-1){//triangle or vertex grabbed
-                beginTransformX = x;
-                beginTransformY = y;
-                lastX=x;
-                lastY=y;
-                translate = true;
-            }
-            else{//nothing grabbed, you should aim properly dude
-                translate=false;
-                glutSetWindowTitle("Nothing selected, try again");
-            }
+                	rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
+                	rotate = false;
+            	}
+		indexAimed=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
+		if(indexAimed>-1)//vertex grabbed
+			vertexMoving=true;
+		else{//if no vertex grabbed try grab triangle
+			indexAimed=grabber(x,y,*(boundingMesh->cage),camera);
+		}
+		if(indexAimed>-1){//triangle or vertex grabbed
+           		beginTransformX = x;
+            		beginTransformY = y;
+			lastX=x;
+			lastY=y;
+    			translate = true;
+		}
+		else{//nothing grabbed, you should aim properly dude
+			translate=false;
+			glutSetWindowTitle("Nothing selected, try again");
+		}
+    	}
+    	else {//cancel translation
+		translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+		translate = false;
         }
-        else {//cancel translation
-            translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
-            translate = false;
-        }
-        break;
+    	break;
     case 's':
     	selectionMode = true;
     	glutSetWindowTitle ("Selection");
-        Un_Select(x,y,*(boundingMesh->cage),camera,selectedTriangle);
+	Un_Select(x,y,*(boundingMesh->cage),camera,selectedTriangle);
     	break;
     case '3':
         mesh.simplifyMesh(12);
