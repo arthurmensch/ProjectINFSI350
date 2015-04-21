@@ -68,7 +68,7 @@ void Mesh::saveOFF(const std::string & filename) {
     if(!out) {
         exit(1);
     }
-    out << sizeV << " " << sizeT << " " << 0 << std::endl;
+    out << "OFF" << std::endl << sizeV << " " << sizeT << " " << 0 << std::endl;
     for (unsigned int i = 0; i < sizeV; i++)
         out << V[i].p << std::endl;
     for (unsigned int i = 0; i < sizeT; i++) {

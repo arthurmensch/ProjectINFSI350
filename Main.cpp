@@ -45,8 +45,8 @@ std::vector<bool> selectedTriangle;
 void printUsage () {
 	std::cerr << std::endl
 		 << appTitle << std::endl
-         << "Author: Tamy Boubekeur" << std::endl << std::endl
-         << "Usage: ./main [<file.off>]" << std::endl
+         << "Author: Arthur Mensch, Paul Vallet, Michaël Weiss" << std::endl << std::endl
+         << "Usage: ./main [<file.off>] [<cage.off>]" << std::endl
          << "Commands:" << std::endl
          << "------------------" << std::endl
          << " ?: Print help" << std::endl
