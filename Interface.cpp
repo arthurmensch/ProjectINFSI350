@@ -23,12 +23,15 @@ void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage, std::vector<boo
 		for (int j=0;j<3;j++){
 			Vec3f currentPoint=cage.V[cage.T[i].v[j]].p;
 			gluProject((double)currentPoint[0],(double)currentPoint[1],(double)currentPoint[2],modelview,projection,viewport,&winX,&winY,&winZ);
-			if((x-lastX)*(winX-lastX)>0&&(y-lastY)*(winY-lastY)>0)
+			
+			if((x-lastX)*(winX-lastX)>0 && (y-lastY)*(winY-lastY)>0 && (x-lastX)*(x-winX)>0&&(y-lastY)*(y-winY)>0)
+				
 				nbvertex++;
 		}
 		if(nbvertex==3)
 			selectedTriangle[i]=true;
 	}
+std::cout<<"test"<<std::endl;
 }
 
 void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh &boundingMesh, Camera &camera, std::vector<bool> &selectedTriangle, int indexAimed, bool &vertexMoving,bool end){
@@ -63,10 +66,12 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             fullScreen = true;
         }
         break;
+
 	case 'a':
 		for (unsigned int i=0;i<selectedTriangle.size();i++)
 			selectedTriangle[i]=false;
 		break;
+
     case 'q':
     case 27:
         exit (0);
@@ -130,6 +135,8 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         }
         break;
     case 's':
+		beginTransformX=x;
+		beginTransformY=y;
     	selectionMode = true;
     	glutSetWindowTitle ("Selection");
         Un_Select(x,y,*(boundingMesh->cage),camera,selectedTriangle);
@@ -150,6 +157,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 	switch(keyReleased) {
 	case 's':
+		selectSquare(x,y,beginTransformX,beginTransformY,*(boundingMesh->cage),selectedTriangle);
 		selectionMode = false;
 		glutSetWindowTitle ("Plus Selection");
 		break;
