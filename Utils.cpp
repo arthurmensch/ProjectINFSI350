@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "Camera.h"
 #include "Vec3.h"
+#include "Mat3.h"
 #include "Mesh.h"
 #include "Ray.h"
 
@@ -171,25 +172,75 @@ void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertexAimed,i
     boundingMesh.moveCageVertexIncr(vertexAimed,translation);
 }
 
-void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){
-    int vec0x = lastX - beginTransformX;
-    int vec0y = lastY - beginTransformY;
-    int vec1x = x - beginTransformX;
-    int vec1y = y - beginTransformY;
+void rotation(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY){
+    // Normal to near plan
+
+    Vec3f camPos;
+    camera.getPos(camPos);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+
+    double centerX,centerY,centerZ;
+
+    gluUnProject((double) camera.getScreenWidth()/2,(double) camera.getScreenHeight()/2,0.0f,modelview,projection,viewport,&centerX,&centerY,&centerZ);
+
+    Vec3f n(centerX-camPos[0],centerY-camPos[1],centerZ-camPos[2]);
+
+    Vec3f bary = barycenter(*boundingMesh.cage, selectedTriangle);
+
+    double barywX, barywY, barywZ;
+    gluProject(bary[0],bary[1],bary[2],modelview,projection,viewport,&barywX,&barywY,&barywZ);
+
+    barywY = camera.getScreenHeight() - barywY; // Inverted Y coordinates
+
+    // Compute rotation angle
+
+    int vec0x = lastX - barywX;
+    int vec0y = lastY - barywY;
+    int vec1x = x - barywX;
+    int vec1y = y - barywY;
     int sign = vec0x * vec1y - vec0y * vec1x >= 0 ? 1 : -1;
+    float lengths = sqrt(vec0x*vec0x + vec0y*vec0y) * sqrt(vec1x*vec1x + vec1y*vec1y);
 
-    float angle = sign * acos((vec0x*vec1x + vec0y*vec1y) / (sqrt(vec0x*vec0x + vec0y*vec0y) * sqrt(vec1x*vec1x + vec1y*vec1y)));
+    float angle;
 
-    glMatrixMode (GL_MODELVIEW);
-    glPushMatrix ();
-    glRotatef(angle,0,0,1);
-    glPopMatrix ();
+    if (lengths == 0.0)
+        angle = 0.0f;
+    else
+        angle = sign * acos((vec0x*vec1x + vec0y*vec1y) / lengths);
+
+
+    // Apply rotation
+
+    Mat3f r;
+    r.rotation(n, angle);
+    std::set<int> s;
+    Vec3f tmp;
+
+    for (unsigned int i = 0; i < selectedTriangle.size(); ++i) {
+        if(selectedTriangle[i]) {
+            for (int j = 0 ; j < 3 ; j++) {
+                if (s.find(boundingMesh.cage->T[i].v[j]) == s.end()) {
+                    s.insert(boundingMesh.cage->T[i].v[j]);
+                    tmp = boundingMesh.cage->V[boundingMesh.cage->T[i].v[j]].p;
+                    tmp -= bary;
+                    tmp = r.multiply(tmp);
+                    tmp += bary;
+                    boundingMesh.moveCageVertexIncr(boundingMesh.cage->T[i].v[j], tmp - boundingMesh.cage->V[boundingMesh.cage->T[i].v[j]].p);
+                }
+            }
+        }
+    }
 }
 
 Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
     Vec3f res;
     std::set<int> s;
-    for (int i = 0; i < selectedTriangle.size(); ++i) {
+    for (unsigned int i = 0; i < selectedTriangle.size(); ++i) {
         if(selectedTriangle[i]) {
             for (int j = 0 ; j < 3 ; j++) {
                 if (s.find(cage.T[i].v[j]) == s.end()) {

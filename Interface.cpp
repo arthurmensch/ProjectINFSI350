@@ -83,10 +83,8 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'r':
         if (!rotate) {
-        	if (translate) {
-            	translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+        	if (translate) 
                 translate = false;
-            }
 
             beginTransformX = x;
             beginTransformY = y;
@@ -98,9 +96,9 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 't':
     	if (!translate) {
-    		if (rotate) {
+    		if (rotate) 
                 rotate = false;
-            }
+
             glutSetWindowTitle("Translation");
             indexAimed=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
             if(indexAimed>-1)//vertex grabbed
@@ -177,7 +175,13 @@ void Interface::passiveMotion (int x, int y) {
     }
 
     if (rotate) {
+        if(!count)
+            boundingMesh->updateEnable(); //Refactor this, this is most dirty
+        
         rotation(camera,*boundingMesh, selectedTriangle, x, y, lastX, lastY);
+
+        if(!count)
+            boundingMesh->makeChange();
     }
 
     camera.handleMouseMoveEvent (x, y);
@@ -199,7 +203,7 @@ void Interface::mouse (int button, int state, int x, int y) {
     }
 
     else if (button == GLUT_RIGHT_BUTTON) {
-        if (translate) {//cancel translation
+        if (translate) { //cancel translation
             //boundingMesh->cancel();
             boundingMesh->updateEnable();
             translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
@@ -207,7 +211,10 @@ void Interface::mouse (int button, int state, int x, int y) {
             translate = false;
         }
 
-        else if (rotate) {
+        else if (rotate) { // Cancel rotation
+            boundingMesh->updateEnable();
+            rotation(camera,*boundingMesh, selectedTriangle, beginTransformX, beginTransformY, lastX, lastY);
+            boundingMesh->makeChange();
             rotate = false;
         }
     }
