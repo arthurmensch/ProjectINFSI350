@@ -133,7 +133,8 @@ gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,v
 gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
 Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
 Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangleAimed].v[0]].p).length();
+float l = (camPos-startPoint).length();
+float rapport=1.0/l*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangleAimed].v[0]].p).length();
 Vec3f translation=rapport*(endPoint-startPoint);
 std::set<int> vertexMoved;
 for (unsigned int j=0;j<selectedTriangle.size();j++){

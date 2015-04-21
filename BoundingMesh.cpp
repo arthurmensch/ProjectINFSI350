@@ -39,6 +39,8 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
 }
 
 void BoundingMesh::updateCage() {
+    moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
+    moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
     updateEnable();
     moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
 }
@@ -178,28 +180,30 @@ void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) 
 }
 
 void BoundingMesh::makeChange() {
-    while(!trianglesToChange.empty()){
-        int j = trianglesToChange.front();
-        trianglesToChange.pop_front();
-        auto coord_v = normalCoordinates.begin();
-        for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-            v->p += (*coord_v)[j] * (cage->T[j].computeNormal(*cage)*s[j]- oldCage->T[j].computeNormal(*oldCage)*olds[j]);
-            ++coord_v;
+    if (update) {
+        while(!trianglesToChange.empty()){
+            int j = trianglesToChange.front();
+            trianglesToChange.pop_front();
+            auto coord_v = normalCoordinates.begin();
+            for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
+                v->p += (*coord_v)[j] * (cage->T[j].computeNormal(*cage)*s[j]- oldCage->T[j].computeNormal(*oldCage)*olds[j]);
+                ++coord_v;
+            }
+            olds[j] = s[j];
         }
-        olds[j] = s[j];
-    }
-    while(!verticesToChange.empty()){
-        int j = verticesToChange.front();
-        verticesToChange.pop_front();
-        auto coord_v = vertexCoordinates.begin();
-        for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-            v->p += (*coord_v)[j] * (cage->V[j].p - oldCage->V[j].p);
-            ++coord_v;
+        while(!verticesToChange.empty()){
+            int j = verticesToChange.front();
+            verticesToChange.pop_front();
+            auto coord_v = vertexCoordinates.begin();
+            for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
+                v->p += (*coord_v)[j] * (cage->V[j].p - oldCage->V[j].p);
+                ++coord_v;
+            }
+            oldCage->V[j] = cage->V[j];
         }
-        oldCage->V[j] = cage->V[j];
+        bounded->recomputeNormals();
+        updateDisable();
     }
-    bounded->recomputeNormals();
-    updateDisable();
 }
 
 void BoundingMesh::makeChangeFull() {
