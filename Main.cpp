@@ -55,9 +55,11 @@ void printUsage () {
          << " <drag>+<right button>: move model" << std::endl
          << " <drag>+<middle button>: zoom" << std::endl
          << " q, <esc>: Quit" << std::endl << std::endl
-         << " s : Select" << std::endl
-         << " t : Translate selection in a plan parallel to the camera" << std::endl
-         << " r : Rotate selection in a plan parallel to the camera" << std::endl;
+         << " s : (Un)Select triangle" << std::endl
+         << " t : Translate selection (or specified vertex) in a plan parallel to the camera" << std::endl
+         << " r : Rotate selection in a plan parallel to the camera" << std::endl
+         << " x : Save mesh" << std::endl
+         << " z : Reset mesh" << std::endl;
 }
 
 void initLighting () {
@@ -148,8 +150,7 @@ void idle () {
         FPS = counter;
         counter = 0;
         static char winTitle [128];
-        unsigned int numOfTriangles = mesh.T.size ();
-        sprintf (winTitle, "Number Of Triangles: %d - FPS: %d", numOfTriangles, FPS);
+        sprintf (winTitle, "Green coordinates demo");
         glutSetWindowTitle (winTitle);
         lastTime = currentTime;
     }
