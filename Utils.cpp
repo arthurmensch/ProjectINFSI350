@@ -256,7 +256,7 @@ Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
     return res;
 }
 
-void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
+/*void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
     GLint mode[2];
 	glGetIntegerv( GL_POLYGON_MODE, mode );
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -330,10 +330,38 @@ void glSphere(float x,float y,float z, float radius,int rgb){
             //glColor3f(c[0],c[1],c[2]);
             glNormal3f(coordinates[i][j][0], coordinates[i][j][1], coordinates[i][j][2]);
             glVertex3f(coordinates[i+1][j+1][0], coordinates[i+1][j+1][1], coordinates[i+1][j+1][2]);
-	}
+    }
     }
     glEnd();
     glPopMatrix ();
+}*/
+
+void glSphere (float x, float y, float z, float radius, int color) { // 1 * R + 256 * G + 256 * 256 * B
+    float step = 1 / (2*M_PI);
+
+    float col[3] = {color % 256, (color / 256) % 256, (color / (256*256)) % 256};
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef (radius, radius, radius); 
+    
+    glBegin (GL_TRIANGLE_STRIP);
+    for (float phi = 0.0 ; phi < M_PI ; phi += step) {
+        for (float theta = 0.0 ; theta < 2 * M_PI ; theta += step) {
+            glColor3f (col[0], col[1], col[2]);
+            glNormal3f (sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
+            glVertex3f (sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
+
+            glColor3f (col[0], col[1], col[2]);
+            glNormal3f (sin(phi+step)*cos(theta), sin(phi+step)*sin(theta), cos(phi+step));
+            glVertex3f (sin(phi+step)*cos(theta), sin(phi+step)*sin(theta), cos(phi+step));
+        }
+    }
+
+    glEnd ();
+    
+    glPopMatrix();
 }
 void glQuadSelect(int lastX,int lastY, int beginTransformX,int beginTransformY){
 	GLint viewport[4];
