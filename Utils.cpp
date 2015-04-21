@@ -172,7 +172,18 @@ void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertexAimed,i
 }
 
 void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){
+    int vec0x = lastX - beginTransformX;
+    int vec0y = lastY - beginTransformY;
+    int vec1x = x - beginTransformX;
+    int vec1y = y - beginTransformY;
+    int sign = vec0x * vec1y - vec0y * vec1x >= 0 ? 1 : -1;
 
+    float angle = sign * acos((vec0x*vec1x + vec0y*vec1y) / (sqrt(vec0x*vec0x + vec0y*vec0y) * sqrt(vec1x*vec1x + vec1y*vec1y)));
+    
+    glMatrixMode (GL_MODELVIEW);
+    glPushMatrix ();
+    glRotatef(angle,0,0,1);
+    glPopMatrix ();
 }
 
 Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
