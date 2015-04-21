@@ -125,7 +125,7 @@ void drawScene () {
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
 				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-				glSphereWithMat(center[0],center[1],center[2],0.05,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,0);
+				glSphereWithMat(center[0],center[1],center[2],0.02,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,0);
 			}
 		}
 	}
