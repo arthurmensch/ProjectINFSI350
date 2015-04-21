@@ -25,6 +25,7 @@ static bool vertexMoving=false;
 static int indexAimed;
 static int lastX;
 static int lastY;
+static int count;
 
 //general functions for movemement,selection/deselection etc
 void Un_Select(int x, int y,Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle);

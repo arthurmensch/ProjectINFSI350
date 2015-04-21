@@ -175,7 +175,6 @@ void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) 
             ++s_it;
             ++j;
         }
-        makeChange();
     }
 }
 
@@ -238,10 +237,11 @@ void BoundingMesh::reset() {
 }
 
 void BoundingMesh::draw() {
+    GLint mode[2];
+	glGetIntegerv( GL_POLYGON_MODE, mode );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // Wireframe for the bounding box
     cage->draw();
-      // std::cerr << v.p << std::endl;
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
     bounded->draw();
 }
 
@@ -252,4 +252,11 @@ void BoundingMesh::updateEnable() {
 
 void BoundingMesh::updateDisable() {
     update = false;
+}
+
+void BoundingMesh::cancel() {
+    Mesh * cageDelete = cage;
+    cage = new Mesh(*oldCage);
+    delete cageDelete;
+    makeChangeFull();
 }

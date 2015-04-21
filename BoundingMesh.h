@@ -27,6 +27,7 @@ class BoundingMesh
         void makeChangeFull();
         void updateEnable();
         void updateDisable();
+        void cancel();
 
 	Mesh *cage;
     private:
