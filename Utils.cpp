@@ -102,7 +102,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for (int j=0;j<3;j++){
-				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.1,dist);
+				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.01,dist);
 				if (intersect){
 					if(dist<profondeur){
 						numVertex=cage.T[i].v[j];
