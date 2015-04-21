@@ -23,7 +23,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	double farX,farY,farZ;
 	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
 	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
-	
+
 	Vec3f origin=Vec3f(farX,farY,farZ);
 	Vec3f direction=Vec3f(nearX,nearY,nearZ);
 	Ray boundFinder=Ray(origin,direction);
@@ -57,7 +57,7 @@ int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &select
 	double farX,farY,farZ;
 	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
 	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
-	
+
 	Vec3f origin=Vec3f(farX,farY,farZ);
 	Vec3f direction=Vec3f(nearX,nearY,nearZ);
 	Ray boundFinder=Ray(origin,direction);
@@ -65,7 +65,7 @@ int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &select
 	float dist;
 	int numTriangle=-1;
 	for (unsigned int i=0;i<cage.T.size();i++){
-		if(selectedTriangle[i]){	
+		if(selectedTriangle[i]){
 			bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
 			if (intersect){
 				if(dist<profondeur){
@@ -92,7 +92,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	double farX,farY,farZ;
 	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
 	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
-	
+
 	Vec3f origin=Vec3f(farX,farY,farZ);
 	Vec3f direction=Vec3f(nearX,nearY,nearZ);
 	Ray boundFinder=Ray(origin,direction);
@@ -141,6 +141,7 @@ for (unsigned int j=0;j<selectedTriangle.size();j++){
 			if(hasMoved==vertexMoved.end()){
 				boundingMesh.moveCageVertexIncr(numVertex,translation);
 				vertexMoved.insert(numVertex);
+				//boundingMesh.makeChange();
 			}
 		}
 	}

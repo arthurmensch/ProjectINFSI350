@@ -25,6 +25,7 @@ BoundingMesh::~BoundingMesh()
 
 
 BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
+    update = false;
     bounded = new Mesh(*m_bounded);
     cage = new Mesh(*m_cage);
     oldCage = new Mesh(*cage);
@@ -38,8 +39,8 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
 }
 
 void BoundingMesh::updateCage() {
+    updateEnable();
     moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
-    makeChange();
 }
 
 float sign(float x) {
@@ -148,28 +149,32 @@ void BoundingMesh::save(const std::string & filename) {
 }
 
 void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {
-    verticesToChange.push_back(vertexIndex);
     cage->V[vertexIndex].p = targetVertex;
-    auto t_init = cageInitial->T.begin();
-    auto s_it = s.begin();
-    int j = 0;
-    for(auto t = cage->T.begin(); t != cage->T.end(); ++t) {
-        bool ownVertex = false;
-        for(unsigned int l = 0; l < 3; l++)
-            ownVertex |= (t->v[l] == vertexIndex);
-        if (ownVertex) {
-            trianglesToChange.push_back(j);
-            Vec3f u = cage->V[t->v[1]].p - cage->V[t->v[0]].p;
-            Vec3f v = cage->V[t->v[2]].p - cage->V[t->v[0]].p;
-            Vec3f ui = cageInitial->V[t_init->v[1]].p - cageInitial->V[t_init->v[0]].p;
-            Vec3f vi = cageInitial->V[t_init->v[2]].p - cageInitial->V[t_init->v[0]].p;
-            *s_it = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
-        }
-        ++t_init;
-        ++s_it;
-        ++j;
-    }
     cage->recomputeNormals();
+
+    if (update) {
+        verticesToChange.push_back(vertexIndex);
+        auto t_init = cageInitial->T.begin();
+        auto s_it = s.begin();
+        int j = 0;
+        for(auto t = cage->T.begin(); t != cage->T.end(); ++t) {
+            bool ownVertex = false;
+            for(unsigned int l = 0; l < 3; l++)
+                ownVertex |= (t->v[l] == vertexIndex);
+            if (ownVertex) {
+                trianglesToChange.push_back(j);
+                Vec3f u = cage->V[t->v[1]].p - cage->V[t->v[0]].p;
+                Vec3f v = cage->V[t->v[2]].p - cage->V[t->v[0]].p;
+                Vec3f ui = cageInitial->V[t_init->v[1]].p - cageInitial->V[t_init->v[0]].p;
+                Vec3f vi = cageInitial->V[t_init->v[2]].p - cageInitial->V[t_init->v[0]].p;
+                *s_it = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
+            }
+            ++t_init;
+            ++s_it;
+            ++j;
+        }
+        makeChange();
+    }
 }
 
 void BoundingMesh::makeChange() {
@@ -194,6 +199,7 @@ void BoundingMesh::makeChange() {
         oldCage->V[j] = cage->V[j];
     }
     bounded->recomputeNormals();
+    updateDisable();
 }
 
 void BoundingMesh::makeChangeFull() {
@@ -233,4 +239,13 @@ void BoundingMesh::draw() {
       // std::cerr << v.p << std::endl;
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     bounded->draw();
+}
+
+
+void BoundingMesh::updateEnable() {
+    update = true;
+}
+
+void BoundingMesh::updateDisable() {
+    update = false;
 }

@@ -25,6 +25,8 @@ class BoundingMesh
         void moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex);
         void makeChange();
         void makeChangeFull();
+        void updateEnable();
+        void updateDisable();
 
 	Mesh *cage;
     private:
@@ -40,6 +42,7 @@ class BoundingMesh
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
         std::list<int> trianglesToChange;
         std::list<int> verticesToChange;
+        bool update;
 };
 
 #endif // BOUNDINGMESH_H
