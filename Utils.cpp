@@ -1,11 +1,14 @@
+#include <cmath>
+#include <set>
+#include <iostream>
+#include <GL/glut.h>
+
 #include "Utils.h"
 #include "Camera.h"
 #include "Vec3.h"
-#include <GL/glut.h>
-#include <cmath>
 #include "Mesh.h"
 #include "Ray.h"
-#include <set>
+
 
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	GLint viewport[4];
@@ -130,9 +133,10 @@ void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &
     gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
     Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
     Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangleAimed].v[0]].p).length();
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-barycenter(*boundingMesh.cage,selectedTriangle)).length();
     Vec3f translation=rapport*(endPoint-startPoint);
     std::set<int> vertexMoved;
+
     for (unsigned int j=0;j<selectedTriangle.size();j++){
     	if(selectedTriangle[j]){
     		for (unsigned int i =0;i<3;i++){
@@ -175,12 +179,19 @@ void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int begin
 
 Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
     Vec3f res;
+    std::set<int> s;
     for (int i = 0; i < selectedTriangle.size(); ++i) {
-        if(selectedTriangle[i])
-            res+=cage.V[i].p;
+        if(selectedTriangle[i]) {
+            for (int j = 0 ; j < 3 ; j++) {
+                if (s.find(cage.T[i].v[j]) == s.end()) {
+                    res+=cage.V[cage.T[i].v[j]].p;
+                    s.insert(cage.T[i].v[j]);
+                }
+            }
+        }
     }
 
-    res /= selectedTriangle.size();
+    res /= (float) s.size();
 
     return res;
 }
