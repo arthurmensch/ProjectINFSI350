@@ -7,7 +7,6 @@
 #include "Ray.h"
 #include <set>
 
-void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){}
 int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
@@ -114,77 +113,92 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	}
 	return numVertex;
 }
-void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle,int triangleAimed,int x,int y,int lastX,int lastY){
-Vec3f camPos;
-camera.getPos(camPos);
-GLint viewport[4];
-glGetIntegerv(GL_VIEWPORT,viewport);
-GLdouble projection[16];
-glGetDoublev(GL_PROJECTION_MATRIX,projection);
-GLdouble modelview[16];
-glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 
-double startX,startY,startZ;
-double endX,endY,endZ;
-gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
-gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
-Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
-Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangleAimed].v[0]].p).length();
-Vec3f translation=rapport*(endPoint-startPoint);
-std::set<int> vertexMoved;
-for (unsigned int j=0;j<selectedTriangle.size();j++){
-	if(selectedTriangle[j]){
-		for (unsigned int i =0;i<3;i++){
-			int numVertex=boundingMesh.cage->T[j].v[i];
-			std::set<int>::iterator hasMoved=vertexMoved.find(numVertex);
-			if(hasMoved==vertexMoved.end()){
-				boundingMesh.moveCageVertexIncr(numVertex,translation);
-				vertexMoved.insert(numVertex);
-			}
-		}
-	}
-}
+void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle,int triangleAimed,int x,int y,int lastX,int lastY){
+    Vec3f camPos;
+    camera.getPos(camPos);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+
+    double startX,startY,startZ;
+    double endX,endY,endZ;
+    gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+    gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+    Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+    Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangleAimed].v[0]].p).length();
+    Vec3f translation=rapport*(endPoint-startPoint);
+    std::set<int> vertexMoved;
+    for (unsigned int j=0;j<selectedTriangle.size();j++){
+    	if(selectedTriangle[j]){
+    		for (unsigned int i =0;i<3;i++){
+    			int numVertex=boundingMesh.cage->T[j].v[i];
+    			std::set<int>::iterator hasMoved=vertexMoved.find(numVertex);
+    			if(hasMoved==vertexMoved.end()){
+    				boundingMesh.moveCageVertexIncr(numVertex,translation);
+    				vertexMoved.insert(numVertex);
+    			}
+    		}
+    	}
+    }
 
 }
 
 void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertexAimed,int x,int y,int lastX,int lastY){
-Vec3f camPos;
-camera.getPos(camPos);
-GLint viewport[4];
-glGetIntegerv(GL_VIEWPORT,viewport);
-GLdouble projection[16];
-glGetDoublev(GL_PROJECTION_MATRIX,projection);
-GLdouble modelview[16];
-glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+    Vec3f camPos;
+    camera.getPos(camPos);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 
-double startX,startY,startZ;
-double endX,endY,endZ;
-gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
-gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
-Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
-Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertexAimed].p).length();
-Vec3f translation=rapport*(endPoint-startPoint);
-boundingMesh.moveCageVertexIncr(vertexAimed,translation);
+    double startX,startY,startZ;
+    double endX,endY,endZ;
+    gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+    gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+    Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+    Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertexAimed].p).length();
+    Vec3f translation=rapport*(endPoint-startPoint);
+    boundingMesh.moveCageVertexIncr(vertexAimed,translation);
 }
 
-void modifyBoundingMesh() {}
+void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){
+
+}
+
+Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
+    Vec3f res;
+    for (int i = 0; i < selectedTriangle.size(); ++i) {
+        if(selectedTriangle[i])
+            res+=cage.V[i].p;
+    }
+
+    res /= selectedTriangle.size();
+
+    return res;
+}
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
-glEnable(GL_COLOR_MATERIAL);
-GLfloat material_color[4] ={difR,difG,difB,1.0f};
-GLfloat material_specular[4]={specR,specG,specB,1.0f};
-glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,material_specular);
-glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,material_color);
-glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess);
-glSphere(x,y,z,r,color);
-GLfloat material_color_init [4] = {1,1,1,1.0f};
-GLfloat material_specular_init [4] = {0.85,0.85,0.85,1.0};
-glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, material_specular_init);
-glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, material_color_init);
-glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
-glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_COLOR_MATERIAL);
+    GLfloat material_color[4] ={difR,difG,difB,1.0f};
+    GLfloat material_specular[4]={specR,specG,specB,1.0f};
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,material_specular);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,material_color);
+    glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess);
+    glSphere(x,y,z,r,color);
+    GLfloat material_color_init [4] = {1,1,1,1.0f};
+    GLfloat material_specular_init [4] = {0.85,0.85,0.85,1.0};
+    glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, material_specular_init);
+    glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, material_color_init);
+    glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
+    glDisable(GL_COLOR_MATERIAL);
 
 }
 

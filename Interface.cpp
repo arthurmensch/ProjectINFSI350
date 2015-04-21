@@ -139,7 +139,7 @@ void Interface::motion (int x, int y) {
 
 void Interface::passiveMotion (int x, int y) {
     if (translate) {//translation
-    translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,false);
+        translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,false);
     }
 
     if (rotate) {
@@ -155,9 +155,9 @@ void Interface::passiveMotion (int x, int y) {
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (translate){//last effective translation
-	    translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+	    //translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
             translate = false;
-	    boundingMesh->makeChange();
+            boundingMesh->makeChange();
         }
 	else if (rotate)
             rotate = false;
