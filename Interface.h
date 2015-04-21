@@ -22,9 +22,13 @@ static bool translate = false;
 static int beginTransformX;
 static int beginTransformY;
 static bool vertexMoving=false;
-static int indexMoving;
+static int indexAimed;
 static int lastX;
 static int lastY;
+
+//general functions for movemement,selection/deselection etc
+void Un_Select(int x, int y,Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle);
+void translateStruct(int x, int y,int lastX,int lastY,BoundingMesh &boundingMesh, Camera &camera, std::vector<bool> &selectedTriangle,int indexAimed,bool &vertexMoving,bool end);
 
 class Interface {
 public:

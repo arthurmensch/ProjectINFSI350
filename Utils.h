@@ -10,8 +10,8 @@
 int grabber(int x, int y,Mesh &cage,Camera &camera);
 int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
 
-void translateTriangle(Camera &camera,BoundingMesh &boundingMesh, int triangle,int x, int y, int lastX, int lastY);
-void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertex,int x, int y, int lastX, int lastY);
+void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int triangleAimed,int x, int y, int lastX, int lastY);
+void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
 void modifyBoundingMesh();
 
 void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY);
