@@ -118,36 +118,36 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 }
 
 void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle,int triangleAimed,int x,int y,int lastX,int lastY){
-Vec3f camPos;
-camera.getPos(camPos);
-GLint viewport[4];
-glGetIntegerv(GL_VIEWPORT,viewport);
-GLdouble projection[16];
-glGetDoublev(GL_PROJECTION_MATRIX,projection);
-GLdouble modelview[16];
-glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+    Vec3f camPos;
+    camera.getPos(camPos);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 
-double startX,startY,startZ;
-double endX,endY,endZ;
-gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
-gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
-Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
-Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[boundingMesh.cage->T[triangleAimed].v[0]].p).length();
-Vec3f translation=rapport*(endPoint-startPoint);
-std::set<int> vertexMoved;
-for (unsigned int j=0;j<selectedTriangle.size();j++){
-	if(selectedTriangle[j]){
-		for (unsigned int i =0;i<3;i++){
-			int numVertex=boundingMesh.cage->T[j].v[i];
-			std::set<int>::iterator hasMoved=vertexMoved.find(numVertex);
-			if(hasMoved==vertexMoved.end()){
-				boundingMesh.moveCageVertexIncr(numVertex,translation);
-				vertexMoved.insert(numVertex);
-			}
-		}
-	}
-}
+    double startX,startY,startZ;
+    double endX,endY,endZ;
+    gluUnProject((double)lastX,viewport[3]-(double)lastY,0.0f,modelview,projection,viewport,&startX,&startY,&startZ);
+    gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
+    Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
+    Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-barycenter(*boundingMesh.cage, selectedTriangle)).length();
+    Vec3f translation=rapport*(endPoint-startPoint);
+    std::set<int> vertexMoved;
+    for (unsigned int j=0;j<selectedTriangle.size();j++){
+    	if(selectedTriangle[j]){
+    		for (unsigned int i =0;i<3;i++){
+    			int numVertex=boundingMesh.cage->T[j].v[i];
+    			std::set<int>::iterator hasMoved=vertexMoved.find(numVertex);
+    			if(hasMoved==vertexMoved.end()){
+    				boundingMesh.moveCageVertexIncr(numVertex,translation);
+    				vertexMoved.insert(numVertex);
+    			}
+    		}
+    	}
+    }
 }
 
 void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertexAimed,int x,int y,int lastX,int lastY){
