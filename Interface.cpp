@@ -18,7 +18,7 @@ void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage, std::vector<boo
 	GLdouble modelview[16];
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 	GLdouble winX,winY,winZ;
-	for (int i=0;i<selectedTriangle.size();i++){
+	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		int nbvertex=0;
 		for (int j=0;j<3;j++){
 			Vec3f currentPoint=cage.V[cage.T[i].v[j]].p;
@@ -76,12 +76,6 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 		glGetIntegerv (GL_POLYGON_MODE, mode);
 		glPolygonMode (GL_FRONT_AND_BACK, mode[1] ==  GL_FILL ? GL_LINE : GL_FILL);
         break;
-    case 'l':
-        mesh.smooth();
-        break;
-    case 'g':
-        mesh.smoothGeom();
-        break;
     case 'r':
         if (!rotate) {
         	if (translate) {
@@ -104,6 +98,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
                 rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
                 rotate = false;
             }
+            glutSetWindowTitle("Translation");
             indexAimed=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
             if(indexAimed>-1)//vertex grabbed
                 vertexMoving=true;
@@ -123,6 +118,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             }*/
         }
         else {//cancel translation
+            glutSetWindowTitle("Translation canceled");
             boundingMesh->updateEnable();
             translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
             boundingMesh->makeChange();
@@ -142,6 +138,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'x':
         boundingMesh->save("models/saved.off");
+        glutSetWindowTitle("Saved");
     default:
         break;
     }
@@ -151,7 +148,7 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 	switch(keyReleased) {
 	case 's':
 		selectionMode = false;
-		glutSetWindowTitle ("Plus Selection");
+		glutSetWindowTitle ("End selection");
 		break;
 	}
 
