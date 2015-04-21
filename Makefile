@@ -1,11 +1,11 @@
 CIBLE = main
 SRCS =  Main.cpp Camera.cpp Mesh.cpp Ray.cpp BoundingMesh.cpp Utils.cpp Interface.cpp
-LIBS =  -lglut -lGLU -lGL -lm
+LIBS =  -lglut -lGLU -lGL -lm -fopenmp
 
 CC = g++
 CPP = g++
 
-FLAGS = -Wall -O2 -std=c++11 -g
+FLAGS = -Wall -O2 -std=c++11 -g -fopenmp
 
 CFLAGS = $(FLAGS)
 CXXFLAGS = $(FLAGS)
