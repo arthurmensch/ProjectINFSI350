@@ -14,6 +14,7 @@ extern BoundingMesh *boundingMesh;
 extern std::vector<bool> selectedTriangle;
 extern std::string globalName;
 
+
 static bool fullScreen = true;
 static bool selectionMode = false;
 static bool rotate = false;
@@ -28,6 +29,8 @@ static int lastY;
 
 //general functions for movemement,selection/deselection etc
 void Un_Select(int x, int y,Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle);
+void selectSquare(int x, int y, int lastX, int lastY,std::vector<bool> &selectedTriangle);
+
 void translateStruct(int x, int y,int lastX,int lastY,BoundingMesh &boundingMesh, Camera &camera, std::vector<bool> &selectedTriangle,int indexAimed,bool &vertexMoving,bool end);
 
 class Interface {
