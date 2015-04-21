@@ -59,14 +59,8 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 'r':
         if (!rotate) {
         	if (translate) {
-                if(vertexMoving){//Bring back to original vertex place
-                    translateVertex(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
-                    vertexMoving=false;
-                }
-                else{//bring back to original triangle place
-                    translateTriangle(camera,*boundingMesh,indexMoving,beginTransformX,beginTransformY,lastX,lastY);
-                    }
-                 translate = false;
+            	translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+                translate = false;
             }
 
             beginTransformX = x;
@@ -88,7 +82,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             if(indexAimed>-1)//vertex grabbed
                 vertexMoving=true;
             else{//if no vertex grabbed try grab triangle
-                indexAimed=grabber(x,y,*(boundingMesh->cage),camera);
+                indexAimed=grabberForm(x,y,*(boundingMesh->cage),camera,selectedTriangle);
             }
             if(indexAimed>-1){//triangle or vertex grabbed
                 beginTransformX = x;

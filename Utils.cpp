@@ -42,6 +42,41 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	return numTriangle;
 }
 
+int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle) {
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT,viewport);
+	GLdouble projection[16];
+	glGetDoublev(GL_PROJECTION_MATRIX,projection);
+	GLdouble modelview[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+	GLdouble winX,winY,winZ;
+	winX=(double)x;
+	winY=(double)y;
+	winY=viewport[3]-winY;
+	double nearX,nearY,nearZ;
+	double farX,farY,farZ;
+	gluUnProject(winX,winY,0.0f,modelview,projection,viewport,&nearX,&nearY,&nearZ);
+	gluUnProject(winX,winY,1.0f,modelview,projection,viewport,&farX,&farY,&farZ);
+	
+	Vec3f origin=Vec3f(farX,farY,farZ);
+	Vec3f direction=Vec3f(nearX,nearY,nearZ);
+	Ray boundFinder=Ray(origin,direction);
+	float profondeur=(float) (origin-direction).length();
+	float dist;
+	int numTriangle=-1;
+	for (unsigned int i=0;i<cage.T.size();i++){
+		if(selectedTriangle[i]){	
+			bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
+			if (intersect){
+				if(dist<profondeur){
+					numTriangle=i;
+					profondeur=dist;
+				}
+			}
+		}
+	}
+	return numTriangle;
+}
 int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
@@ -101,7 +136,7 @@ std::set<int> vertexMoved;
 for (unsigned int j=0;j<selectedTriangle.size();j++){
 	if(selectedTriangle[j]){
 		for (unsigned int i =0;i<3;i++){
-			int numVertex=boundingMesh.cage->T[triangleAimed].v[i];
+			int numVertex=boundingMesh.cage->T[j].v[i];
 			std::set<int>::iterator hasMoved=vertexMoved.find(numVertex);
 			if(hasMoved==vertexMoved.end()){
 				boundingMesh.moveCageVertexIncr(numVertex,translation);

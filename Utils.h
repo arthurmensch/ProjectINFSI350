@@ -8,6 +8,7 @@
 #include "BoundingMesh.h"
 
 int grabber(int x, int y,Mesh &cage,Camera &camera);
+int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
 int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
 
 void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int triangleAimed,int x, int y, int lastX, int lastY);
