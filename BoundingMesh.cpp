@@ -1,15 +1,16 @@
 #include "BoundingMesh.h"
 #include <cmath>
 #include <GL/glut.h>
+#include <string>
 
 BoundingMesh::BoundingMesh() {
 }
 
-BoundingMesh * BoundingMesh::generate() {
+BoundingMesh * BoundingMesh::generate(const char * modelFilename, const char * modelCage) {
     Mesh bounded = Mesh();
-    bounded.loadOFF("models/horse.off");
+    bounded.loadOFF(std::string(modelFilename));
     Mesh cage = Mesh();
-    cage.loadOFF("models/horsebounding2.off");
+    cage.loadOFF(std::string(modelCage));
     BoundingMesh * boundingMesh = new BoundingMesh(&bounded, &cage);
     return boundingMesh;
 }
@@ -120,12 +121,12 @@ float BoundingMesh::GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta) {
         double S = Sa[i];
         double C = Ca[i];
         I[i] = 0;
-        double logt = std::sqrt(lambda) * (std::log(2*sqrt(lambda)*S*S/((1-C)*(1-C)))+std::log(1-2*c*C/(c*(1+C)+lambda + std::sqrt(lambda*lambda+lambda*c*S*S))));
-        double atant = std::atan(sqrt(c)*C / (std::sqrt(lambda + S*S*c)));
-//        if (isnan(logt)) {
-//            std::cerr << "nan ";
-//            return 0;
-//        }
+        double logt = std::sqrt(lambda) * (std::log(2*std::sqrt(lambda)*S*S/((1-C)*(1-C)))+std::log(1-2*c*C/(c*(1+C)+lambda + std::sqrt(lambda*lambda+lambda*c*S*S))));
+        double atant = std::atan(std::sqrt(c)*C / (std::sqrt(lambda + S*S*c)));
+        if (isnan(logt)) {
+            std::cerr << "nan ";
+            return 0;
+        }
         I[i] =  (logt + 2*std::sqrt(c)*atant)* (- sign(S) / 2);
     }
     double res = - 1 / (4*M_PI)* fabs (I[0]-I[1]-std::sqrt(c)*beta);
@@ -140,6 +141,10 @@ void BoundingMesh::moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVert
 void BoundingMesh::moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex) {
     for(unsigned int i = 0; i < 3; i++)
         moveCageVertexIncr(cage->T[triangleIndex].v[i], targetVertex);
+}
+
+void BoundingMesh::save(const std::string & filename) {
+    bounded->saveOFF(filename);
 }
 
 void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {

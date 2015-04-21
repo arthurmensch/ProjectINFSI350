@@ -61,6 +61,25 @@ void Mesh::loadOFF (const std::string & filename) {
     recomputeNormals ();
 }
 
+void Mesh::saveOFF(const std::string & filename) {
+    unsigned int sizeV = V.size();
+    unsigned int sizeT = T.size();
+    ofstream out (filename.c_str());
+    if(!out) {
+        exit(1);
+    }
+    out << sizeV << " " << sizeT << " " << 0 << std::endl;
+    for (unsigned int i = 0; i < sizeV; i++)
+        out << V[i].p << std::endl;
+    for (unsigned int i = 0; i < sizeT; i++) {
+        out << 3;
+        for (unsigned int j = 0; j < 3; j++)
+            out << " " <<T[i].v[j];
+        out << std::endl;
+    }
+    out.close();
+}
+
 void Mesh::recomputeNormals () {
     for (unsigned int i = 0; i < V.size (); i++)
         V[i].n = Vec3f (0.0, 0.0, 0.0);

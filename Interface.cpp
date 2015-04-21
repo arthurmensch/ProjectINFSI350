@@ -104,6 +104,8 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 'i':
         boundingMesh->reset();
         break;
+    case 'n':
+        boundingMesh->save("models/saved.off");
     default:
         break;
     }

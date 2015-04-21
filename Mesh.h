@@ -44,6 +44,7 @@ public:
     ~Mesh();
 
 	void loadOFF (const std::string & filename);
+    void saveOFF(const std::string & filename);
 
     /// Compute smooth per-vertex normals
     void recomputeNormals ();

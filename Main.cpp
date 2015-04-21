@@ -27,7 +27,8 @@ using namespace std;
 
 static const unsigned int DEFAULT_SCREENWIDTH = 1024;
 static const unsigned int DEFAULT_SCREENHEIGHT = 768;
-static const string DEFAULT_MESH_FILE ("models/horsebounding.off");
+static const string DEFAULT_MESH_FILE ("models/horse.off");
+static const string DEFAULT_CAGE_FILE ("models/horsebounding.off");
 
 static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement Géométrique");
 static GLint window;
@@ -98,7 +99,7 @@ void initMaterial () {
         glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
 }
 
-void init (const char * modelFilename) {
+void init (const char * modelFilename, const char * modelCage) {
     globalName = string(modelFilename);
     glCullFace (GL_BACK);     // Specifies the faces to cull (here the ones pointing away from the camera)
     glEnable (GL_CULL_FACE); // Enables face culling (based on the orientation defined by the CW/CCW enumeration).
@@ -106,11 +107,10 @@ void init (const char * modelFilename) {
     glEnable (GL_DEPTH_TEST); // Enable the z-buffer in the rasterization
 	initLighting ();
 	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
-	initMaterial ();
+	//initMaterial ();
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
-	glDisable (GL_COLOR_MATERIAL);
-
-    boundingMesh = BoundingMesh::generate();
+	//glDisable (GL_COLOR_MATERIAL);
+    boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
 	//initiate selection of triangle
 	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
 	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
@@ -133,7 +133,7 @@ void drawScene () {
 
 void display () {
     camera.apply ();
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawScene ();
     glFlush ();
     glutSwapBuffers ();
@@ -157,7 +157,7 @@ void idle () {
 }
 
 int main (int argc, char ** argv) {
-    if (argc > 2) {
+    if (argc > 3) {
         printUsage ();
         exit (1);
     }
@@ -165,7 +165,7 @@ int main (int argc, char ** argv) {
     glutInitDisplayMode (GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize (DEFAULT_SCREENWIDTH, DEFAULT_SCREENHEIGHT);
     window = glutCreateWindow (appTitle.c_str ());
-    init (argc == 2 ? argv[1] : DEFAULT_MESH_FILE.c_str ());
+    init (argc == 3 ? argv[1] : DEFAULT_MESH_FILE.c_str (), argc == 3 ? argv[2] : DEFAULT_CAGE_FILE.c_str ());
     glutIdleFunc (idle);
 
     Interface interface;

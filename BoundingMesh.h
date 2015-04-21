@@ -13,13 +13,13 @@ class BoundingMesh
         BoundingMesh();
         BoundingMesh(Mesh * m_bounded, Mesh * m_cage);
         virtual ~BoundingMesh();
-        static BoundingMesh * generate();
-
+        static BoundingMesh * generate(const char * modelFilename, const char * modelCage);
 
         void computeCoordinates();
         void updateCage();
         void draw();
         void reset();
+        void save(const std::string & filename);
         void moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex);
