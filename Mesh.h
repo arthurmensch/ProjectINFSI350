@@ -21,6 +21,8 @@
 #include <vector>
 #include "Vec3.h"
 
+extern std::vector<bool> selectedTriangle;
+
 class Triangle;
 /// A simple vertex class storing position and normal
 class Vertex {
@@ -53,6 +55,7 @@ public:
     void centerAndScaleToUnit ();
 
     void draw();
+    void draw(Vec3i selectedColor);
 
     void smooth();
 

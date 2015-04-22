@@ -236,11 +236,11 @@ void BoundingMesh::reset() {
     makeChangeFull();
 }
 
-void BoundingMesh::draw() {
+void BoundingMesh::draw(Vec3i selectedColor) {
     GLint mode[2];
 	glGetIntegerv( GL_POLYGON_MODE, mode );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // Wireframe for the bounding box
-    cage->draw();
+    cage->draw(selectedColor);
     glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
     bounded->draw();
 }

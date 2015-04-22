@@ -184,6 +184,41 @@ void Mesh::draw() {
     glEnd ();
 }
 
+void Mesh::draw(Vec3i selectedColor) {
+    // Normal Triangles
+    glBegin (GL_TRIANGLES);
+    for (unsigned int i = 0; i < T.size (); i++) {
+        if (!selectedTriangle[i]) {
+            for (unsigned int j = 0; j < 3; j++) {
+                const Vertex & v = V[T[i].v[j]];
+                glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
+                glVertex3f (v.p[0], v.p[1], v.p[2]); // Emit a vertex (one triangle is emitted each time 3 vertices are emitted)
+            }
+        }
+    }
+    glEnd ();
+
+    // Selected Triangles
+    glDisable(GL_LIGHTING);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glBegin (GL_TRIANGLES);
+    for (unsigned int i = 0; i < T.size (); i++) {
+        if (selectedTriangle[i]) {
+            for (unsigned int j = 0; j < 3; j++) {
+                const Vertex & v = V[T[i].v[j]];
+                glColor3f(selectedColor[0], selectedColor[1], selectedColor[2]);
+                glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
+                glVertex3f (v.p[0], v.p[1], v.p[2]); // Emit a vertex (one triangle is emitted each time 3 vertices are emitted)
+            }
+            
+        }
+    }
+
+    glEnd ();
+    glDisable(GL_POLYGON_OFFSET_LINE);
+    glEnable(GL_LIGHTING);
+}
+
 void Mesh::simplifyMesh(unsigned int r) {
     Vec3f Vmin, Vmax;
     for(Vertex v : V) {

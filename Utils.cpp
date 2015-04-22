@@ -256,32 +256,8 @@ Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
     return res;
 }
 
-void glSphereWithMat(float x,float y,float z,float r,float difR,float difG,float difB,float specR,float specG,float specB,float shininess,int color){
-    GLint mode[2];
-	glGetIntegerv( GL_POLYGON_MODE, mode );
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    glDisable(GL_LIGHTING);
-    //glEnable(GL_COLOR_MATERIAL);
-    GLfloat material_color[4] ={difR,difG,difB,1.0f};
-    GLfloat material_specular[4]={specR,specG,specB,1.0f};
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,material_specular);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,material_color);
-    glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,shininess);
-    glSphere(x,y,z,r,color);
-    GLfloat material_color_init [4] = {1.0f,1.0f,1.0f,1.0f};
-    GLfloat material_specular_init [4] = {0.85,0.85,0.85,1.0};
-    glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, material_specular_init);
-    glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, material_color_init);
-    glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 128.0f);
-    //glDisable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);
-    glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
-}
-
-void glSphere (float x, float y, float z, float radius, int color) { // 1 * R + 256 * G + 256 * 256 * B
+void glSphere (float x, float y, float z, float radius, Vec3i col) {
     float step = 1 / (2*M_PI);
-
-    float col[3] = {color % 256, (color / 256) % 256, (color / (256*256)) % 256};
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();

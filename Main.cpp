@@ -110,7 +110,8 @@ void init (const char * modelFilename, const char * modelCage) {
 	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
 	initMaterial ();
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
-	//glDisable (GL_COLOR_MATERIAL);
+	glDisable (GL_COLOR_MATERIAL);
+    glPolygonOffset(-1,-1);
     boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
 	//initiate selection of triangle
 	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
@@ -120,16 +121,20 @@ void init (const char * modelFilename, const char * modelCage) {
 }
 
 void drawScene () {
-	boundingMesh->draw();
+    Vec3i selectedColor(255,255,0);
+
+	boundingMesh->draw(selectedColor);
 	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
 				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-				glSphereWithMat(center[0],center[1],center[2],0.01,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,255+255*256); // Yellow
-                //glSphere(center[0],center[1],center[2],0.02f,255+255*256);
+                glDisable(GL_LIGHTING);
+                glSphere(center[0],center[1],center[2],0.01f,selectedColor);
+                glEnable(GL_LIGHTING);
 			}
 		}
 	}
+
 	displayCarre();
 }
 

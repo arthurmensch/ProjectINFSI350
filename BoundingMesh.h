@@ -17,7 +17,7 @@ class BoundingMesh
 
         void computeCoordinates();
         void updateCage();
-        void draw();
+        void draw(Vec3i selectedColor);
         void reset();
         void save(const std::string & filename);
         void moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex);
