@@ -158,9 +158,13 @@ void Interface::motion (int x, int y) {
 }
 
 void Interface::passiveMotion (int x, int y) {
+    count++;
+    if (count == 5)
+        count = 0;
     if (translate) {
         translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving,false);
-        boundingMesh->makeChange();
+        if(!count)
+            boundingMesh->makeChange();
     }
     if (rotate) {
         rotation(lastX, x, lastY, y,beginTransformX,beginTransformY);

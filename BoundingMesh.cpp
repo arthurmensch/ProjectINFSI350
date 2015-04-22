@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <string>
 #include "Utils.h"
+#include <omp.h>
 
 BoundingMesh::BoundingMesh() {
 }
@@ -61,6 +62,7 @@ void BoundingMesh::computeCoordinates() {
         vertexCoordinates[i].resize(Vsize_c);
         normalCoordinates[i].resize(Tsize_c);
     }
+    #pragma omp parallel for
     for(unsigned int i = 0; i< bounded->V.size(); i++) {
         Vertex eta = bounded->V[i];
         for(unsigned int j = 0; j< cage->T.size(); j++) {
@@ -165,24 +167,18 @@ void BoundingMesh::updateS(unsigned int i) {
 void BoundingMesh::prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore) {
     float sign = restore ? - 1 : 1;
     std::cerr << "vertex " << vertexIndex << " " << sign << std::endl;
-    auto v = bounded->V.begin();
-    auto coord_it = vertexCoordinates.begin();
-    for(auto v_old = oldBounded->V.begin(); v_old != oldBounded->V.end(); ++v_old) {
-        v_old->p = v_old->p - sign * (*coord_it)[vertexIndex] * sign * oldCage->V[vertexIndex].p;
-        ++v;
-        ++coord_it;
+    #pragma omp for
+    for(int v_old = 0 ; v_old < oldBounded->V.size(); ++v_old) {
+        oldBounded->V[v_old].p -= sign * vertexCoordinates[v_old][vertexIndex] * sign * oldCage->V[vertexIndex].p;
     }
 }
 
 void BoundingMesh::prepareTriangleCoordinatesOldBounded(unsigned int j, bool restore) {
     float sign = restore ? - 1 : 1;
     std::cerr << "triangle " << j << " " << sign << std::endl;
-    auto v = bounded->V.begin();
-    auto coord_it = normalCoordinates.begin();
-    for(auto v_old = oldBounded->V.begin(); v_old != oldBounded->V.end(); ++v_old) {
-        v_old->p = v_old->p - sign * (*coord_it)[j] * oldCage->T[j].computeNormal(*oldCage)*olds[j];
-        ++v;
-        ++coord_it;
+    #pragma omp for
+    for(int v_old = 0 ; v_old < oldBounded->V.size(); ++v_old) {
+        oldBounded->V[v_old].p -= sign * normalCoordinates[v_old][j] * oldCage->T[j].computeNormal(*oldCage)*olds[j];
     }
 }
 
@@ -286,21 +282,15 @@ void BoundingMesh::release(bool validate) {
 void BoundingMesh::makeChange() {
         bounded->V = oldBounded->V;
         for(auto it = trianglesToChange.begin(); it != trianglesToChange.end(); ++it){
-            auto coord_v = normalCoordinates.begin();
-            auto v_old = oldBounded->V.begin();
-            for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-                v->p += (*coord_v)[*it] * cage->T[*it].computeNormal(*cage)*s[*it];// - (*coord_v)[*it] * oldCage->T[*it].computeNormal(*oldCage)*olds[*it];
-                ++coord_v;
-                ++v_old;
+            #pragma omp for
+            for(int v = 0; v < bounded->V.size(); ++v) {
+                bounded->V[v].p += normalCoordinates[v][*it] * cage->T[*it].computeNormal(*cage)*s[*it];// - (*coord_v)[*it] * oldCage->T[*it].computeNormal(*oldCage)*olds[*it];
             }
         }
         for(auto it = verticesToChange.begin(); it != verticesToChange.end(); ++it){
-            auto coord_v = vertexCoordinates.begin();
-            auto v_old = oldBounded->V.begin();
-            for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-                v->p += + (*coord_v)[*it] * cage->V[*it].p;// - (*coord_v)[*it] * oldCage->V[*it].p;
-                ++coord_v;
-                ++v_old;
+            #pragma omp for
+            for(int v = 0; v < bounded->V.size(); ++v) {
+                bounded->V[v].p += vertexCoordinates[v][*it] * cage->V[*it].p;// - (*coord_v)[*it] * oldCage->V[*it].p;
             }
         }
         bounded->recomputeNormals();
@@ -309,6 +299,7 @@ void BoundingMesh::makeChange() {
 void BoundingMesh::makeChangeFull() {
     auto coord_v_normal = normalCoordinates.begin();
     auto coord_v_vertex = vertexCoordinates.begin();
+
     for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
         v->p = Vec3f(0,0,0);
         for(unsigned int j = 0; j < cage->T.size(); j++) {
