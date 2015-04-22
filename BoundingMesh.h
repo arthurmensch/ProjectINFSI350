@@ -4,7 +4,7 @@
 #include "Mesh.h"
 #include <map>
 #include <vector>
-#include <list>
+#include <set>
 
 
 class BoundingMesh
@@ -20,20 +20,41 @@ class BoundingMesh
         void draw(Vec3i selectedColor);
         void reset();
         void save(const std::string & filename);
+
         void moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex);
+
         void makeChange();
         void makeChangeFull();
-        void updateEnable();
-        void updateDisable();
-        void cancel();
+        void release(bool validate);
 
-	Mesh *cage;
+        void addVerticesToSelection(std::set<int> vertexIndices);
+        void removeVerticesFromSelection(std::set<int> vertexIndices);
+        void addTrianglesToSelection(std::set<int> triangleIndices);
+        void removeTrianglesFromSelection(std::set<int> triangleIndices);
+
+        inline bool triangleIsSelected(unsigned int triangleIndex) { return selectedTriangles.find(triangleIndex) != selectedTriangles.end(); };
+
+        std::set<int> getTriangleSelection();
+        void clearSelection();
+
+        void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore);
+        void prepareTriangleCoordinatesOldBounded(unsigned int j, bool restore);
+        void prepareOldBounded(std::set<int> vertexIndices, std::set<int> triangleIndices, bool restore);
+
+        void updateS(unsigned int i);
+
+        inline Mesh * getCage() { return cage;} ;
+        inline Mesh * getOldCage() { return oldCage;} ;
+
+
     private:
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
 
+        Mesh * cage;
         Mesh * bounded;
+        Mesh * oldBounded;
         Mesh * cageInitial;
         Mesh * oldCage;
         std::vector<float> s;
@@ -41,8 +62,9 @@ class BoundingMesh
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
-        std::list<int> trianglesToChange;
-        std::list<int> verticesToChange;
+        std::set<int> selectedTriangles;
+        std::set<int> trianglesToChange;
+        std::set<int> verticesToChange;
         bool update;
 };
 

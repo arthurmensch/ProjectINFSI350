@@ -1,7 +1,7 @@
 // ----------------------------------------------
-// Informatique Graphique 3D & Réalité Virtuelle.
+// Informatique Graphique 3D & Rï¿½alitï¿½ Virtuelle.
 // Travaux Pratiques
-// Traitement Géométrique
+// Traitement Gï¿½omï¿½trique
 // Copyright (C) 2015 Tamy Boubekeur
 // All rights reserved.
 // ----------------------------------------------
@@ -30,7 +30,7 @@ static const unsigned int DEFAULT_SCREENHEIGHT = 768;
 static const string DEFAULT_MESH_FILE ("models/horse.off");
 static const string DEFAULT_CAGE_FILE ("models/horsebounding.off");
 
-static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement Géométrique");
+static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement Gï¿½omï¿½trique");
 static GLint window;
 static unsigned int FPS = 0;
 string globalName;
@@ -44,7 +44,7 @@ std::vector<bool> selectedTriangle;
 void printUsage () {
 	std::cerr << std::endl
 		 << appTitle << std::endl
-         << "Author: Arthur Mensch, Paul Vallet, Michaël Weiss" << std::endl << std::endl
+         << "Author: Arthur Mensch, Paul Vallet, Michaï¿½l Weiss" << std::endl << std::endl
          << "Usage: ./main [<file.off>] [<cage.off>]" << std::endl
          << "Commands:" << std::endl
          << "------------------" << std::endl
@@ -106,7 +106,7 @@ void init (const char * modelFilename, const char * modelCage) {
     glCullFace (GL_BACK);     // Specifies the faces to cull (here the ones pointing away from the camera)
     glEnable (GL_CULL_FACE); // Enables face culling (based on the orientation defined by the CW/CCW enumeration).
     glDepthFunc (GL_LESS); // Specify the depth test for the z-buffer
-    glEnable (GL_DEPTH_TEST); // Enable the z-buffer in the rasterization
+    glEnable( GL_DEPTH_TEST);
 	initLighting ();
 	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
 	initMaterial ();
@@ -114,29 +114,13 @@ void init (const char * modelFilename, const char * modelCage) {
 	glDisable (GL_COLOR_MATERIAL);
     glPolygonOffset(-1,-1);
     boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
-	//initiate selection of triangle
-	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
-	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
-		selectedTriangle[i]=false;
     camera.resize (DEFAULT_SCREENWIDTH, DEFAULT_SCREENHEIGHT);
 }
 
 void drawScene () {
     Vec3i selectedColor(255,255,0);
-
-	boundingMesh->draw(selectedColor);
-	for (unsigned int i=0;i<selectedTriangle.size();i++){
-		if(selectedTriangle[i]){
-			for(unsigned int j=0;j<3;j++){
-				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-                glDisable(GL_LIGHTING);
-                glSphere(center[0],center[1],center[2],0.01f,selectedColor);
-                glEnable(GL_LIGHTING);
-			}
-		}
-	}
-
 	displayCarre();
+    boundingMesh->draw(selectedColor);
 }
 
 void display () {

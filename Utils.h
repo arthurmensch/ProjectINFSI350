@@ -7,16 +7,16 @@
 #include "Camera.h"
 #include "BoundingMesh.h"
 
-int grabber(int x, int y,Mesh &cage,Camera &camera);
-int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
-int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
+int grabber(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
+int grabberForm(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
+int grabberVertex(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
 
-void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int triangleAimed,int x, int y, int lastX, int lastY);
-void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
+void translateForm(Camera &camera,BoundingMesh *boundingMesh,int x, int y, int lastX, int lastY);
+void translateVertex(Camera &camera,BoundingMesh *boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
 
 void rotation(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY);
 void scaling(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY);
-Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle);
+Vec3f barycenter(BoundingMesh *boundingMesh);
 
 void glSphere (float x, float y, float z, float radius, Vec3i selectedColor);
 void glQuadSelect(int lastX,int lastY, int beginTransformX, int beginTransformY);
