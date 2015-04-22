@@ -32,14 +32,18 @@ class BoundingMesh
         void addTrianglesToSelection(std::set<int> triangleIndices);
         void removeTrianglesFromSelection(std::set<int> triangleIndices);
 
-        void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex);
-        void prepareTriangleCoordinatesOldBounded(unsigned int j, float s);
+        std::set<int> getTriangleSelection();
+        void clearSelection();
 
+        void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore);
+        void prepareTriangleCoordinatesOldBounded(unsigned int j, bool restore);
 
-	Mesh *cage;
+        inline Mesh * getCage() { return cage;} ;
+
     private:
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
 
+        Mesh *cage;
         Mesh * bounded;
         Mesh * oldBounded;
         Mesh * cageInitial;
@@ -49,6 +53,7 @@ class BoundingMesh
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
+        std::vector<int> selectedTriangle;
         std::set<int> trianglesToChange;
         std::set<int> verticesToChange;
         bool update;
