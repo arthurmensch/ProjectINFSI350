@@ -113,22 +113,14 @@ void init (const char * modelFilename, const char * modelCage) {
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
 	//glDisable (GL_COLOR_MATERIAL);
     boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
-	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
-	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
-		selectedTriangle[i]=false;
+//	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
+//	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
+//		selectedTriangle[i]=false;
     camera.resize (DEFAULT_SCREENWIDTH, DEFAULT_SCREENHEIGHT);
 }
 
 void drawScene () {
 	 boundingMesh->draw();
-	 for (unsigned int i=0;i<selectedTriangle.size();i++){
-		if(selectedTriangle[i]){
-			for(unsigned int j=0;j<3;j++){
-				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-				glSphereWithMat(center[0],center[1],center[2],0.02,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,0);
-			}
-		}
-    }
 }
 
 void display () {

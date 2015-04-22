@@ -49,11 +49,10 @@ class BoundingMesh
         inline Mesh * getOldCage() { return oldCage;} ;
 
 
-        Mesh *cage;
-
     private:
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
 
+        Mesh * cage;
         Mesh * bounded;
         Mesh * oldBounded;
         Mesh * cageInitial;

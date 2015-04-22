@@ -190,7 +190,7 @@ void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int begin
 Vec3f barycenter(BoundingMesh *boundingMesh) {
     Vec3f res;
     std::set<int> s;
-	Mesh *cage=boundingMesh->getCage();
+	Mesh *cage=boundingMesh->getOldCage();
 	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
     	for (auto it = selectedTriangle.begin(); it != selectedTriangle.end(); ++it) {
        		for (int j = 0 ; j < 3 ; j++) {
