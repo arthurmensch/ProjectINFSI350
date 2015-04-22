@@ -10,7 +10,7 @@
 #include "Ray.h"
 
 
-int grabber(int x, int y,Mesh &cage,Camera &camera) {
+int grabber(int x, int y,BoundingMesh *boundingMesh,Camera &camera) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -32,8 +32,9 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	float profondeur=(float) (origin-direction).length();
 	float dist;
 	int numTriangle=-1;
-	for (unsigned int i=0;i<cage.T.size();i++){
-		bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
+	Mesh * cage=boundingMesh->getCage();
+	for (unsigned int i=0;i<cage->T.size();i++){
+		bool intersect=boundFinder.intersectTriangle(*cage,cage->T[i],dist);
 		if (intersect){
 			if(dist<profondeur){
 				numTriangle=i;
@@ -44,7 +45,7 @@ int grabber(int x, int y,Mesh &cage,Camera &camera) {
 	return numTriangle;
 }
 
-int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle) {
+int grabberForm(int x, int y,BoundingMesh *boundingMesh,Camera &camera) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -66,20 +67,20 @@ int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &select
 	float profondeur=(float) (origin-direction).length();
 	float dist;
 	int numTriangle=-1;
-	for (unsigned int i=0;i<cage.T.size();i++){
-		if(selectedTriangle[i]){
-			bool intersect=boundFinder.intersectTriangle(cage,cage.T[i],dist);
-			if (intersect){
-				if(dist<profondeur){
-					numTriangle=i;
-					profondeur=dist;
-				}
+	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
+	Mesh *cage =boundingMesh->getCage();
+	for (std::set<int>::iterator it=selectedTriangle.begin();it!=selectedTriangle.end();it++){
+		bool intersect=boundFinder.intersectTriangle(*cage,cage->T[*it],dist);
+		if (intersect){
+			if(dist<profondeur){
+				numTriangle=*it;
+				profondeur=dist;
 			}
 		}
 	}
 	return numTriangle;
 }
-int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle) {
+int grabberVertex(int x, int y,BoundingMesh *boundingMesh,Camera &camera) {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -101,15 +102,15 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	float profondeur=(float) (origin-direction).length();
 	float dist;
 	int numVertex=-1;
-	for (unsigned int i=0;i<selectedTriangle.size();i++){
-		if(selectedTriangle[i]){
-			for (int j=0;j<3;j++){
-				bool intersect=boundFinder.intersectVertex(cage,cage.T[i].v[j],0.01,dist);
-				if (intersect){
-					if(dist<profondeur){
-						numVertex=cage.T[i].v[j];
-						profondeur=dist;
-					}
+	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
+	Mesh *cage =boundingMesh->getCage();
+	for (std::set<int>::iterator it=selectedTriangle.begin();it!=selectedTriangle.end();it++){
+		for (int j=0;j<3;j++){
+			bool intersect=boundFinder.intersectVertex(*cage,cage->T[*it].v[j],0.015,dist);
+			if (intersect){
+				if(dist<profondeur){
+					numVertex=cage->T[*it].v[j];
+					profondeur=dist;
 				}
 			}
 		}
@@ -117,7 +118,7 @@ int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &sele
 	return numVertex;
 }
 
-void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle,int triangleAimed,int x,int y,int lastX,int lastY){
+void translateForm(Camera &camera,BoundingMesh *boundingMesh,int x,int y,int lastX,int lastY){
     Vec3f camPos;
     camera.getPos(camPos);
     GLint viewport[4];
@@ -133,24 +134,24 @@ void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &
     gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
     Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
     Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-    float rapport=1.0/(camPos-startPoint).length()*(camPos-barycenter(*boundingMesh.cage, selectedTriangle)).length();
+	Mesh *cage =boundingMesh->getCage();
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-barycenter(boundingMesh)).length();
     Vec3f translation=rapport*(endPoint-startPoint);
     std::set<int> vertexMoved;
-    for (unsigned int j=0;j<selectedTriangle.size();j++){
-    	if(selectedTriangle[j]){
+	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
+	for (std::set<int>::iterator it=selectedTriangle.begin();it!=selectedTriangle.end();it++){
     		for (unsigned int i =0;i<3;i++){
-    			int numVertex=boundingMesh.cage->T[j].v[i];
+    			int numVertex=cage->T[*it].v[i];
     			std::set<int>::iterator hasMoved=vertexMoved.find(numVertex);
     			if(hasMoved==vertexMoved.end()){
-    				boundingMesh.moveCageVertexIncr(numVertex,translation);
+    				boundingMesh->moveCageVertexIncr(numVertex,translation);
     				vertexMoved.insert(numVertex);
     			}
     		}
     	}
-    }
 }
 
-void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertexAimed,int x,int y,int lastX,int lastY){
+void translateVertex(Camera &camera,BoundingMesh *boundingMesh,int vertexAimed,int x,int y,int lastX,int lastY){
     Vec3f camPos;
     camera.getPos(camPos);
     GLint viewport[4];
@@ -166,9 +167,9 @@ void translateVertex(Camera &camera,BoundingMesh &boundingMesh,int vertexAimed,i
     gluUnProject((double)x,viewport[3]-(double)y,0.0f,modelview,projection,viewport,&endX,&endY,&endZ);
     Vec3f startPoint=Vec3f((float)startX,(float)startY,(float)startZ);
     Vec3f endPoint=Vec3f((float)endX,(float)endY,(float)endZ);
-    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh.cage->V[vertexAimed].p).length();
+    float rapport=1.0/(camPos-startPoint).length()*(camPos-boundingMesh->getCage()->V[vertexAimed].p).length();
     Vec3f translation=rapport*(endPoint-startPoint);
-    boundingMesh.moveCageVertexIncr(vertexAimed,translation);
+    boundingMesh->moveCageVertexIncr(vertexAimed,translation);
 }
 
 void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY){
@@ -186,19 +187,19 @@ void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int begin
     glPopMatrix ();
 }
 
-Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
+Vec3f barycenter(BoundingMesh *boundingMesh) {
     Vec3f res;
     std::set<int> s;
-    for (int i = 0; i < selectedTriangle.size(); ++i) {
-        if(selectedTriangle[i]) {
-            for (int j = 0 ; j < 3 ; j++) {
-                if (s.find(cage.T[i].v[j]) == s.end()) {
-                    res+=cage.V[cage.T[i].v[j]].p;
-                    s.insert(cage.T[i].v[j]);
-                }
-            }
-        }
-    }
+	Mesh *cage=boundingMesh->getCage();
+	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
+    	for (auto it = selectedTriangle.begin(); it != selectedTriangle.end(); ++it) {
+       		for (int j = 0 ; j < 3 ; j++) {
+           		if (s.find(cage->T[*it].v[j]) == s.end()) {
+              			res+=cage->V[cage->T[*it].v[j]].p;
+              			s.insert(cage->T[*it].v[j]);
+         		}
+       		}
+	}
 
     res /= (float) s.size();
 

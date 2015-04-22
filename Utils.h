@@ -7,15 +7,15 @@
 #include "Camera.h"
 #include "BoundingMesh.h"
 
-int grabber(int x, int y,Mesh &cage,Camera &camera);
-int grabberForm(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
-int grabberVertex(int x, int y,Mesh &cage,Camera &camera,std::vector<bool> &selectedTriangle);
+int grabber(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
+int grabberForm(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
+int grabberVertex(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
 
-void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int triangleAimed,int x, int y, int lastX, int lastY);
-void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
+void translateForm(Camera &camera,BoundingMesh *boundingMesh,int x, int y, int lastX, int lastY);
+void translateVertex(Camera &camera,BoundingMesh *boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
 
 void rotation(int lastX, int x, int lastY, int y, int beginTransformX, int beginTransformY);
-Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle);
+Vec3f barycenter(BoundingMesh *boundingMesh);
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difB,float difG,float specR,float specG,float specB,float shininess, int color);
 void glSphere (float x, float y, float z, float radius, int rgb);

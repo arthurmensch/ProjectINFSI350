@@ -30,10 +30,10 @@ static int lastY;
 static int count;
 
 //general functions for movemement,selection/deselection etc
-void Un_Select(int x, int y,Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle);
-void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage,std::vector<bool> &selectedTriangle);
+void Un_Select(int x, int y,BoundingMesh *boundingMesh, Camera &camera);
+void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boundingMesh);
 
-void translateStruct(int x, int y,int lastX,int lastY,BoundingMesh &boundingMesh, Camera &camera, std::vector<bool> &selectedTriangle,int indexAimed,bool &vertexMoving,bool end);
+void translateStruct(int x, int y,int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera,int indexAimed,bool &vertexMoving,bool end);
 
 class Interface {
 public:
