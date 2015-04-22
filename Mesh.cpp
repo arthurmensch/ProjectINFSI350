@@ -174,10 +174,12 @@ void Mesh::smoothGeom() {
 }
 
 void Mesh::draw() {
+
     glBegin (GL_TRIANGLES);
     for (unsigned int i = 0; i < T.size (); i++)
         for (unsigned int j = 0; j < 3; j++) {
             const Vertex & v = V[T[i].v[j]];
+            glColor4f(1,1,1,0.5);
             glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
             glVertex3f (v.p[0], v.p[1], v.p[2]); // Emit a vertex (one triangle is emitted each time 3 vertices are emitted)
         }

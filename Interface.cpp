@@ -23,9 +23,9 @@ void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage, std::vector<boo
 		for (int j=0;j<3;j++){
 			Vec3f currentPoint=cage.V[cage.T[i].v[j]].p;
 			gluProject((double)currentPoint[0],(double)currentPoint[1],(double)currentPoint[2],modelview,projection,viewport,&winX,&winY,&winZ);
-			
+
 			if((x-lastX)*(winX-lastX)>0 && (y-lastY)*(winY-lastY)>0 && (x-lastX)*(x-winX)>0&&(y-lastY)*(y-winY)>0)
-				
+
 				nbvertex++;
 		}
 		if(nbvertex==3)

@@ -27,13 +27,20 @@ class BoundingMesh
         void makeChangeFull();
         void updateEnable();
         void updateDisable();
+        void addToSelection(unsigned int vertexIndex);
+        void releaseSelection(bool validate);
         void cancel();
+
+        void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex);
+        void prepareTriangleCoordinatesOldBounded(unsigned int j, float s);
+
 
 	Mesh *cage;
     private:
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
 
         Mesh * bounded;
+        Mesh * oldBounded;
         Mesh * cageInitial;
         Mesh * oldCage;
         std::vector<float> s;

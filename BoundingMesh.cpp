@@ -19,6 +19,7 @@ BoundingMesh::~BoundingMesh()
 {
     delete cageInitial;
     delete bounded;
+    delete oldBounded;
     delete cage;
     delete oldCage;
 }
@@ -30,6 +31,7 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
     cage = new Mesh(*m_cage);
     oldCage = new Mesh(*cage);
     cageInitial = new Mesh(*cage);
+    oldBounded = new Mesh(*bounded);
     s = std::vector<float>(cage->T.size(),1.);
     olds = s;
     trianglesToChange = std::list<int>();
@@ -153,7 +155,6 @@ void BoundingMesh::save(const std::string & filename) {
 void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {
     cage->V[vertexIndex].p = targetVertex;
     cage->recomputeNormals();
-
     if (update) {
         verticesToChange.push_back(vertexIndex);
         auto t_init = cageInitial->T.begin();
@@ -178,31 +179,92 @@ void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) 
     }
 }
 
+//void BoundingMesh::moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex) {
+//    cage->V[vertexIndex].p = targetVertex;
+//    for(auto it = trianglesToChange.begin(); t != trianglesToChange.end(); ++t) {
+//        Vec3f u = cage->V[cage->T[*it].v[1]].p - cage->V[cage->T[*it].v[0]].p;
+//        Vec3f v = cage->V[tcage->T[*it].v[2]].p - cage->V[cage->T[*it].v[0]].p;
+//        Vec3f ui = cageInitial->V[t_init->v[1]].p - cageInitial->V[t_init->v[0]].p;
+//        Vec3f vi = cageInitial->V[t_init->v[2]].p - cageInitial->V[t_init->v[0]].p;
+//        s[*it] = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
+//    }
+//}
+
+void BoundingMesh::prepareVertexCoordinatesOldBounded(unsigned int vertexIndex) {
+    auto v = bounded->V.begin();
+    for(auto v_old = oldBounded->V.begin(); v != oldBounded->V.end(); ++v)
+            v_old->p = v->p - oldCage->V[vertexIndex].p;
+}
+
+void BoundingMesh::prepareTriangleCoordinatesOldBounded(unsigned int j, float s) {
+    auto v = bounded->V.begin();
+    for(auto v_old = oldBounded->V.begin(); v != oldBounded->V.end(); ++v)
+        v_old->p = v->p - oldCage->T[j].computeNormal(*oldCage)*s;
+}
+
+void BoundingMesh::addToSelection(unsigned int vertexIndex) {
+    verticesToChange.push_back(vertexIndex);
+    prepareVertexCoordinatesOldBounded(vertexIndex);
+    auto t_init = cageInitial->T.begin();
+    auto s_it = s.begin();
+    int j = 0;
+    for(auto t = cage->T.begin(); t != cage->T.end(); ++t) {
+        bool ownVertex = false;
+        for(unsigned int l = 0; l < 3; l++)
+            ownVertex |= (t->v[l] == vertexIndex);
+        if (ownVertex) {
+            trianglesToChange.push_back(j);
+            Vec3f u = oldCage->V[t->v[1]].p - oldCage->V[t->v[0]].p;
+            Vec3f v = oldCage->V[t->v[2]].p - oldCage->V[t->v[0]].p;
+            Vec3f ui = cageInitial->V[t_init->v[1]].p - cageInitial->V[t_init->v[0]].p;
+            Vec3f vi = cageInitial->V[t_init->v[2]].p - cageInitial->V[t_init->v[0]].p;
+            *s_it = sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
+            prepareTriangleCoordinatesOldBounded(j,*s_it);
+        }
+        ++t_init;
+        ++s_it;
+        ++j;
+    }
+}
+
+void BoundingMesh::releaseSelection(bool validate) {
+    if(!validate) { //cancel
+        verticesToChange = std::list<int>();
+        trianglesToChange = std::list<int>();
+        cage->T = oldCage->T;
+        cage->recomputeNormals();
+        makeChangeFull();
+   }
+    else {
+        makeChangeFull();
+        oldCage = cage;
+    }
+}
+
 void BoundingMesh::makeChange() {
-    if (update) {
         while(!trianglesToChange.empty()){
             int j = trianglesToChange.front();
             trianglesToChange.pop_front();
             auto coord_v = normalCoordinates.begin();
+            auto v_old = oldBounded->V.begin();
             for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-                v->p += (*coord_v)[j] * (cage->T[j].computeNormal(*cage)*s[j]- oldCage->T[j].computeNormal(*oldCage)*olds[j]);
+                v->p = v_old->p + (*coord_v)[j] * (cage->T[j].computeNormal(*cage)*s[j]- oldCage->T[j].computeNormal(*oldCage)*olds[j]);
                 ++coord_v;
+                ++v_old;
             }
-            olds[j] = s[j];
         }
         while(!verticesToChange.empty()){
             int j = verticesToChange.front();
             verticesToChange.pop_front();
             auto coord_v = vertexCoordinates.begin();
+            auto v_old = oldBounded->V.begin();
             for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-                v->p += (*coord_v)[j] * (cage->V[j].p - oldCage->V[j].p);
+                v->p = v_old->p + (*coord_v)[j] * (cage->V[j].p- oldCage->V[j].p);
                 ++coord_v;
+                ++v_old;
             }
-            oldCage->V[j] = cage->V[j];
         }
         bounded->recomputeNormals();
-        updateDisable();
-    }
 }
 
 void BoundingMesh::makeChangeFull() {
@@ -240,9 +302,14 @@ void BoundingMesh::draw() {
     GLint mode[2];
 	glGetIntegerv( GL_POLYGON_MODE, mode );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // Wireframe for the bounding box
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     cage->draw();
+    //glDisable(GL_BLEND);
+    //glEnable( GL_DEPTH_TEST);
     glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
     bounded->draw();
+
 }
 
 

@@ -106,14 +106,13 @@ void init (const char * modelFilename, const char * modelCage) {
     glCullFace (GL_BACK);     // Specifies the faces to cull (here the ones pointing away from the camera)
     glEnable (GL_CULL_FACE); // Enables face culling (based on the orientation defined by the CW/CCW enumeration).
     glDepthFunc (GL_LESS); // Specify the depth test for the z-buffer
-    glEnable (GL_DEPTH_TEST); // Enable the z-buffer in the rasterization
+    glEnable( GL_DEPTH_TEST);
 	initLighting ();
 	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
-	//initMaterial ();
+	initMaterial ();
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
 	//glDisable (GL_COLOR_MATERIAL);
     boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
-	//initiate selection of triangle
 	selectedTriangle=std::vector<bool>(boundingMesh->cage->T.size());
 	for (unsigned int i=0; i<boundingMesh->cage->T.size();i++)
 		selectedTriangle[i]=false;
@@ -122,15 +121,14 @@ void init (const char * modelFilename, const char * modelCage) {
 
 void drawScene () {
 	 boundingMesh->draw();
-
-	for (unsigned int i=0;i<selectedTriangle.size();i++){
+	 for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
 				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
 				glSphereWithMat(center[0],center[1],center[2],0.02,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,0);
 			}
 		}
-	}
+    }
 }
 
 void display () {
