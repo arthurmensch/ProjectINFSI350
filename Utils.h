@@ -14,8 +14,8 @@ int grabberVertex(int x, int y,BoundingMesh *boundingMesh,Camera &camera);
 void translateForm(Camera &camera,BoundingMesh *boundingMesh,int x, int y, int lastX, int lastY);
 void translateVertex(Camera &camera,BoundingMesh *boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
 
-void rotation(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY);
-void scaling(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY);
+void rotation(Camera &camera,BoundingMesh *boundingMesh, int x, int y, int lastX, int lastY);
+void scaling(Camera &camera,BoundingMesh *boundingMesh, int x, int y, int lastX, int lastY);
 Vec3f barycenter(BoundingMesh *boundingMesh);
 
 void glSphere (float x, float y, float z, float radius, Vec3i selectedColor);
