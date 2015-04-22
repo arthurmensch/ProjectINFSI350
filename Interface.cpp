@@ -1,16 +1,19 @@
 #include "Interface.h"
 
-void Un_Select(int x, int y, Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle){
-	int triangle=grabber(x,y,cage,camera);
+void Un_Select(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
+	int triangle=grabber(x,y,boundingMesh,camera);
 	if(triangle>-1){
-		if(selectedTriangle[(unsigned int)triangle])
-			selectedTriangle[(unsigned int)triangle]=false;
+		bool selected=boundingMesh->triangleIsSelected(triangle);
+		std::set<int> triangleIndex;
+		triangleIndex.insert(triangle);
+		if(selected)
+			boundingMesh->removeTrianglesFromSelection(triangleIndex);
 		else
-			selectedTriangle[(unsigned int)triangle]=true;
+			boundingMesh->addTrianglesToSelection(triangleIndex);
 	}
 }
 
-void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage, std::vector<bool> &selectedTriangle){
+void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -18,10 +21,12 @@ void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage, std::vector<boo
 	GLdouble modelview[16];
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
 	GLdouble winX,winY,winZ;
-	for (unsigned int i=0;i<selectedTriangle.size();i++){
+	Mesh *cage=boundingMesh->getCage();
+	std::set<int> trianglesIndex;
+	for (unsigned int i=0;i<cage->T.size();i++){
 		int nbvertex=0;
 		for (int j=0;j<3;j++){
-			Vec3f currentPoint=cage.V[cage.T[i].v[j]].p;
+			Vec3f currentPoint=cage->V[cage->T[i].v[j]].p;
 			gluProject((double)currentPoint[0],(double)currentPoint[1],(double)currentPoint[2],modelview,projection,viewport,&winX,&winY,&winZ);
 
 			if((x-lastX)*(winX-lastX)>0 && (y-lastY)*(winY-lastY)>0 && (x-lastX)*(x-winX)>0&&(y-lastY)*(y-winY)>0)
@@ -29,19 +34,19 @@ void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage, std::vector<boo
 				nbvertex++;
 		}
 		if(nbvertex==3)
-			selectedTriangle[i]=true;
+			trianglesIndex.insert(i);
 	}
-std::cout<<"test"<<std::endl;
+	boundingMesh->addTrianglesToSelection(trianglesIndex);
 }
 
-void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh &boundingMesh, Camera &camera, std::vector<bool> &selectedTriangle, int indexAimed, bool &vertexMoving,bool end){
+void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving,bool end){
     if(vertexMoving){
-    	translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
+	translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
     	if(end)
         vertexMoving=false;
     }
     else{
-    	translateForm(camera,boundingMesh,selectedTriangle,indexAimed,x,y,lastX,lastY);
+    	translateForm(camera,boundingMesh,x,y,lastX,lastY);
     }
 }
 
@@ -68,8 +73,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
 
 	case 'a':
-		for (unsigned int i=0;i<selectedTriangle.size();i++)
-			selectedTriangle[i]=false;
+		boundingMesh->clearSelection();
 		break;
 
     case 'q':
@@ -84,7 +88,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 'r':
         if (!rotate) {
         	if (translate) {
-            	translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+            	translateStruct(beginTransformX, beginTransformY,lastX,lastY, boundingMesh,camera,indexAimed, vertexMoving,true);
                 translate = false;
             }
 
@@ -104,7 +108,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
                 rotate = false;
             }
             glutSetWindowTitle("Translation");
-            indexAimed=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
+            indexAimed=grabberVertex(x,y,boundingMesh,camera);
             if(indexAimed>-1)//vertex grabbed
                 vertexMoving=true;
             /*else{//if no vertex grabbed try grab triangle
@@ -124,7 +128,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         }
         else {//cancel translation
             glutSetWindowTitle("Translation canceled");
-            translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+            translateStruct(beginTransformX, beginTransformY,lastX,lastY, boundingMesh,camera,indexAimed, vertexMoving,true);
             translate = false;
         }
         break;
@@ -133,7 +137,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 		beginTransformY=y;
     	selectionMode = true;
     	glutSetWindowTitle ("Selection");
-        Un_Select(x,y,*(boundingMesh->cage),camera,selectedTriangle);
+        Un_Select(x,y,boundingMesh,camera);
     	break;
     case 'm':
         boundingMesh->updateCage();
@@ -152,7 +156,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 void Interface::keyUp(unsigned char keyReleased, int x, int y) {
 	switch(keyReleased) {
 	case 's':
-		selectSquare(x,y,beginTransformX,beginTransformY,*(boundingMesh->cage),selectedTriangle);
+		selectSquare(x,y,beginTransformX,beginTransformY,boundingMesh);
 		selectionMode = false;
 		glutSetWindowTitle ("End selection");
 		break;
@@ -169,7 +173,7 @@ void Interface::passiveMotion (int x, int y) {
     if (count == 20)
         count = 0;
     if (translate) {//translation
-        translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,false);
+        translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving,false);
     }
 
     if (rotate) {
@@ -185,7 +189,7 @@ void Interface::passiveMotion (int x, int y) {
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (translate){//last effective translation
-            translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+            translateStruct(x, y,lastX,lastY, boundingMesh,camera,indexAimed, vertexMoving,true);
             translate = false;
         }
 	else if (rotate)
@@ -194,7 +198,7 @@ void Interface::mouse (int button, int state, int x, int y) {
 
     else if (button == GLUT_RIGHT_BUTTON) {
         if (translate) {//cancel translation
-            translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
+            translateStruct(beginTransformX, beginTransformY,lastX,lastY, boundingMesh,camera,indexAimed, vertexMoving,true);
             translate = false;
         }
 
