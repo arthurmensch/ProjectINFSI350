@@ -117,7 +117,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         }
         else {
             glutSetWindowTitle("Translation canceled");
-            translateStruct(beginTransformX, beginTransformY,lastX,lastY, boundingMesh,camera,indexAimed, vertexMoving,true);
+            boundingMesh->release(false);
             translate = false;
         }
         break;
