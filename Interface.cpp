@@ -1,4 +1,5 @@
 #include "Interface.h"
+
 void toggleSelect(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
 	int triangle=grabber(x,y,boundingMesh,camera);
 	if(triangle>-1){
@@ -90,14 +91,16 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'r':
         if (!rotate) {
-        	if (translate) {
-            	translateStruct(beginTransformX, beginTransformY,lastX,lastY, boundingMesh,camera,indexAimed, vertexMoving,true);
-                translate = false;
-            }
+			if(boundingMesh->getTriangleSelection().size()>0){
+        		if (translate) {
+                	boundingMesh->release(false);
+					translate = false;
+            	}
 
-            beginTransformX = x;
-            beginTransformY = y;
-        	rotate = true;
+            	beginTransformX = x;
+            	beginTransformY = y;
+        		rotate = true;
+			}
         }
         else {
         	rotate = false;
@@ -105,10 +108,10 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 't':
     	if (!translate) {
-			if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
+		if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
     			if (rotate) {
-                	//rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
-                	rotate = false;
+                		boundingMesh->release(false);
+                		rotate = false;
             	}
             	glutSetWindowTitle("Translation");
             	indexAimed=grabberVertex(x,y,boundingMesh,camera);
@@ -130,6 +133,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 
     case 'e':
         if (!scale) {
+			boundingMesh->release(false);
             translate = false;
             rotate = false;
 
@@ -138,6 +142,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             scale = true;
         }
         else {
+			boundingMesh->release(false);
             scale = false;
         }
         break;
@@ -177,9 +182,7 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
                 selectionMode=true;
             }
             else{
-                selectSquare(x,y,beginTransformX,beginTransformY,boundingMesh);
                 selectionMode = false;
-                glutSetWindowTitle ("End selection");
             }
             break;
 
@@ -200,18 +203,14 @@ void Interface::passiveMotion (int x, int y) {
             boundingMesh->makeChange();
     }
     if (rotate) {
-        if(!count)
-
-        //rotation(camera,*boundingMesh, selectedTriangle, x, y, lastX, lastY);
+        rotation(camera,boundingMesh, x, y, lastX, lastY);
 
         if(!count)
             boundingMesh->makeChange();
     }
 
     if (scale) {
-        if(!count)
-
-        //scaling(camera,*boundingMesh, selectedTriangle, x, y, lastX, lastY);
+        scaling(camera,boundingMesh, x, y, lastX, lastY);
 
         if(!count)
             boundingMesh->makeChange();
@@ -227,8 +226,18 @@ void Interface::mouse (int button, int state, int x, int y) {
             boundingMesh->release(true);
             translate = false;
         }
-        else if (rotate)
+        else if (rotate){
+			boundingMesh->release(true);	
             rotate = false;
+		}
+		else if(scale){
+			boundingMesh->release(true);
+			scale = false;
+		}
+		else if (selectionMode){
+                selectSquare(lastY,lastX,beginTransformX,beginTransformY,boundingMesh);
+				selectionMode = false;
+		}
     }
 
     else if (button == GLUT_RIGHT_BUTTON) {
@@ -237,16 +246,16 @@ void Interface::mouse (int button, int state, int x, int y) {
             translate = false;
         }
         else if (rotate) {
-            //rotation(camera,*boundingMesh, selectedTriangle, beginTransformX, beginTransformY, lastX, lastY);
-            //boundingMesh->makeChange();
+            boundingMesh->release(false);
             rotate = false;
         }
 
-        else if (rotate) { // Cancel scale
-            //scaling(camera,*boundingMesh, selectedTriangle, beginTransformX, beginTransformY, lastX, lastY);
-            //boundingMesh->makeChange();
-            scale = false;
+        else if (scale) { // Cancel scale
+			boundingMesh->release(false);
+            scale = false ;
         }
+		else if (selectionMode)
+			selectionMode = false;
     }
 
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
