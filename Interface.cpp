@@ -124,9 +124,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         }
         else {//cancel translation
             glutSetWindowTitle("Translation canceled");
-            boundingMesh->updateEnable();
             translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
-            boundingMesh->makeChange();
             translate = false;
         }
         break;
@@ -171,11 +169,7 @@ void Interface::passiveMotion (int x, int y) {
     if (count == 20)
         count = 0;
     if (translate) {//translation
-        if(!count)
-            boundingMesh->updateEnable(); //Refactor this, this is most dirty
         translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,false);
-        if(!count)
-            boundingMesh->makeChange();
     }
 
     if (rotate) {
@@ -191,9 +185,7 @@ void Interface::passiveMotion (int x, int y) {
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (translate){//last effective translation
-            boundingMesh->updateEnable();
             translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
-            boundingMesh->makeChange();
             translate = false;
         }
 	else if (rotate)
@@ -202,10 +194,7 @@ void Interface::mouse (int button, int state, int x, int y) {
 
     else if (button == GLUT_RIGHT_BUTTON) {
         if (translate) {//cancel translation
-            //boundingMesh->cancel();
-            boundingMesh->updateEnable();
             translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
-            boundingMesh->makeChange();
             translate = false;
         }
 

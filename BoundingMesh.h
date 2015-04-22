@@ -4,7 +4,7 @@
 #include "Mesh.h"
 #include <map>
 #include <vector>
-#include <list>
+#include <set>
 
 
 class BoundingMesh
@@ -25,11 +25,12 @@ class BoundingMesh
         void moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex);
         void makeChange();
         void makeChangeFull();
-        void updateEnable();
-        void updateDisable();
-        void addToSelection(unsigned int vertexIndex);
-        void releaseSelection(bool validate);
-        void cancel();
+        void release(bool validate);
+
+        void addVerticesToSelection(std::set<int> vertexIndices);
+        void removeVerticesFromSelection(std::set<int> vertexIndices);
+        void addTrianglesToSelection(std::set<int> triangleIndices);
+        void removeTrianglesFromSelection(std::set<int> triangleIndices);
 
         void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex);
         void prepareTriangleCoordinatesOldBounded(unsigned int j, float s);
@@ -48,8 +49,8 @@ class BoundingMesh
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
-        std::list<int> trianglesToChange;
-        std::list<int> verticesToChange;
+        std::set<int> trianglesToChange;
+        std::set<int> verticesToChange;
         bool update;
 };
 
