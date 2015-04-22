@@ -19,7 +19,7 @@ Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle);
 
 void glSphereWithMat(float x,float y,float z,float r,float difR,float difB,float difG,float specR,float specG,float specB,float shininess, int color);
 void glSphere (float x, float y, float z, float radius, int rgb);
-
+void glQuadSelect(int lastX,int lastY, int beginTransformX, int beginTransformY);
 void glTriangles(std::vector<Vertex> &V, std::vector<Triangle> &T, Vec3f & camPos);
 void polar2Cartesian (float phi, float theta, float d, float & x, float & y, float & z);
 

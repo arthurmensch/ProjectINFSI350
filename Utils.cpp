@@ -335,7 +335,54 @@ void glSphere(float x,float y,float z, float radius,int rgb){
     glEnd();
     glPopMatrix ();
 }
-
+void glQuadSelect(int lastX,int lastY, int beginTransformX,int beginTransformY){
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT,viewport);
+	GLdouble projection[16];
+	glGetDoublev(GL_PROJECTION_MATRIX,projection);
+	GLdouble modelview[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+	Vec3d debut,debutm,finm,fin,normal;
+	gluUnProject((double)beginTransformX,viewport[3]-(double)beginTransformY,0.05f,modelview,projection,viewport,&debut[0],&debut[1],&debut[2]);
+	gluUnProject((double)beginTransformX,viewport[3]-(double)lastY,0.05f,modelview,projection,viewport,&debutm[0],&debutm[1],&debutm[2]);
+	gluUnProject((double)lastX,viewport[3]-(double)lastY,0.05f,modelview,projection,viewport,&finm[0],&finm[1],&finm[2]);
+	gluUnProject((double)lastX,viewport[3]-(double)beginTransformY,0.05f,modelview,projection,viewport,&fin[0],&fin[1],&fin[2]);
+	normal=normalize(cross(debutm-debut,fin-debut));
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	if((lastX-beginTransformX)*(lastY-beginTransformY)>0){
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(debut[0],debut[1],debut[2]);
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(debutm[0],debutm[1],debutm[2]);
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(finm[0],finm[1],finm[2]);
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(fin[0],fin[1],fin[2]);
+	}
+	else{
+		normal=-normal;
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(debut[0],debut[1],debut[2]);
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(fin[0],fin[1],fin[2]);
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(finm[0],finm[1],finm[2]);
+		glColor3f(1.0,1.0,1.0);
+		glNormal3d(normal[0],normal[1],normal[2]);
+		glVertex3d(debutm[0],debutm[1],debutm[2]);
+	}
+	glEnd();
+	glPopMatrix();
+}
 void polar2Cartesian (float phi, float theta, float d, float & x, float & y, float & z)
 {
     x = d*sin (theta) * cos (phi);

@@ -33,7 +33,8 @@ static const string DEFAULT_CAGE_FILE ("models/horsebounding.off");
 static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement Géométrique");
 static GLint window;
 static unsigned int FPS = 0;
-
+bool selectionMode=false;
+int lastX,lastY,beginTransformX,beginTransformY;
 string globalName;
 
 Camera camera;
@@ -121,8 +122,7 @@ void init (const char * modelFilename, const char * modelCage) {
 }
 
 void drawScene () {
-	 boundingMesh->draw();
-
+	boundingMesh->draw();
 	for (unsigned int i=0;i<selectedTriangle.size();i++){
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
@@ -131,6 +131,9 @@ void drawScene () {
 			}
 		}
 	}
+	if(selectionMode){
+		glQuadSelect(lastX,lastY,beginTransformX,beginTransformY);
+	}	
 }
 
 void display () {

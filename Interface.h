@@ -17,16 +17,16 @@ extern std::string globalName;
 
 
 static bool fullScreen = true;
-static bool selectionMode = false;
+extern bool selectionMode ;
 static bool rotate = false;
 static bool translate = false;
 
-static int beginTransformX;
-static int beginTransformY;
+extern int beginTransformX;
+extern int beginTransformY;
 static bool vertexMoving=false;
 static int indexAimed;
-static int lastX;
-static int lastY;
+extern int lastX;
+extern int lastY;
 static int count;
 
 //general functions for movemement,selection/deselection etc
