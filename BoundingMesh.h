@@ -32,6 +32,8 @@ class BoundingMesh
         void addTrianglesToSelection(std::set<int> triangleIndices);
         void removeTrianglesFromSelection(std::set<int> triangleIndices);
 
+        inline bool triangleIsSelected(unsigned int triangleIndex) { return selectedTriangle.find(triangleIndex) != selectedTriangle.end(); };
+
         std::set<int> getTriangleSelection();
         void clearSelection();
 
@@ -55,7 +57,7 @@ class BoundingMesh
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
-        std::vector<int> selectedTriangle;
+        std::set<int> selectedTriangle;
         std::set<int> trianglesToChange;
         std::set<int> verticesToChange;
         bool update;
