@@ -57,6 +57,7 @@ void printUsage () {
          << " s : (Un)Select triangle" << std::endl
          << " t : Translate selection (or specified vertex) in a plan parallel to the camera" << std::endl
          << " r : Rotate selection in a plan parallel to the camera" << std::endl
+         << " e : Scale selection from barycenter" << std::endl
          << " x : Save mesh" << std::endl
          << " z : Reset mesh" << std::endl;
 }
