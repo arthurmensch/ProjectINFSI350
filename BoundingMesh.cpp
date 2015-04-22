@@ -41,9 +41,6 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
 }
 
 void BoundingMesh::updateCage() {
-    moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
-    moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
-    moveCageTriangleIncr(10,Vec3f(0,-0.5,0));
 }
 
 float sign(float x) {
@@ -201,43 +198,77 @@ void BoundingMesh::addVerticesToSelection(std::set<int> vertexIndices) {
         ++t_init;
         ++j;
     }
+    prepareOldBounded(verticesToChange,trianglesToChange,false);
+
 }
 
-void BoundingMesh::removeVerticesFromSelection(std::set<int> vertexIndices) {
-    for(auto vertexIndex = vertexIndices.begin(); vertexIndex != vertexIndices.end(); ++vertexIndex) {
+void BoundingMesh::removeVerticesFromSelection(std::set<int> verticesToRestore) {
+    for(auto vertexIndex = verticesToRestore.begin(); vertexIndex != verticesToRestore.end(); ++vertexIndex) {
         verticesToChange.erase(*vertexIndex);
-        prepareVertexCoordinatesOldBounded(*vertexIndex,true);
     }
     int j = 0;
+    std::set<int> trianglesToRestore = std::set<int>();
     for(auto it = trianglesToChange.begin(); it != trianglesToChange.end(); ++it) {
         bool ownVertex = false;
         for(unsigned int l = 0; l < 3; l++)
             ownVertex |= (verticesToChange.find(cage->T[*it].v[l]) != verticesToChange.end());
         if(!ownVertex)
-            prepareTriangleCoordinatesOldBounded(j,true);
+            trianglesToChange.erase(it);
+            trianglesToRestore.insert(j);
+    }
+    prepareOldBounded(verticesToRestore,trianglesToRestore,true);
+}
+
+void BoundingMesh::prepareOldBounded(std::set<int> vertexIndices, std::set<int> triangleIndices, bool restore) {
+    for(auto vertexIndex = vertexIndices.begin(); vertexIndex != vertexIndices.end(); ++vertexIndex) {
+        prepareVertexCoordinatesOldBounded(*vertexIndex,true);
+    }
+    for(auto triangleIndex = triangleIndices.begin(); triangleIndex != triangleIndices.end(); ++triangleIndex) {
+        prepareTriangleCoordinatesOldBounded(*triangleIndex,true);
     }
 }
 
 void BoundingMesh::addTrianglesToSelection(std::set<int> triangleIndices) {
-
+    std::set<int> vertexIndices = std::set<int>();
+    for(auto triangleIndex = triangleIndices.begin(); triangleIndex != triangleIndices.end(); ++triangleIndex) {
+        selectedTriangles.insert(*triangleIndex);
+        for(int l = 0; l < 3; l++) {
+            vertexIndices.insert(cage->T[*triangleIndex].v[l]);
+        }
+    }
+    addVerticesToSelection(vertexIndices);
 }
 
 void BoundingMesh::removeTrianglesFromSelection(std::set<int> triangleIndices) {
+    std::set<int> verticesToRestore = std::set<int>();
+    for(auto triangleIndex = triangleIndices.begin(); triangleIndex != triangleIndices.end(); ++triangleIndex) {
+        selectedTriangles.erase(triangleIndex);
+        for(int l = 0; l < 3; l++) {
+            bool inTriangle = false;
+            for(auto selected_it = selectedTriangles.begin(); selected_it != selectedTriangles.end(); ++selected_it) {
+                for(unsigned int l = 0; l < 3; l++)
+                    inTriangle |= ((unsigned int) *triangleIndex == cage->T[*selected_it].v[l]);
+                if(!inTriangle)
+                    verticesToRestore.insert(cage->T[*triangleIndex].v[l]);
+            } //Probably buggy
+        }
+    }
+    removeVerticesFromSelection(verticesToRestore);
 
 }
 
 void BoundingMesh::release(bool validate) {
     if(!validate) {
-        cage->T = oldCage->T;
-        cage->recomputeNormals();
+        *cage = *oldCage;
         s = olds;
         makeChangeFull();
+        prepareOldBounded(verticesToChange,trianglesToChange,false);
    }
     else {
         makeChangeFull();
-        oldCage->T = cage->T;
-        oldCage->recomputeNormals(); //refactor this
+        *cage = *oldCage; //refactor this
         olds = s;
+        prepareOldBounded(verticesToChange,trianglesToChange,false);
     }
 }
 
@@ -283,15 +314,20 @@ void BoundingMesh::makeChangeFull() {
 }
 
 void BoundingMesh::reset() {
-    Mesh * cageDelete = cage;
-    Mesh * oldCageDelete = oldCage;
-    cage = new Mesh(*cageInitial);
-    oldCage = new Mesh(*cage);
+    *cage = *cageInitial;
+    *oldCage = *cage;
     s = std::vector<float>(cage->T.size(),1.);
     olds = s;
-    delete cageDelete;
-    delete oldCageDelete;
     makeChangeFull();
+}
+
+void BoundingMesh::clearSelection() {
+        trianglesToChange = std::set<int>();
+        verticesToChange = std::set<int>();
+}
+
+std::set<int> BoundingMesh::getTriangleSelection() {
+    return selectedTriangles;
 }
 
 void BoundingMesh::draw() {

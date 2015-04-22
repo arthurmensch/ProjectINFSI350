@@ -39,6 +39,11 @@ Mesh::Mesh(const Mesh & mesh) {
     recomputeNormals();
 }
 
+Mesh & Mesh::operator=(const Mesh & mesh) {
+    T = mesh.T;
+    V = mesh.V;
+    recomputeNormals();}
+
 void Mesh::loadOFF (const std::string & filename) {
 	ifstream in (filename.c_str ());
     if (!in)

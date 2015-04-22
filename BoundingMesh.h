@@ -20,9 +20,11 @@ class BoundingMesh
         void draw();
         void reset();
         void save(const std::string & filename);
+
         void moveCageVertex(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageVertexIncr(unsigned int vertexIndex, Vec3f targetVertex);
         void moveCageTriangleIncr(unsigned int triangleIndex, Vec3f targetVertex);
+
         void makeChange();
         void makeChangeFull();
         void release(bool validate);
@@ -32,16 +34,20 @@ class BoundingMesh
         void addTrianglesToSelection(std::set<int> triangleIndices);
         void removeTrianglesFromSelection(std::set<int> triangleIndices);
 
-        inline bool triangleIsSelected(unsigned int triangleIndex) { return selectedTriangle.find(triangleIndex) != selectedTriangle.end(); };
+        inline bool triangleIsSelected(unsigned int triangleIndex) { return selectedTriangles.find(triangleIndex) != selectedTriangles.end(); };
 
         std::set<int> getTriangleSelection();
         void clearSelection();
 
         void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore);
         void prepareTriangleCoordinatesOldBounded(unsigned int j, bool restore);
+        void prepareOldBounded(std::set<int> vertexIndices, std::set<int> triangleIndices, bool restore);
+
         void updateS(unsigned int i);
 
         inline Mesh * getCage() { return cage;} ;
+        inline Mesh * getOldCage() { return oldCage;} ;
+
 
         Mesh *cage;
 
@@ -57,7 +63,7 @@ class BoundingMesh
         std::map<Triangle,Vec3f> normalMap;
         std::vector<std::vector<float>> vertexCoordinates; //ordered like vertex in bounded->V
         std::vector<std::vector<float>> normalCoordinates; //ordered like triangles in bounded->T
-        std::set<int> selectedTriangle;
+        std::set<int> selectedTriangles;
         std::set<int> trianglesToChange;
         std::set<int> verticesToChange;
         bool update;
