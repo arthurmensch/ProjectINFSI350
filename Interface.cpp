@@ -28,7 +28,7 @@ void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 		for (int j=0;j<3;j++){
 			Vec3f currentPoint=cage->V[cage->T[i].v[j]].p;
 			gluProject((double)currentPoint[0],(double)currentPoint[1],(double)currentPoint[2],modelview,projection,viewport,&winX,&winY,&winZ);
-
+			winY=viewport[3]-winY;	
 			if((x-lastX)*(winX-lastX)>0 && (y-lastY)*(winY-lastY)>0 && (x-lastX)*(x-winX)>0&&(y-lastY)*(y-winY)>0)
 
 				nbvertex++;
