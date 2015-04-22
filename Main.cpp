@@ -108,7 +108,7 @@ void init (const char * modelFilename, const char * modelCage) {
     glEnable (GL_DEPTH_TEST); // Enable the z-buffer in the rasterization
 	initLighting ();
 	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
-	//initMaterial ();
+	initMaterial ();
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
 	//glDisable (GL_COLOR_MATERIAL);
     boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
@@ -125,8 +125,8 @@ void drawScene () {
 		if(selectedTriangle[i]){
 			for(unsigned int j=0;j<3;j++){
 				Vec3f center=boundingMesh->cage->V[boundingMesh->cage->T[i].v[j]].p;
-				//glSphereWithMat(center[0],center[1],center[2],0.02,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,255+255*256); // Yellow
-                glSphere(center[0],center[1],center[2],0.02f,255+255*256);
+				glSphereWithMat(center[0],center[1],center[2],0.01,1.0f,1.0f,1.0f,0.5f,0.5,0.5f,0.5f,255+255*256); // Yellow
+                //glSphere(center[0],center[1],center[2],0.02f,255+255*256);
 			}
 		}
 	}
