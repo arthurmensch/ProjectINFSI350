@@ -1,5 +1,9 @@
 #include "Interface.h"
-
+void displayCarre(){
+	if(selectionMode){
+		glQuadSelect(lastX,lastY,beginTransformX,beginTransformY);
+	}	
+}
 void Un_Select(int x, int y, Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle){
 	int triangle=grabber(x,y,cage,camera);
 	if(triangle>-1){

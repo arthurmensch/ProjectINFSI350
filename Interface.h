@@ -17,19 +17,20 @@ extern std::string globalName;
 
 
 static bool fullScreen = true;
-extern bool selectionMode ;
+static bool selectionMode = false ;
 static bool rotate = false;
 static bool translate = false;
 
-extern int beginTransformX;
-extern int beginTransformY;
+static int beginTransformX;
+static int beginTransformY;
 static bool vertexMoving=false;
 static int indexAimed;
-extern int lastX;
-extern int lastY;
+static int lastX;
+static int lastY;
 static int count;
 
 //general functions for movemement,selection/deselection etc
+void displayCarre();
 void Un_Select(int x, int y,Mesh &cage, Camera &camera, std::vector<bool> &selectedTriangle);
 void selectSquare(int x, int y, int lastX, int lastY,Mesh &cage,std::vector<bool> &selectedTriangle);
 
