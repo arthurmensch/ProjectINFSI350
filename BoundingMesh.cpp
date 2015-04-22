@@ -286,14 +286,14 @@ void BoundingMesh::release(bool validate) {
 }
 
 void BoundingMesh::makeChange() {
+        bounded->V = oldBounded->V;
         for(auto it = trianglesToChange.begin(); it != trianglesToChange.end(); ++it){
             std::cerr << "change : triangle " << *it << std::endl;
             auto coord_v = normalCoordinates.begin();
             auto v_old = oldBounded->V.begin();
             for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-                v->p = v_old->p+ (*coord_v)[*it] * (cage->T[*it].computeNormal(*cage)*s[*it]);// - (*coord_v)[*it] * oldCage->T[*it].computeNormal(*oldCage)*olds[*it];
+                v->p += (*coord_v)[*it] * cage->T[*it].computeNormal(*cage)*s[*it];// - (*coord_v)[*it] * oldCage->T[*it].computeNormal(*oldCage)*olds[*it];
                 ++coord_v;
-                std::cerr << "new" << std::endl;
                 ++v_old;
             }
         }
@@ -302,7 +302,7 @@ void BoundingMesh::makeChange() {
             auto v_old = oldBounded->V.begin();
             std::cerr << "change : vertex " << *it << std::endl;
             for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-                v->p = v_old->p + (*coord_v)[*it] * cage->V[*it].p;// - (*coord_v)[*it] * oldCage->V[*it].p;
+                v->p += + (*coord_v)[*it] * cage->V[*it].p;// - (*coord_v)[*it] * oldCage->V[*it].p;
                 ++coord_v;
                 ++v_old;
             }
