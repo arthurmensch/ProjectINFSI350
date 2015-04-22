@@ -1,6 +1,6 @@
 #include "Interface.h"
 
-void Un_Select(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
+void toggleSelect(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
 	int triangle=grabber(x,y,boundingMesh,camera);
 	if(triangle>-1){
 		bool selected=boundingMesh->triangleIsSelected(triangle);
@@ -126,7 +126,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 		beginTransformY=y;
     	selectionMode = true;
     	glutSetWindowTitle ("Selection");
-        Un_Select(x,y,boundingMesh,camera);
+        toggleSelect(x,y,boundingMesh,camera);
     	break;
     case 'm':
         boundingMesh->updateCage();
@@ -176,7 +176,7 @@ void Interface::mouse (int button, int state, int x, int y) {
             boundingMesh->release(true);
             translate = false;
         }
-	else if (rotate)
+        else if (rotate)
             rotate = false;
     }
 
@@ -185,21 +185,13 @@ void Interface::mouse (int button, int state, int x, int y) {
             boundingMesh->release(false);
             translate = false;
         }
-
         else if (rotate) {
             rotation(beginTransformX,lastX,beginTransformY,lastY,beginTransformX,beginTransformY);
             rotate = false;
         }
     }
 
-	if(selectionMode){
-//		Un_Select(x,y,*(boundingMesh->cage),camera,selectedTriangle);
-	}
-
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
         camera.handleMouseClickEvent (button, state, x, y);
-    }
-
-    else {
     }
 }

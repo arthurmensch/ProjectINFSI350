@@ -40,7 +40,7 @@ BoundingMesh::BoundingMesh(Mesh * m_bounded, Mesh * m_cage) {
     computeCoordinates();
     makeChangeFull();
     oldBounded = new Mesh(*bounded);
-    prepareOldBounded(verticesToChange, trianglesToChange, false);
+    //prepareOldBounded(verticesToChange, trianglesToChange, false);
 }
 
 void BoundingMesh::updateCage() {
@@ -159,7 +159,7 @@ void BoundingMesh::updateS(unsigned int i) {
     Vec3f v = cage->V[cage->T[i].v[2]].p - cage->V[cage->T[i].v[0]].p;
     Vec3f ui = cageInitial->V[cageInitial->T[i].v[1]].p - cageInitial->V[cageInitial->T[i].v[0]].p;
     Vec3f vi = cageInitial->V[cageInitial->T[i].v[2]].p - cageInitial->V[cageInitial->T[i].v[0]].p;
-    s[i] = 1;//sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
+    s[i] = std::sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
 }
 
 void BoundingMesh::prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore) {
@@ -168,7 +168,6 @@ void BoundingMesh::prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, 
     auto v = bounded->V.begin();
     auto coord_it = vertexCoordinates.begin();
     for(auto v_old = oldBounded->V.begin(); v_old != oldBounded->V.end(); ++v_old) {
-        //std::cerr << v_old->p << " " << v->p << std::endl;
         v_old->p = v_old->p - sign * (*coord_it)[vertexIndex] * sign * oldCage->V[vertexIndex].p;
         ++v;
         ++coord_it;
@@ -181,7 +180,6 @@ void BoundingMesh::prepareTriangleCoordinatesOldBounded(unsigned int j, bool res
     auto v = bounded->V.begin();
     auto coord_it = normalCoordinates.begin();
     for(auto v_old = oldBounded->V.begin(); v_old != oldBounded->V.end(); ++v_old) {
-        //std::cerr << v_old->p << " " << v->p  << std::endl;
         v_old->p = v_old->p - sign * (*coord_it)[j] * oldCage->T[j].computeNormal(*oldCage)*olds[j];
         ++v;
         ++coord_it;
@@ -288,7 +286,6 @@ void BoundingMesh::release(bool validate) {
 void BoundingMesh::makeChange() {
         bounded->V = oldBounded->V;
         for(auto it = trianglesToChange.begin(); it != trianglesToChange.end(); ++it){
-            std::cerr << "change : triangle " << *it << std::endl;
             auto coord_v = normalCoordinates.begin();
             auto v_old = oldBounded->V.begin();
             for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
@@ -300,7 +297,6 @@ void BoundingMesh::makeChange() {
         for(auto it = verticesToChange.begin(); it != verticesToChange.end(); ++it){
             auto coord_v = vertexCoordinates.begin();
             auto v_old = oldBounded->V.begin();
-            std::cerr << "change : vertex " << *it << std::endl;
             for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
                 v->p += + (*coord_v)[*it] * cage->V[*it].p;// - (*coord_v)[*it] * oldCage->V[*it].p;
                 ++coord_v;
@@ -343,6 +339,7 @@ void BoundingMesh::clearSelection() {
     selectedTriangles = std::set<int>();
     trianglesToChange = std::set<int>();
     verticesToChange = std::set<int>();
+    prepareOldBounded(verticesToChange,trianglesToChange,false);
 }
 
 std::set<int> BoundingMesh::getTriangleSelection() {
