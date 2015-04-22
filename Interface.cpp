@@ -73,7 +73,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
 	case 'a':
 		boundingMesh->clearSelection();
-
+		break;
     case 'q':
     case 27:
         exit (0);
@@ -109,7 +109,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             	glutSetWindowTitle("Translation");
             	indexAimed=grabberVertex(x,y,boundingMesh,camera);
            		if(indexAimed>-1)//vertex grabbed
-            	    vertexMoving=true;	
+            	    vertexMoving=true;
         	        beginTransformX = x;
     	            beginTransformY = y;
 	                lastX=x;

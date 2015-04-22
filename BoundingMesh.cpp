@@ -166,7 +166,6 @@ void BoundingMesh::updateS(unsigned int i) {
 
 void BoundingMesh::prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore) {
     float sign = restore ? - 1 : 1;
-    std::cerr << "vertex " << vertexIndex << " " << sign << std::endl;
     #pragma omp for
     for(int v_old = 0 ; v_old < oldBounded->V.size(); ++v_old) {
         oldBounded->V[v_old].p -= sign * vertexCoordinates[v_old][vertexIndex] * sign * oldCage->V[vertexIndex].p;
@@ -175,7 +174,6 @@ void BoundingMesh::prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, 
 
 void BoundingMesh::prepareTriangleCoordinatesOldBounded(unsigned int j, bool restore) {
     float sign = restore ? - 1 : 1;
-    std::cerr << "triangle " << j << " " << sign << std::endl;
     #pragma omp for
     for(int v_old = 0 ; v_old < oldBounded->V.size(); ++v_old) {
         oldBounded->V[v_old].p -= sign * normalCoordinates[v_old][j] * oldCage->T[j].computeNormal(*oldCage)*olds[j];
@@ -227,7 +225,6 @@ void BoundingMesh::removeVerticesFromSelection(std::set<int> verticesToRestore) 
 }
 
 void BoundingMesh::prepareOldBounded(std::set<int> vertexIndices, std::set<int> triangleIndices, bool restore) {
-    std::cerr << "Equal oldBounded, bounded" << std::endl;
     oldBounded->V = bounded->V;
     for(auto vertexIndex = vertexIndices.begin(); vertexIndex != vertexIndices.end(); ++vertexIndex) {
         prepareVertexCoordinatesOldBounded(*vertexIndex,restore);
