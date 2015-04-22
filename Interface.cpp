@@ -78,6 +78,11 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         }
         break;
 	case 'a':
+		boundingMesh->release(false);
+		translate = false ;
+		rotate = false ;
+		selectionMode = false ;
+		scale = false ;
 		boundingMesh->clearSelection();
 		break;
     case 'q':
@@ -92,27 +97,27 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 'r':
         if (!rotate) {
 		if(boundingMesh->getTriangleSelection().size()>0){
-        		if (translate) {
-                		boundingMesh->release(false);
-				translate = false;
-            		}
-
-            	beginTransformX = x;
-            	beginTransformY = y;
-        	rotate = true;
+                	boundingMesh->release(false);
+			translate = false;
+            		scale = false;
+			lastX = x;
+			lastY = y;
+            		beginTransformX = x;
+            		beginTransformY = y;
+        		rotate = true;
 		}
         }
         else {
+		boundingMesh->release(false);
         	rotate = false;
         }
         break;
     case 't':
     	if (!translate) {
 		if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
-    			if (rotate) {
-                		boundingMesh->release(false);
-                		rotate = false;
-            		}
+                	boundingMesh->release(false);
+                	rotate = false;
+			scale = false;
             		glutSetWindowTitle("Translation");
             		indexAimed=grabberVertex(x,y,boundingMesh,camera);
            		if(indexAimed>-1)//vertex grabbed
@@ -133,16 +138,19 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 
     case 'e':
         if (!scale) {
+		if(boundingMesh->getTriangleSelection().size()>0){
 			boundingMesh->release(false);
-            translate = false;
-            rotate = false;
-
-            beginTransformX = x;
-            beginTransformY = y;
-            scale = true;
+            		translate = false;
+            		rotate = false;
+			lastX = x;
+			lastY = y;
+            		beginTransformX = x;
+            		beginTransformY = y;
+            		scale = true;
+		}
         }
         else {
-			boundingMesh->release(false);
+		boundingMesh->release(false);
             scale = false;
         }
         break;
@@ -203,7 +211,7 @@ void Interface::passiveMotion (int x, int y) {
     }
 
     if (scale) {
-        scaling(camera,boundingMesh, x, y, lastX, lastY);
+        scaling(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
 
         if(!count)
             boundingMesh->makeChange();
