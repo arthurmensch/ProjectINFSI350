@@ -9,9 +9,6 @@
 #include <list>
 #include <set>
 
-#include <armadillo>
-
-using namespace arma;
 
 BSHNode::BSHNode(std::vector<Vertex> &V, std::vector<Triangle> &T, int _depth) {
     Vec3f h; // Separation plane normal
