@@ -15,6 +15,7 @@ void translateForm(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &
 void translateVertex(Camera &camera,BoundingMesh &boundingMesh, int vertexAimed,int x, int y, int lastX, int lastY);
 
 void rotation(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY);
+void scaling(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY);
 Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle);
 
 void glSphere (float x, float y, float z, float radius, Vec3i selectedColor);

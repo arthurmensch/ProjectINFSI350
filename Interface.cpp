@@ -86,8 +86,8 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 'r':
         if (!rotate) {
-        	if (translate) 
-                translate = false;
+        	translate = false;
+            scale = false;
 
             beginTransformX = x;
             beginTransformY = y;
@@ -99,8 +99,8 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 't':
     	if (!translate) {
-    		if (rotate) 
-                rotate = false;
+    		rotate = false;
+            scale = false;
 
             glutSetWindowTitle("Translation");
             indexAimed=grabberVertex(x,y,*(boundingMesh->cage),camera,selectedTriangle);
@@ -127,6 +127,19 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             translateStruct(beginTransformX, beginTransformY,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
             boundingMesh->makeChange();
             translate = false;
+        }
+        break;
+    case 'e':
+        if (!scale) {
+            translate = false;
+            rotate = false;
+
+            beginTransformX = x;
+            beginTransformY = y;
+            scale = true;
+        }
+        else {
+            scale = false;
         }
         break;
     case 'm':
@@ -191,6 +204,16 @@ void Interface::passiveMotion (int x, int y) {
             boundingMesh->makeChange();
     }
 
+    if (scale) {
+        if(!count)
+            boundingMesh->updateEnable(); //Refactor this, this is most dirty
+        
+        scaling(camera,*boundingMesh, selectedTriangle, x, y, lastX, lastY);
+
+        if(!count)
+            boundingMesh->makeChange();
+    }
+
     camera.handleMouseMoveEvent (x, y);
 
     lastX = x;
@@ -199,14 +222,9 @@ void Interface::passiveMotion (int x, int y) {
 
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
-        if (translate){//last effective translation
-            boundingMesh->updateEnable();
-            translateStruct(x, y,lastX,lastY, *boundingMesh,camera,selectedTriangle,indexAimed, vertexMoving,true);
-            boundingMesh->makeChange();
-            translate = false;
-        }
-	else if (rotate)
-            rotate = false;
+        translate = false;
+        rotate = false;
+        scale = false;
     }
 
     else if (button == GLUT_RIGHT_BUTTON) {
@@ -223,6 +241,13 @@ void Interface::mouse (int button, int state, int x, int y) {
             rotation(camera,*boundingMesh, selectedTriangle, beginTransformX, beginTransformY, lastX, lastY);
             boundingMesh->makeChange();
             rotate = false;
+        }
+
+        else if (rotate) { // Cancel scale
+            boundingMesh->updateEnable();
+            scaling(camera,*boundingMesh, selectedTriangle, beginTransformX, beginTransformY, lastX, lastY);
+            boundingMesh->makeChange();
+            scale = false;
         }
     }
 

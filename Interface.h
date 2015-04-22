@@ -20,6 +20,7 @@ static bool fullScreen = true;
 static bool selectionMode = false ;
 static bool rotate = false;
 static bool translate = false;
+static bool scale = false;
 
 static int beginTransformX;
 static int beginTransformY;

@@ -237,6 +237,60 @@ void rotation(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selec
     }
 }
 
+void scaling(Camera &camera,BoundingMesh &boundingMesh,std::vector<bool> &selectedTriangle, int x, int y, int lastX, int lastY){
+    // Barycenter projection
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble projection[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    GLdouble modelview[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+
+
+    Vec3f bary = barycenter(*boundingMesh.cage, selectedTriangle);
+
+    double barywX, barywY, barywZ;
+    gluProject(bary[0],bary[1],bary[2],modelview,projection,viewport,&barywX,&barywY,&barywZ);
+
+    barywY = camera.getScreenHeight() - barywY; // Inverted Y coordinates
+
+
+    // Compute factor
+
+    int vec0x = x - barywX;
+    int vec0y = y - barywY;
+    int vec1x = lastX - barywX;
+    int vec1y = lastY - barywY;
+    
+    float length0 = sqrt(vec0x*vec0x + vec0y*vec0y);
+    float length1 = sqrt(vec1x*vec1x + vec1y*vec1y);
+
+    float ratio;
+
+    if (length0 == 0.0f || length1 == 0.0f)
+        ratio = 1.0f;
+    else
+        ratio = length0 / length1;
+
+    // Apply rotation
+    std::set<int> s;
+    Vec3f tmp;
+
+    for (unsigned int i = 0; i < selectedTriangle.size(); ++i) {
+        if(selectedTriangle[i]) {
+            for (int j = 0 ; j < 3 ; j++) {
+                if (s.find(boundingMesh.cage->T[i].v[j]) == s.end()) {
+                    s.insert(boundingMesh.cage->T[i].v[j]);
+                    tmp = boundingMesh.cage->V[boundingMesh.cage->T[i].v[j]].p;
+                    tmp = (tmp - bary) * ratio + bary;
+                    boundingMesh.moveCageVertexIncr(boundingMesh.cage->T[i].v[j], tmp - boundingMesh.cage->V[boundingMesh.cage->T[i].v[j]].p);
+                }
+            }
+        }
+    }
+}
+
 Vec3f barycenter(Mesh &cage,std::vector<bool> &selectedTriangle) {
     Vec3f res;
     std::set<int> s;
