@@ -16,7 +16,7 @@ extern std::vector<bool> selectedTriangle;
 extern std::string globalName;
 
 
-static bool fullScreen = true;
+static bool fullScreen = false;
 static bool selectionMode = false;
 static bool rotate = false;
 static bool translate = false;
