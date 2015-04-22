@@ -15,7 +15,6 @@ class BoundingMesh
         virtual ~BoundingMesh();
         static BoundingMesh * generate(const char * modelFilename, const char * modelCage);
 
-        void computeCoordinates();
         void updateCage();
         void draw(Vec3i selectedColor);
         void reset();
@@ -36,21 +35,17 @@ class BoundingMesh
 
         inline bool triangleIsSelected(unsigned int triangleIndex) { return selectedTriangles.find(triangleIndex) != selectedTriangles.end(); };
 
-        std::set<int> getTriangleSelection();
-        void clearSelection();
-
-        void prepareVertexCoordinatesOldBounded(unsigned int vertexIndex, bool restore);
-        void prepareTriangleCoordinatesOldBounded(unsigned int j, bool restore);
-        void prepareOldBounded(std::set<int> vertexIndices, std::set<int> triangleIndices, bool restore);
-
-        void updateS(unsigned int i);
-
         inline Mesh * getCage() { return cage;} ;
         inline Mesh * getOldCage() { return oldCage;} ;
 
+        std::set<int> getTriangleSelection();
+        void clearSelection();
 
     private:
         float GCTriInt(Vec3f p, Vec3f v1, Vec3f v2, Vec3f eta);
+        void prepareOldBounded(std::set<int> vertexIndices, std::set<int> triangleIndices, bool restore);
+        void updateS(unsigned int i);
+        void computeCoordinates();
 
         Mesh * cage;
         Mesh * bounded;
