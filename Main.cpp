@@ -39,8 +39,6 @@ Camera camera;
 Mesh mesh;
 BoundingMesh *boundingMesh;
 
-std::vector<bool> selectedTriangle;
-
 void printUsage () {
 	std::cerr << std::endl
 		 << appTitle << std::endl

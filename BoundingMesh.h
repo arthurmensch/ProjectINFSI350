@@ -1,6 +1,5 @@
 #ifndef BOUNDINGMESH_H
 #define BOUNDINGMESH_H
-
 #include "Mesh.h"
 #include <map>
 #include <vector>

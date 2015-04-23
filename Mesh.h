@@ -18,10 +18,9 @@
 
 #pragma once
 #include <cmath>
+#include <set>
 #include <vector>
 #include "Vec3.h"
-
-extern std::vector<bool> selectedTriangle;
 
 class Triangle;
 /// A simple vertex class storing position and normal
@@ -56,7 +55,7 @@ public:
     void centerAndScaleToUnit ();
 
     void draw();
-    void draw(Vec3i selectedColor);
+    void draw(Vec3i selectedColor, const std::set<int> &selectedTriangles);
 
     void smooth();
 

@@ -191,11 +191,11 @@ void Mesh::draw() {
     glEnd ();
 }
 
-void Mesh::draw(Vec3i selectedColor) {
+void Mesh::draw(Vec3i selectedColor, const std::set<int> &selectedTriangles) {
     // Normal Triangles
     glBegin (GL_TRIANGLES);
     for (unsigned int i = 0; i < T.size (); i++) {
-        if (!selectedTriangle[i]) {
+        if (selectedTriangles.find(i) == selectedTriangles.end()) {
             for (unsigned int j = 0; j < 3; j++) {
                 const Vertex & v = V[T[i].v[j]];
                 glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
@@ -209,7 +209,7 @@ void Mesh::draw(Vec3i selectedColor) {
     glEnable(GL_POLYGON_OFFSET_LINE);
     glBegin (GL_TRIANGLES);
     for (unsigned int i = 0; i < T.size (); i++) {
-        if (selectedTriangle[i]) {
+        if (selectedTriangles.find(i) != selectedTriangles.end()) {
             for (unsigned int j = 0; j < 3; j++) {
                 const Vertex & v = V[T[i].v[j]];
                 glColor3f(selectedColor[0], selectedColor[1], selectedColor[2]);

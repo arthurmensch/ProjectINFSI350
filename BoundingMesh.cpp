@@ -322,7 +322,7 @@ void BoundingMesh::draw(Vec3i selectedColor) {
     bounded->draw();
     glDisable (GL_LIGHTING);
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    cage->draw();
+    cage->draw(selectedColor, selectedTriangles);
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     for (auto it = selectedTriangles.begin(); it != selectedTriangles.end(); ++it){
         for(unsigned int j=0;j<3;j++){
