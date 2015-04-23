@@ -196,26 +196,24 @@ void Interface::motion (int x, int y) {
 
 void Interface::passiveMotion (int x, int y) {
     count++;
-    if (count == 5)
+    if(count == 5)
         count = 0;
     if (translate) {
         translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving,false);
-        if(!count)
-            boundingMesh->makeChange();
+
     }
     if (rotate) {
         rotation(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
 
-        if(!count)
-            boundingMesh->makeChange();
     }
 
     if (scale) {
         scaling(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
 
+    }
+    if(scale || rotate || translate)
         if(!count)
             boundingMesh->makeChange();
-    }
     camera.handleMouseMoveEvent (x, y);
     lastX = x;
     lastY = y;
@@ -228,7 +226,7 @@ void Interface::mouse (int button, int state, int x, int y) {
             translate = false;
         }
         else if (rotate){
-			boundingMesh->release(true);	
+			boundingMesh->release(true);
             rotate = false;
 	}
 	else if(scale){

@@ -161,7 +161,8 @@ void BoundingMesh::updateS(unsigned int i) {
     Vec3f v = cage->V[cage->T[i].v[2]].p - cage->V[cage->T[i].v[0]].p;
     Vec3f ui = cageInitial->V[cageInitial->T[i].v[1]].p - cageInitial->V[cageInitial->T[i].v[0]].p;
     Vec3f vi = cageInitial->V[cageInitial->T[i].v[2]].p - cageInitial->V[cageInitial->T[i].v[0]].p;
-    s[i] = std::sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/(sqrt(2*cross(ui,vi).squaredLength()));
+    float a = sqrt(2*cross(ui,vi).squaredLength());
+    s[i] = a == 0 ? 1 : std::sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/a;
 }
 
 void BoundingMesh::addVerticesToSelection(std::set<int> vertexIndices) {
@@ -192,9 +193,7 @@ void BoundingMesh::addVerticesToSelection(std::set<int> vertexIndices) {
 
 void BoundingMesh::removeVerticesFromSelection(std::set<int> verticesToRestore) {
     for(auto vertexIndex = verticesToRestore.begin(); vertexIndex != verticesToRestore.end(); ++vertexIndex) {
-//        prepareVertexCoordinatesOldBounded(*vertexIndex,true);
         verticesToChange.erase(*vertexIndex);
-        vertexIndex--;
     }
     std::set<int> trianglesToRestore = std::set<int>();
     for(auto it = trianglesToChange.begin(); it != trianglesToChange.end(); ++it) {
@@ -239,7 +238,6 @@ void BoundingMesh::removeTrianglesFromSelection(std::set<int> triangleIndices) {
     std::set<int> verticesToRestore = std::set<int>();
     for(auto triangleIndex = triangleIndices.begin(); triangleIndex != triangleIndices.end(); ++triangleIndex) {
         selectedTriangles.erase(*triangleIndex);
-        triangleIndex--;
         for(int l = 0; l < 3; l++) {
             bool inTriangle = false;
             for(auto selected_it = selectedTriangles.begin(); selected_it != selectedTriangles.end(); ++selected_it) {
@@ -282,19 +280,15 @@ void BoundingMesh::makeChange() {
 }
 
 void BoundingMesh::makeChangeFull() {
-    auto coord_v_normal = normalCoordinates.begin();
-    auto coord_v_vertex = vertexCoordinates.begin();
-
-    for(auto v = bounded->V.begin(); v != bounded->V.end(); ++v) {
-        v->p = Vec3f(0,0,0);
+    #pragma omp for
+    for(unsigned int v = 0; v < bounded->V.size(); ++v) {
+        bounded->V[v].p = Vec3f(0,0,0);
         for(unsigned int j = 0; j < cage->T.size(); j++) {
-                v->p += (*coord_v_normal)[j] * (cage->T[j].computeNormal(*cage)*s[j]);
+                bounded->V[v].p += normalCoordinates[v][j] * (cage->T[j].computeNormal(*cage)*s[j]);
         }
         for(unsigned int j = 0; j < cage->V.size(); j++) {
-            v->p += (*coord_v_vertex)[j] * (cage->V[j].p);
+            bounded->V[v].p += vertexCoordinates[v][j] * (cage->V[j].p);
         }
-        ++coord_v_normal;
-        ++coord_v_vertex;
     }
     bounded->recomputeNormals();
 }
@@ -325,15 +319,20 @@ std::set<int> BoundingMesh::getTriangleSelection() {
 void BoundingMesh::draw(Vec3i selectedColor) {
     GLint mode[2];
 	glGetIntegerv( GL_POLYGON_MODE, mode );
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // Wireframe for the bounding box
-    cage->draw();
-    glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
     bounded->draw();
+    glDisable (GL_LIGHTING);
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    cage->draw();
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     for (auto it = selectedTriangles.begin(); it != selectedTriangles.end(); ++it){
         for(unsigned int j=0;j<3;j++){
             Vec3i selectedColor(255,255,0);
+            std::cerr << cage->T[*it].v[j] << " " << cage->V[cage->T[*it].v[j]].p <<std::endl;
             Vec3f center= cage->V[cage->T[*it].v[j]].p;
             glSphere(center[0],center[1],center[2],0.02,selectedColor);
         }
     }
+    glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
+    glEnable (GL_LIGHTING);
+
 }

@@ -335,6 +335,9 @@ void glSphere (float x, float y, float z, float radius, Vec3i col) {
     glPopMatrix();
 }
 void glQuadSelect(int lastX,int lastY, int beginTransformX,int beginTransformY){
+    GLint mode[2];
+	glGetIntegerv( GL_POLYGON_MODE, mode );
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT,viewport);
 	GLdouble projection[16];
@@ -381,6 +384,7 @@ void glQuadSelect(int lastX,int lastY, int beginTransformX,int beginTransformY){
 	}
 	glEnd();
 	glPopMatrix();
+	glPolygonMode( GL_FRONT_AND_BACK, mode[1] );
 }
 void polar2Cartesian (float phi, float theta, float d, float & x, float & y, float & z)
 {

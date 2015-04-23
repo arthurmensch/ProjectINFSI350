@@ -27,10 +27,10 @@ using namespace std;
 
 static const unsigned int DEFAULT_SCREENWIDTH = 1024;
 static const unsigned int DEFAULT_SCREENHEIGHT = 768;
-static const string DEFAULT_MESH_FILE ("models/horse.off");
-static const string DEFAULT_CAGE_FILE ("models/horsebounding.off");
+static const string DEFAULT_MESH_FILE ("models/gargoyle.off");
+static const string DEFAULT_CAGE_FILE ("models/gargoylebounding.off");
 
-static string appTitle ("Informatique Graphique & Realite Virtuelle - Travaux Pratiques - Traitement G�om�trique");
+static string appTitle ("Green coordinates demonstration");
 static GLint window;
 static unsigned int FPS = 0;
 string globalName;

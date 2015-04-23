@@ -12,7 +12,7 @@ Ray::Ray(Vec3f &origin,Vec3f &direction){
 }
 
 bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T,float &dist){
-	
+
 	Vec3f normal=normalize(cross(mesh.V[T.v[0]].p-mesh.V[T.v[1]].p,mesh.V[T.v[0]].p-mesh.V[T.v[2]].p));
 	Vec3f point=mesh.V[T.v[0]].p;
 	float constante=dot(point,normal);
@@ -30,7 +30,7 @@ bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T,float &dist){
 		return false;
 	}
 	float lambda=(constante-constanteDir)/dot(normal,this->origin-this->direction);
-	
+
 	Vec3f pointIntersect=this->direction+(this->origin-this->direction)*lambda;
 	if(lambda<0.0001)//intersection à direction ou derriere
 		return false;
@@ -56,7 +56,7 @@ bool Ray::intersectTriangle(Mesh &mesh ,Triangle &T,float &dist){
 }
 
 bool Ray::intersectVertex(Mesh &mesh, int vertex,float radius,float &dist){
-	
+
 Vec3f normal=normalize(this->origin-this->direction);
 Vec3f point=mesh.V[vertex].p;
 float constante=dot(point,normal);
