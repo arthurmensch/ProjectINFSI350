@@ -162,7 +162,7 @@ void BoundingMesh::updateS(unsigned int i) {
     Vec3f ui = cageInitial->V[cageInitial->T[i].v[1]].p - cageInitial->V[cageInitial->T[i].v[0]].p;
     Vec3f vi = cageInitial->V[cageInitial->T[i].v[2]].p - cageInitial->V[cageInitial->T[i].v[0]].p;
     float a = sqrt(2*cross(ui,vi).squaredLength());
-    s[i] = a == 0 ? 1 : std::sqrt(u.squaredLength()*v.squaredLength()+ ui.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/a;
+    s[i] = a == 0 ? 1 : std::sqrt(ui.squaredLength()*v.squaredLength()+ u.squaredLength()*vi.squaredLength() -2*(dot(ui,vi)*dot(u,v)))/a;
 }
 
 void BoundingMesh::addVerticesToSelection(std::set<int> vertexIndices) {
