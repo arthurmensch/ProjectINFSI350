@@ -9,7 +9,7 @@ static bool vertexMoving=false;
 static int indexAimed;
 static int lastX;
 static int lastY;
-static int count;
+static unsigned int countSwap;
 
 void toggleSelect(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
 	int triangle=grabber(x,y,boundingMesh,camera);
@@ -70,9 +70,16 @@ Interface::Interface() {
     glutPassiveMotionFunc (passiveMotion);
 	glutReshapeFunc (reshape);
     glutKeyboardFunc (keyDown);
+    glutIdleFunc (idle);
     glutKeyboardUpFunc(keyUp);
     glutMouseFunc (mouse);
-    count = 0;
+    countSwap = 0;
+}
+
+void  Interface::idle() {
+    countSwap = -1;
+    //boundingMesh->makeChange();
+    glutPostRedisplay ();
 }
 
 void Interface::keyDown (unsigned char keyPressed, int x, int y) {
@@ -211,10 +218,9 @@ void Interface::motion (int x, int y) {
 }
 
 void Interface::passiveMotion (int x, int y) {
-    count++;
-    if(count == 5)
-        count = 0;
-
+    countSwap++;
+    if(countSwap >= boundingMesh->getTriangleSelection().size()*4)
+        countSwap = 0;
     switch (transformState) {
         case TRANSLATE:
             translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving);
@@ -230,7 +236,7 @@ void Interface::passiveMotion (int x, int y) {
     }
 
     if (transformState != NONE && transformState != SELECTION)
-        if(!count)
+        if(!countSwap)
             boundingMesh->makeChange();
     camera.handleMouseMoveEvent (x, y);
     lastX = x;

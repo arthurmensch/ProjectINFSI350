@@ -34,7 +34,7 @@ const string DEFAULT_CAGE_FILE_2 ("models/gargoylebounding.off");
 
 static string appTitle ("Green coordinates demonstration");
 static GLint window;
-static unsigned int FPS = 0;
+//static unsigned int FPS = 0;
 string globalName;
 
 Camera camera;
@@ -151,21 +151,21 @@ void display () {
     glutSwapBuffers ();
 }
 
-void idle () {
-    static float lastTime = glutGet ((GLenum)GLUT_ELAPSED_TIME);
-    static unsigned int counter = 0;
-    counter++;
-    float currentTime = glutGet ((GLenum)GLUT_ELAPSED_TIME);
-    if (currentTime - lastTime >= 1000.0f) {
-        FPS = counter;
-        counter = 0;
-        static char winTitle [128];
-        sprintf (winTitle, "Green coordinates demo");
-        glutSetWindowTitle (winTitle);
-        lastTime = currentTime;
-    }
-    glutPostRedisplay ();
-}
+//void idle () {
+//    static float lastTime = glutGet ((GLenum)GLUT_ELAPSED_TIME);
+//    static unsigned int counter = 0;
+//    counter++;
+//    float currentTime = glutGet ((GLenum)GLUT_ELAPSED_TIME);
+//    if (currentTime - lastTime >= 1000.0f) {
+//        FPS = counter;
+//        counter = 0;
+//        static char winTitle [128];
+//        sprintf (winTitle, "Green coordinates demo");
+//        glutSetWindowTitle (winTitle);
+//        lastTime = currentTime;
+//    }
+//    glutPostRedisplay ();
+//}
 
 int main (int argc, char ** argv) {
     if (argc > 3) {
@@ -177,7 +177,7 @@ int main (int argc, char ** argv) {
     glutInitWindowSize (DEFAULT_SCREENWIDTH, DEFAULT_SCREENHEIGHT);
     window = glutCreateWindow (appTitle.c_str ());
     init (argc == 3 ? argv[1] : DEFAULT_MESH_FILE.c_str (), argc == 3 ? argv[2] : DEFAULT_CAGE_FILE.c_str ());
-    glutIdleFunc (idle);
+    //glutIdleFunc (idle);
 
     Interface interface;
 

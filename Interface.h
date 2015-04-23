@@ -39,5 +39,6 @@ public:
 	static void keyDown (unsigned char keyPressed, int x, int y);
 	static void keyUp(unsigned char keyReleased, int x, int y);
 	static void mouse (int button, int state, int x, int y);
+	static void idle();
 };
 

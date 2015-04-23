@@ -18,7 +18,7 @@ int grabber(int x, int y,BoundingMesh *boundingMesh,Camera &camera) {
 	glGetDoublev(GL_PROJECTION_MATRIX,projection);
 	GLdouble modelview[16];
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
-	GLdouble winX,winY,winZ;
+	GLdouble winX,winY;
 	winX=(double)x;
 	winY=(double)y;
 	winY=viewport[3]-winY;
@@ -53,7 +53,7 @@ int grabberForm(int x, int y,BoundingMesh *boundingMesh,Camera &camera) {
 	glGetDoublev(GL_PROJECTION_MATRIX,projection);
 	GLdouble modelview[16];
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
-	GLdouble winX,winY,winZ;
+	GLdouble winX,winY;
 	winX=(double)x;
 	winY=(double)y;
 	winY=viewport[3]-winY;
@@ -88,7 +88,7 @@ int grabberVertex(int x, int y,BoundingMesh *boundingMesh,Camera &camera) {
 	glGetDoublev(GL_PROJECTION_MATRIX,projection);
 	GLdouble modelview[16];
 	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
-	GLdouble winX,winY,winZ;
+	GLdouble winX,winY;
 	winX=(double)x;
 	winY=(double)y;
 	winY=viewport[3]-winY;
