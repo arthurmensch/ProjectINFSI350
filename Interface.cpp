@@ -1,5 +1,16 @@
 #include "Interface.h"
 
+static bool fullScreen = false;
+static bool firstModel = true;
+
+static int beginTransformX;
+static int beginTransformY;
+static bool vertexMoving=false;
+static int indexAimed;
+static int lastX;
+static int lastY;
+static int count;
+
 void toggleSelect(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
 	int triangle=grabber(x,y,boundingMesh,camera);
 	if(triangle>-1){
@@ -66,6 +77,18 @@ Interface::Interface() {
 
 void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     switch (keyPressed) {
+    case '1':
+        if (!firstModel) {
+            boundingMesh = BoundingMesh::generate(DEFAULT_MESH_FILE.c_str(), DEFAULT_CAGE_FILE.c_str());
+            firstModel = true;
+        }
+        break;
+    case '2':
+        if (firstModel) {
+            boundingMesh = BoundingMesh::generate(DEFAULT_MESH_FILE_2.c_str(), DEFAULT_CAGE_FILE_2.c_str());
+            firstModel = false;
+        }
+        break;
     case 'f':
         if (fullScreen) {
             glutReshapeWindow (camera.getScreenWidth (), camera.getScreenHeight ());
@@ -201,6 +224,8 @@ void Interface::passiveMotion (int x, int y) {
             break;
         case SCALE:
             scaling(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
+            break;
+        default:
             break;
     }
 

@@ -15,19 +15,13 @@ extern BoundingMesh *boundingMesh;
 extern std::vector<bool> selectedTriangle;
 extern std::string globalName;
 
-
 enum TransformState {NONE, SCALE, ROTATE, TRANSLATE, SELECTION};
-static TransformState transformState = NONE;
+extern TransformState transformState;
 
-static bool fullScreen = false;
-
-static int beginTransformX;
-static int beginTransformY;
-static bool vertexMoving=false;
-static int indexAimed;
-static int lastX;
-static int lastY;
-static int count;
+extern const std::string DEFAULT_MESH_FILE;
+extern const std::string DEFAULT_CAGE_FILE;
+extern const std::string DEFAULT_MESH_FILE_2;
+extern const std::string DEFAULT_CAGE_FILE_2;
 
 //general functions for movemement,selection/deselection etc
 void displayCarre();
