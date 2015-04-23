@@ -47,7 +47,10 @@ void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 
 void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving,bool end){
     if(vertexMoving){
-        translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
+        if(indexAimed > -1)
+            translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
+        else
+            vertexMoving = false;
     	if(end)
             vertexMoving=false;
     }
@@ -116,7 +119,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 
         	if(indexAimed>-1)//vertex grabbed
             	vertexMoving=true;
-        	
+
             beginTransformX = x;
     	    beginTransformY = y;
 	        lastX=x;
@@ -213,7 +216,7 @@ void Interface::passiveMotion (int x, int y) {
 
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
-        if (transformState == SELECTION) 
+        if (transformState == SELECTION)
             selectSquare(lastX,lastY,beginTransformX,beginTransformY,boundingMesh);
 
         else if (transformState != NONE) //last effective transformation
