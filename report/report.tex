@@ -25,7 +25,7 @@ Nous présentons dans ce rapport notre implémentation de l'article \cite{lipman
 \end{abstract}
 \section*{Introduction}
 
-Pour être utilisable, une interface de modélisation 3D doit permettre à l'utilisateur de modifier un objet en 3D de manière rapide et intuitive. Si les maillages 3D manipulés sont souvent d'une taille considérable, ils n'ont, s'il représente des objets physiques, qu'un nombre limité de degré de liberté. Il importe donc de pouvoir les modifier avec une petit nombre d'interaction de contrôle. Pour cela, les outils de déformation par cage sont très appropriés : l'idée est d'englober un maillage compliqué par un maillage plus simple, et de répercuter les déformations effectuées la cage sur le maillage cible. 
+Pour être utilisable, une interface de modélisation 3D doit permettre à l'utilisateur de modifier un objet en 3D de manière rapide et intuitive. Si les maillages 3D manipulés sont souvent d'une taille considérable, l'objet qu'il représente n'a dans le monde réel qu'un nombre limité de degré de liberté. Il importe donc de pouvoir les modifier avec une petit nombre d'interaction de contrôle. Pour cela, les outils de déformation par cage sont très appropriés : l'idée est d'englober un maillage compliqué par un maillage plus simple, et de répercuter les déformations effectuées la cage sur le maillage cible. 
 
 Les outils de déformation par cage reposent sur la description du maillage cible dans un certain 'référentiel' lié à la cage. Nous présentons les principes théoriques de cette déformation, en décrivant plus précisément les \textit{coordonnées de Green} qui constitue un des otuils mathématiques utilisable, et décrivons l'implémentation et le fonctionnement d'un démonstrateur. 
 
