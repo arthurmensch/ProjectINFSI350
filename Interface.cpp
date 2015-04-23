@@ -45,14 +45,9 @@ void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 	boundingMesh->addTrianglesToSelection(trianglesIndex);
 }
 
-void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving,bool end){
+void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving){
     if(vertexMoving){
-        if(indexAimed > -1)
-            translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
-        else
-            vertexMoving = false;
-    	if(end)
-            vertexMoving=false;
+    	translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
     }
     else{
     	translateForm(camera,boundingMesh,x,y,lastX,lastY);
@@ -81,6 +76,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         }
         break;
 	case 'a':
+		vertexMoving=false;
 		boundingMesh->release(false);
 		transformState = NONE;
 		boundingMesh->clearSelection();
@@ -113,12 +109,13 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
     case 't':
     	if (transformState != TRANSLATE) {
 		if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
-            boundingMesh->release(true);
-            glutSetWindowTitle("Translation");
-            indexAimed=grabberVertex(x,y,boundingMesh,camera);
+            		vertexMoving=false;
+			boundingMesh->release(true);
+            		glutSetWindowTitle("Translation");
+            		indexAimed=grabberVertex(x,y,boundingMesh,camera);
 
         	if(indexAimed>-1)//vertex grabbed
-            	vertexMoving=true;
+            		vertexMoving=true;
 
             beginTransformX = x;
     	    beginTransformY = y;
@@ -131,6 +128,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
             glutSetWindowTitle("Translation canceled");
             boundingMesh->release(false);
             transformState = NONE;
+		vertexMoving=false;
         }
         break;
 
@@ -196,7 +194,7 @@ void Interface::passiveMotion (int x, int y) {
 
     switch (transformState) {
         case TRANSLATE:
-            translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving,false);
+            translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving);
             break;
         case ROTATE:
             rotation(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
