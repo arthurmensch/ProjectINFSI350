@@ -221,7 +221,7 @@ void rotation(Camera &camera,BoundingMesh *boundingMesh, int x, int y, int lastX
     r.rotation(n, angle);
     std::set<int> s;
     Vec3f tmp;
-	Mesh *cage=boundingMesh->getCage();
+	Mesh *cage=boundingMesh->getOldCage();
 	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
 	for (std::set<int>::iterator it=selectedTriangle.begin();it!=selectedTriangle.end();it++){
     	for (unsigned int i =0;i<3;i++){
@@ -276,7 +276,7 @@ void scaling(Camera &camera,BoundingMesh *boundingMesh, int x, int y, int lastX,
     // Apply rotation
     std::set<int> s;
     Vec3f tmp;
-	Mesh *cage=boundingMesh->getCage();
+	Mesh *cage=boundingMesh->getOldCage();
 	std::set<int> selectedTriangle=boundingMesh->getTriangleSelection();
 	for (std::set<int>::iterator it=selectedTriangle.begin();it!=selectedTriangle.end();it++){
     	for (unsigned int i =0;i<3;i++){
