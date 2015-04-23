@@ -55,7 +55,7 @@ public:
     void centerAndScaleToUnit ();
 
     void draw();
-    void draw(Vec3i selectedColor, const std::set<int> &selectedTriangles);
+    void draw(Vec3f selectedColor, const std::set<int> &selectedTriangles);
 
     void smooth();
 

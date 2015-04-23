@@ -27,8 +27,10 @@ using namespace std;
 
 static const unsigned int DEFAULT_SCREENWIDTH = 1024;
 static const unsigned int DEFAULT_SCREENHEIGHT = 768;
-static const string DEFAULT_MESH_FILE ("models/gargoyle.off");
-static const string DEFAULT_CAGE_FILE ("models/gargoylebounding.off");
+const string DEFAULT_MESH_FILE ("models/horse.off");
+const string DEFAULT_CAGE_FILE ("models/horsebounding.off");
+const string DEFAULT_MESH_FILE_2 ("models/gargoyle.off");
+const string DEFAULT_CAGE_FILE_2 ("models/gargoylebounding.off");
 
 static string appTitle ("Green coordinates demonstration");
 static GLint window;
@@ -38,6 +40,8 @@ string globalName;
 Camera camera;
 Mesh mesh;
 BoundingMesh *boundingMesh;
+
+TransformState transformState = NONE;
 
 void printUsage () {
 	std::cerr << std::endl
@@ -52,6 +56,7 @@ void printUsage () {
          << " <drag>+<right button>: move model" << std::endl
          << " <drag>+<middle button>: zoom" << std::endl
          << " q, <esc>: Quit" << std::endl << std::endl
+         << " 1 / 2 to switch models" << std::endl
          << " a : Unselect all" << std::endl
          << " s : (Un)Select triangle" << std::endl
          << " t : Translate selection (or specified vertex) in a plan parallel to the camera" << std::endl
@@ -117,7 +122,23 @@ void init (const char * modelFilename, const char * modelCage) {
 }
 
 void drawScene () {
-    Vec3i selectedColor(255,255,0);
+    Vec3f selectedColor;
+
+    switch (transformState) {
+        case ROTATE:
+            selectedColor = Vec3f(1.0f,0,0);
+            break;
+        case SCALE:
+            selectedColor = Vec3f(1.0f,0.5f,0);
+            break;
+        case TRANSLATE:
+            selectedColor = Vec3f(1.0f,1.0f,0);
+            break;
+        default:
+            selectedColor = Vec3f(0,1.0f,0);
+            break;
+    }
+
 	displayCarre();
     boundingMesh->draw(selectedColor);
 }

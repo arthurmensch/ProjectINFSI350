@@ -18,7 +18,7 @@ void rotation(Camera &camera,BoundingMesh *boundingMesh, int x, int y, int lastX
 void scaling(Camera &camera,BoundingMesh *boundingMesh, int x, int y, int lastX, int lastY);
 Vec3f barycenter(BoundingMesh *boundingMesh);
 
-void glSphere (float x, float y, float z, float radius, Vec3i selectedColor);
+void glSphere (float x, float y, float z, float radius, Vec3f selectedColor);
 void glQuadSelect(int lastX,int lastY, int beginTransformX, int beginTransformY);
 void glTriangles(std::vector<Vertex> &V, std::vector<Triangle> &T, Vec3f & camPos);
 void polar2Cartesian (float phi, float theta, float d, float & x, float & y, float & z);

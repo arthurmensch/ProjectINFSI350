@@ -316,7 +316,7 @@ std::set<int> BoundingMesh::getTriangleSelection() {
     return selectedTriangles;
 }
 
-void BoundingMesh::draw(Vec3i selectedColor) {
+void BoundingMesh::draw(Vec3f selectedColor) {
     GLint mode[2];
 	glGetIntegerv( GL_POLYGON_MODE, mode );
     bounded->draw();
@@ -326,10 +326,9 @@ void BoundingMesh::draw(Vec3i selectedColor) {
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     for (auto it = selectedTriangles.begin(); it != selectedTriangles.end(); ++it){
         for(unsigned int j=0;j<3;j++){
-            Vec3i selectedColor(255,255,0);
             //std::cerr << cage->T[*it].v[j] << " " << cage->V[cage->T[*it].v[j]].p <<std::endl;
             Vec3f center= cage->V[cage->T[*it].v[j]].p;
-            glSphere(center[0],center[1],center[2],0.02,selectedColor);
+            glSphere(center[0],center[1],center[2],0.01,selectedColor);
         }
     }
     glPolygonMode( GL_FRONT_AND_BACK, mode[1] );

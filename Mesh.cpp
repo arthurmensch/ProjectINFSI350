@@ -193,7 +193,7 @@ void Mesh::draw() {
     glEnd ();
 }
 
-void Mesh::draw(Vec3i selectedColor, const std::set<int> &selectedTriangles) {
+void Mesh::draw(Vec3f selectedColor, const std::set<int> &selectedTriangles) {
     // Normal Triangles
     glBegin (GL_TRIANGLES);
     for (unsigned int i = 0; i < T.size (); i++) {
