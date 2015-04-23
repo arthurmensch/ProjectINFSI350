@@ -31,9 +31,24 @@ Nous présentons dans ce rapport notre implémentation de l'article \cite{lipman
 \subsection{Coordonnées de Green}
 
 \section{Démonstration}
-
+S'il existe des méthodes pour \textit{encadrer} automatiquement un modèle $3D$ d'une cage de contrôle, celleq-ci ne sont pas adaptées à notre problème. En effet il est difficile de définir à  priori la complexité de la cage voulue (i.e. le nombre de triangles utilisés) et la proximité avec laquelle la cage doit suivre la surface exterieure du modèle. Ainsi, pour chaque modèle, la cage de contrôle a été dessinée manuellement afin de pouvoir réaliser facilement les déformations voulues.
+ 
 \subsection{Fonctionnalités}
+Afin de montrer l'interêt d'une telle méthode, il était donc nécéssaire de pouvoir appliquer des déformations intuitives pour l'utilisateur. Pour cela deux grands problèmes surviennent : la \textbf{selection} des points de la cage que l'on cherche à déformer et la \textbf{déformation} à proprement parler. Nous sommes donc partis du moteur graphique utilisé à partir du deuxieme TP où les mouvements de caméra controlables grâce a la souris étaient déjà implémentés.
 
+\paragraph{Selection\newline}
+La selection peut se faire de deux manières différentes : une sélection triangle par triangle et une selection par carré.\\
+La selection triangle par triangle s'effectue en pointant un triangle à l'aide de la souris, un rayon est alors tracé entre le \textit{near plane} et le \textit{far plane} ayant pour coordonnées dans le plan celles de notre souris. Ce rayon nous permet alors de déterminer le triangle ayant une intersection avec ce rayon et étant le plus proche du \textit{near plane}. Celui-ci est alors ajouté à l'ensemble des triangles selectionnés. Inversement, si ce triangle visé était déjà selectionné, il est alors enlevé de l'ensemble des triangles selectionnés.\\
+La selection par carré elle permet de dessiner un carré sur l'écran de l'utilisateur. Alors, tous les triangles projetés dans le \textit{near plane} étant contenus dans ce carré seront ajoutés à la selection, ce qui permet de selectionner facilement tout une zone de notre cage de contrôle.\\
+Une fois ces triangles selectionnés, il est alors possible de les modifier ce qui resulte par une modification du model $3D$.
+
+\paragraph{Translation\newline}
+L'ensemble des triangles selectionnés de notre cage peut être translaté en passant dans le mode translation. Cette translation s'effectue dans le plan parallèle au plan de l'écran (\textit{near plane}) et suit les mouvements de la souris de l'utilisateur jusqu'à ce que celui-ci mette fin au mode de translation.\\
+Pour pouvoir permettre d'effectuer des modification plus précises, il est aussi possible d'effectuer une translation point par point en selectionnant un point parmis ceux des triangles selectionnés. 
+
+\paragraph{Rotation\newline}
+
+\paragraph{Agrandissement(trouve une meilleure dénomination)\newline}
 \subsection{Fonctionnement}
 
 \section*{Conclusion}
