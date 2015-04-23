@@ -99,12 +99,12 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 		if(boundingMesh->getTriangleSelection().size()>0){
                 	boundingMesh->release(false);
 			translate = false;
-            		scale = false;
+            scale = false;
 			lastX = x;
 			lastY = y;
             		beginTransformX = x;
             		beginTransformY = y;
-        		rotate = true;
+            rotate = true;
 		}
         }
         else {
