@@ -47,7 +47,10 @@ void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 
 void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving,bool end){
     if(vertexMoving){
-        translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
+        if (indexAimed>-1)
+            translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
+        else
+            vertexMoving = false;
     	if(end)
             vertexMoving=false;
     }
@@ -114,20 +117,20 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
     case 't':
     	if (!translate) {
-		if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
-                	boundingMesh->release(false);
-                	rotate = false;
-			scale = false;
-            		glutSetWindowTitle("Translation");
-            		indexAimed=grabberVertex(x,y,boundingMesh,camera);
-           		if(indexAimed>-1)//vertex grabbed
-            	    		vertexMoving=true;
-        		beginTransformX = x;
-    	        	beginTransformY = y;
-	        	lastX=x;
-                	lastY=y;
-             		translate = true;
-		}
+            if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
+                boundingMesh->release(false);
+                rotate = false;
+                scale = false;
+                glutSetWindowTitle("Translation");
+                indexAimed=grabberVertex(x,y,boundingMesh,camera);
+                if(indexAimed>-1)//vertex grabbed
+                    vertexMoving=true;
+                beginTransformX = x;
+                    beginTransformY = y;
+                lastX=x;
+                    lastY=y;
+                    translate = true;
+            }
         }
         else {
             glutSetWindowTitle("Translation canceled");
@@ -234,7 +237,7 @@ void Interface::mouse (int button, int state, int x, int y) {
 		scale = false;
 	}
 	else if (selectionMode){
-               	selectSquare(lastX,lastY,beginTransformX,beginTransformY,boundingMesh);
+        selectSquare(lastX,lastY,beginTransformX,beginTransformY,boundingMesh);
 		selectionMode = false;
 	}
     }
