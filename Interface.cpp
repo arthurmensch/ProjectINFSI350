@@ -45,11 +45,9 @@ void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 	boundingMesh->addTrianglesToSelection(trianglesIndex);
 }
 
-void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving,bool end){
+void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving){
     if(vertexMoving){
         translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
-    	if(end)
-            vertexMoving=false;
     }
     else{
     	translateForm(camera,boundingMesh,x,y,lastX,lastY);
@@ -79,6 +77,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
 	case 'a':
 		boundingMesh->release(false);
+		vertexMoving=false;
 		translate = false ;
 		rotate = false ;
 		selectionMode = false ;
@@ -98,13 +97,14 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         if (!rotate) {
 		if(boundingMesh->getTriangleSelection().size()>0){
                 	boundingMesh->release(false);
+			vertexMoving=false;
 			translate = false;
-            scale = false;
+            		scale = false;
 			lastX = x;
 			lastY = y;
             		beginTransformX = x;
             		beginTransformY = y;
-            rotate = true;
+            		rotate = true;
 		}
         }
         else {
@@ -132,6 +132,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         else {
             glutSetWindowTitle("Translation canceled");
             boundingMesh->release(false);
+		vertexMoving=false;
             translate = false;
         }
         break;
@@ -140,6 +141,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         if (!scale) {
 		if(boundingMesh->getTriangleSelection().size()>0){
 			boundingMesh->release(false);
+			vertexMoving=false;
             		translate = false;
             		rotate = false;
 			lastX = x;
@@ -199,7 +201,7 @@ void Interface::passiveMotion (int x, int y) {
     if(count == 5)
         count = 0;
     if (translate) {
-        translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving,false);
+        translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving);
 
     }
     if (rotate) {
@@ -223,6 +225,7 @@ void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         if (translate){//last effective translation
             boundingMesh->release(true);
+		vertexMoving=false;
             translate = false;
         }
         else if (rotate){
@@ -242,6 +245,7 @@ void Interface::mouse (int button, int state, int x, int y) {
     else if (button == GLUT_RIGHT_BUTTON) {
         if (translate) {//cancel translation
             boundingMesh->release(false);
+		vertexMoving=false;
             translate = false;
         }
         else if (rotate) {
