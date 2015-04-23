@@ -35,7 +35,7 @@ void displayCarre();
 void toggleSelect(int x, int y,BoundingMesh *boundingMesh, Camera &camera);
 void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boundingMesh);
 
-void translateStruct(int x, int y,int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera,int indexAimed,bool &vertexMoving,bool end);
+void translateStruct(int x, int y,int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera,int indexAimed,bool &vertexMoving);
 
 class Interface {
 public:
