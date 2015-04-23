@@ -25,6 +25,10 @@ Nous présentons dans ce rapport notre implémentation de l'article \cite{lipman
 \end{abstract}
 \section*{Introduction}
 
+Pour être utilisable, une interface de modélisation 3D doit permettre à l'utilisateur de modifier un objet en 3D de manière rapide et intuitive. Si les maillages 3D manipulés sont souvent d'une taille considérable, ils n'ont, s'il représente des objets physiques, qu'un nombre limité de degré de liberté. Il importe donc de pouvoir les modifier avec une petit nombre d'interaction de contrôle. Pour cela, les outils de déformation par cage sont très appropriés : l'idée est d'englober un maillage compliqué par un maillage plus simple, et de répercuter les déformations effectuées la cage sur le maillage cible. 
+
+Les outils de déformation par cage reposent sur la description du maillage cible dans un certain 'référentiel' lié à la cage. Nous présentons les principes théoriques de cette déformation, en décrivant plus précisément les \textit{coordonnées de Green} qui constitue un des otuils mathématiques utilisable, et décrivons l'implémentation et le fonctionnement d'un démonstrateur. 
+
 \section{Principes théoriques}
 \label{section:theory}
 
@@ -76,7 +80,7 @@ où $s \left(t'_i, t_i \right)$ est un terme dépendant explicitement des triang
 \end{itemize}
 
 \section{Démonstration}
-S'il existe des méthodes pour \textit{encadrer} automatiquement un modèle $3D$ d'une cage de contrôle, celle-ci ne sont pas adaptées à notre problème. En effet il est difficile de définir à  priori la complexité de la cage voulue (i.e. le nombre de triangles utilisés) et la proximité avec laquelle la cage doit suivre la surface exterieure du modèle. Ainsi, pour chaque modèle, la cage de contrôle a été dessinée manuellement, à l'aide du logiciel \textit{Blender}, afin de pouvoir réaliser facilement les déformations voulues.
+S'il existe des méthodes pour \textit{encadrer} automatiquement un modèle $3D$ d'une cage de contrôle, celle-ci ne sont pas adaptées à notre problème. En effet il est difficile de définir à  priori la complexité de la cage voulue (i.e. le nombre de triangles utilisés) et la proximité avec laquelle la cage doit suivre la surface exterieure du modèle. Ainsi, pour chaque modèle, la cage de contrôle a été dessinée manuellement, à l'aide du logiciel \texttt{Blender}, afin de pouvoir réaliser facilement les déformations voulues.
  
 \subsection{Fonctionnalités utilisateur}
 Afin de montrer l'interêt d'une telle méthode, il était donc nécéssaire de pouvoir appliquer des déformations intuitives pour l'utilisateur. Pour cela deux grands problèmes surviennent : la \textbf{selection} des points de la cage que l'on cherche à déformer et la \textbf{déformation} à proprement parler. Nous sommes donc partis du moteur graphique utilisé à partir du deuxieme TP où les mouvements de caméra controlables grâce a la souris étaient déjà implémentés.
@@ -112,11 +116,11 @@ Pour permettre une mise à jour en temps réel, on a donc recours à la stratég
 
 \subsection{Résultats}
 
-Notre démonstrateur permet d'éditer la cage de manière relativement complète et intuitive, à la manière de la fonction d'édition de maillage du logiciel \textit{Blender}. La méthode utilisée permet, avec un code optimisé, de montrer à l'utilisateur la déformation du maillage cible en quasi \emph{temps réel}, ce qui est particulièrement satisfaisant en terme d'ergonomie.
+Notre démonstrateur permet d'éditer la cage de manière relativement complète et intuitive, à la manière de la fonction d'édition de maillage du logiciel \texttt{Blender}. La méthode utilisée permet, avec un code optimisé, de montrer à l'utilisateur la déformation du maillage cible en quasi \emph{temps réel}, ce qui est particulièrement satisfaisant en terme d'ergonomie.
 
 \section*{Conclusion}
 
-Notre démonstrateur expose la puissance des coordonnées de Green pour déformer des maillages de manière intuitive et physiquement plausible. Cette méthode peut notamment être utilisée pour animer des maillages en un temps raisonnable. Un certain nombre d'optimisation peuvent encore être effectuée en portant les calculs sur GPU. Il serait intéressant d'intégrer cet outil comme plugin de \textit{blender}, qui jouit déjà d'une interface utilisateur intuitive et documentée.
+Notre démonstrateur expose la puissance des coordonnées de Green pour déformer des maillages de manière intuitive et physiquement plausible. Cette méthode peut notamment être utilisée pour animer des maillages en un temps raisonnable. Un certain nombre d'optimisation peuvent encore être effectuée en portant les calculs sur GPU. Il serait intéressant d'intégrer cet outil comme \textit{plug-in} de \texttt{Blender}, qui jouit déjà d'une interface utilisateur intuitive et documentée.
 
 \section*{Référence}
 
