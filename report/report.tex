@@ -22,13 +22,54 @@ Nous présentons dans ce rapport notre implémentation de l'article \cite{lipman
 \end{abstract}
 \section*{Introduction}
 
-
-
 \section{Principe}
 
-\subsection{Déformation par cage}
+\subsection{Fonctions coordonnées}
+L'objectif est de contrôler la déformation d'un grand nombre de sommets par la déformation d'une structure simple. On décrit pour chaque sommet du maillage cible comme une combinaison linéaire des sommets du maillage de contrôle, ainsi que des normales de ses faces (c'est la contribution de \cite{lipman2008green}). On écrit donc, pour tout sommet $\mathbf{\eta}$ :
+\begin{equation}
+\label{eq:linear}
+\mathbf{\eta} = \sum_{\mathbf{v_i} \in \mathbb{V}} \phi_i \left( \mathbf{\eta} \right) \mathbf{v_i} 
++ \sum_{t_i \in \mathbb{T}} \psi_i \left( \mathbf{\eta} \right) \mathbf{n} \left( t_i \right)
+\end{equation}
+
+en notant $\mathbb{V}$ et $\mathbb{T}$ l'ensemble des sommets et des faces du maillage de contrôle (la cage). On définit ainsi des ensembles de \textit{fonctions coordonnées} .
+
+Ils existent plusieurs familles de fonctions coordonnées : on peut les prendre toutes nulles sauf quatre $\phi_i$ correspondant à quatre $\mathbf{v}_i$ non alignés. Il s'agit alors des coordonnées barycentrique dans le repère barycentrique $\left( \mathbf{v}_i \right)_{1 \leq i \leq 4}$. Cependant ces coordonnées ne sont pas bonnes au sens où les déformations de la cage induisent des déformations non plausible physiquement sur le maillage.
 
 \subsection{Coordonnées de Green}
+
+Les coordonnées utilisées dans l'article sont les coordonnées de Green. Elle repose sur le fait que la fonction identité soit harmonique (i.e. de Laplacien nulle), et sur la troisième identité de Green, corollaire direct du théorème de la divergence, qui stipule, pour $u = \mathrm{Id}$ harmonique et $G_\eta$ solution fondamentale de l'équation de Laplace $\left\lbrace \Delta G_\eta = \delta_\eta \right\rbrace$ :
+\begin{equation}
+\boldsymbol\eta = \int_{\partial D} \left(
+	\boldsymbol\xi
+		\frac{\partial G_\eta \left(\boldsymbol\xi \right)}
+		{\partial \mathbf{n \left( \boldsymbol\xi \right)}}
+	- G_\eta \left( \boldsymbol\xi \right) 
+		\frac{\partial \boldsymbol\xi }
+		{\partial \mathbf{n \left( \boldsymbol\xi \right)}}
+\right)
+\mathrm{d}\, \sigma_\xi
+\end{equation}
+
+où $D$ est le maillage cage englobant le maillage cible. La normale $\mathbf{n \left( \boldsymbol\xi \right)}$ étant constante sur le maillage cible, on dérive de cette égalité une expression de la forme de l'Eq. \ref{eq:linear}, avec une expression intégrale des fonctions coordonnnées, qui s'écrit analytiquement : on a donc un moyen précis de calculer les $\left( \phi_i \right)_i$ et $\left( \psi_i \right)_i$.
+
+\subsection{Déformation}
+
+L'avantage de cette méthode est que les fonctions coordonnées fournies sont harmoniques. On va pouvoir les utiliser dans la déformation de la cage, avec une légère correction, pour obtenir une déformation quasi-conforme du maillage cible.
+
+On cherche à répercuter la déformation de la cage sur le maillage cible. Soit $\left( v'_i \right)_i$ et $\left( t'_i \right)_i$ les nouveaux élements du maillage cage. On écrit alors :
+\begin{equation}
+\mathbf{\eta'} = \sum_{\mathbf{v'_i} \in \mathbb{V}'} \phi_i \left( \mathbf{\eta} \right) \mathbf{v'_i} 
++ \sum_{t'_i \in \mathbb{T}'} \psi_i \left( \mathbf{\eta} \right) s \left(t'_i, t_i \right) mathbf{n} \left( t'_i \right)
+\end{equation}
+
+où $s \left(t'_i, t_i \right)$ est un terme dépendant explicitement des triangles pré et post-déformation.
+
+La définition des $\left( \phi_i \right)_i$ et $\left( \psi_i \right)_i$ puis de la fonction $s$ s'assure alors des éléments suivant pour la déformation $\boldsymbol\eta \rightarrow \boldsymbol\eta'$ :
+\begin{itemize}
+\item Toute similitudes appliqué à la cage se traduit par une similitude appliqué au maillage cible.
+\item La déformation du maillage cible est $\mathcal{C}^\infty$ et quasi-conforme (le cisaillement est encadré, i.e la modification locale des angles est bornée).
+\end{itemize}
 
 \section{Démonstration}
 

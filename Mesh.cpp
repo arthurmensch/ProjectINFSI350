@@ -42,7 +42,9 @@ Mesh::Mesh(const Mesh & mesh) {
 Mesh & Mesh::operator=(const Mesh & mesh) {
     T = mesh.T;
     V = mesh.V;
-    recomputeNormals();}
+    recomputeNormals();
+    return *this;
+}
 
 void Mesh::loadOFF (const std::string & filename) {
 	ifstream in (filename.c_str ());
@@ -216,7 +218,7 @@ void Mesh::draw(Vec3i selectedColor, const std::set<int> &selectedTriangles) {
                 glNormal3f (v.n[0], v.n[1], v.n[2]); // Specifies current normal vertex
                 glVertex3f (v.p[0], v.p[1], v.p[2]); // Emit a vertex (one triangle is emitted each time 3 vertices are emitted)
             }
-            
+
         }
     }
 
