@@ -11,6 +11,9 @@
 \usepackage[a4paper, margin=20mm]{geometry}
 \usepackage[frenchb]{babel}
 \usepackage{subcaption}
+\usepackage{hyperref}
+
+\def\equationautorefname{Eq.}
 
 
 \author{Arthur Mensch, Paul Vallet, Michaël Weiss}
@@ -51,7 +54,7 @@ Ils existent plusieurs familles de fonctions coordonnées : on peut les prendre 
 \mathrm{d}\, \sigma_\xi
 \end{equation}
 
-où $D$ est le maillage cage englobant le maillage cible. La normale $\mathbf{n \left( \boldsymbol\xi \right)}$ étant constante sur le maillage cible, on dérive de cette égalité une expression de la forme de l'Eq. \ref{eq:linear}, avec une expression intégrale des fonctions coordonnnées, qui s'écrit analytiquement : on a donc un moyen précis de calculer les $\left( \phi_i \right)_i$ et $\left( \psi_i \right)_i$.
+où $D$ est le maillage cage englobant le maillage cible. La normale $\mathbf{n \left( \boldsymbol\xi \right)}$ étant constante sur le maillage cible, on dérive de cette égalité une expression de la forme de l'\autoref{eq:linear}, avec une expression intégrale des fonctions coordonnnées, qui s'écrit analytiquement : on a donc un moyen précis de calculer les $\left( \phi_i \right)_i$ et $\left( \psi_i \right)_i$.
 
 \subsection{Déformation}
 
@@ -92,11 +95,11 @@ Pour pouvoir permettre d'effectuer des modification plus précises, il est aussi
 
 \subsection{Fonctionnement algorithmique}
 
-Les déformations sont basés sur la théorie présenté en Section. \ref{section:theory}. Les algorithmes de mise à jour des coordonnées et de gestion de la selection sont encapsulé dans une classe \texttt{BoundingMesh}.
+Les déformations sont basés sur la théorie présenté en \autoref{section:theory}. Les algorithmes de mise à jour des coordonnées et de gestion de la selection sont encapsulé dans une classe \texttt{BoundingMesh}.
 
 \paragraph{Calcul des coordonnées}Au chargement du maillage, on calcule les coordonnées de Green de chacun de ses sommets, puis on remplace les sommets données en entrée par les sommets calculés à partir de ces coordonnées. On utilise dans cette phase les algorithmes présentés en \cite{lipman2008green}.
 
-\paragraph{Mise à jour}Une fonction de mise à jour totale calcule la position de chaque sommet en effectuant le calcul entier de l'Eq. \ref{eq:def}. Cependant, lorsqu'on agit seulement sur une partie de la cage, on peut effectuer une mise à jour des position en ligne, en ne modifiant qu'une partie de la somme de l'Eq. \ref{eq:def}.
+\paragraph{Mise à jour}Une fonction de mise à jour totale calcule la position de chaque sommet en effectuant le calcul entier de l'\autoref{eq:def}. Cependant, lorsqu'on agit seulement sur une partie de la cage, on peut effectuer une mise à jour des position en ligne, en ne modifiant qu'une partie de la somme de l'\autoref{eq:def}.
 
 Pour permettre une mise à jour en temps réel, on a donc recours à la stratégie suivante :
 \begin{itemize}
@@ -109,10 +112,15 @@ Pour permettre une mise à jour en temps réel, on a donc recours à la stratég
 
 \subsection{Résultats}
 
-Notre démonstrateur permet d'éditer la cage de manière relativement complète et intuitive, à la manière de la fonction d'édition de maillage du logiciel \textit{Blender}. La méthode utilisée permet, avec un code optimisé, de montrer à l'utilisateur la déformation du maillage cible en \emph{temps réel}, ce qui est particulièrement satisfaisant en terme d'ergonomie.
+Notre démonstrateur permet d'éditer la cage de manière relativement complète et intuitive, à la manière de la fonction d'édition de maillage du logiciel \textit{Blender}. La méthode utilisée permet, avec un code optimisé, de montrer à l'utilisateur la déformation du maillage cible en quasi \emph{temps réel}, ce qui est particulièrement satisfaisant en terme d'ergonomie.
+
 \section*{Conclusion}
 
+Notre démonstrateur expose la puissance des coordonnées de Green pour déformer des maillages de manière intuitive et physiquement plausible. Cette méthode peut notamment être utilisée pour animer des maillages en un temps raisonnable. Un certain nombre d'optimisation peuvent encore être effectuée en portant les calculs sur GPU. Il serait intéressant d'intégrer cet outil comme plugin de \textit{blender}, qui jouit déjà d'une interface utilisateur intuitive et documentée.
+
 \section*{Référence}
+
+Le démonstrateur est téléchargeable à l'adresse \url{https://github.com/arthurmensch/ProjectINFSI350}.
 
 \bibliographystyle{plain}
 
