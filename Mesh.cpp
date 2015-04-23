@@ -206,7 +206,6 @@ void Mesh::draw(Vec3i selectedColor) {
     glEnd ();
 
     // Selected Triangles
-    glDisable(GL_LIGHTING);
     glEnable(GL_POLYGON_OFFSET_LINE);
     glBegin (GL_TRIANGLES);
     for (unsigned int i = 0; i < T.size (); i++) {
@@ -223,7 +222,6 @@ void Mesh::draw(Vec3i selectedColor) {
 
     glEnd ();
     glDisable(GL_POLYGON_OFFSET_LINE);
-    glEnable(GL_LIGHTING);
 }
 
 void Mesh::simplifyMesh(unsigned int r) {

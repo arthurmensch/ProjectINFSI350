@@ -54,6 +54,7 @@ void printUsage () {
          << " <drag>+<right button>: move model" << std::endl
          << " <drag>+<middle button>: zoom" << std::endl
          << " q, <esc>: Quit" << std::endl << std::endl
+         << " a : Unselect all" << std::endl
          << " s : (Un)Select triangle" << std::endl
          << " t : Translate selection (or specified vertex) in a plan parallel to the camera" << std::endl
          << " r : Rotate selection in a plan parallel to the camera" << std::endl

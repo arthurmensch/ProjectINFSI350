@@ -16,11 +16,10 @@ extern std::vector<bool> selectedTriangle;
 extern std::string globalName;
 
 
+enum TransformState {NONE, SCALE, ROTATE, TRANSLATE, SELECTION};
+static TransformState transformState = NONE;
+
 static bool fullScreen = false;
-static bool selectionMode = false;
-static bool rotate = false;
-static bool translate = false;
-static bool scale = false;
 
 static int beginTransformX;
 static int beginTransformY;

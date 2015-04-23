@@ -14,7 +14,7 @@ void toggleSelect(int x, int y, BoundingMesh *boundingMesh, Camera &camera){
 }
 
 void displayCarre(){
-	if(selectionMode){
+	if(transformState == SELECTION){
 		glQuadSelect(lastX,lastY,beginTransformX,beginTransformY);
 	}
 }
@@ -45,9 +45,11 @@ void selectSquare(int x, int y, int lastX, int lastY,BoundingMesh *boudingMesh){
 	boundingMesh->addTrianglesToSelection(trianglesIndex);
 }
 
-void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving){
+void translateStruct(int x, int y, int lastX,int lastY,BoundingMesh *boundingMesh, Camera &camera, int indexAimed, bool &vertexMoving,bool end){
     if(vertexMoving){
         translateVertex(camera,boundingMesh,indexAimed,x,y,lastX,lastY);
+    	if(end)
+            vertexMoving=false;
     }
     else{
     	translateForm(camera,boundingMesh,x,y,lastX,lastY);
@@ -77,11 +79,7 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
         break;
 	case 'a':
 		boundingMesh->release(false);
-		vertexMoving=false;
-		translate = false ;
-		rotate = false ;
-		selectionMode = false ;
-		scale = false ;
+		transformState = NONE;
 		boundingMesh->clearSelection();
 		break;
     case 'q':
@@ -94,66 +92,70 @@ void Interface::keyDown (unsigned char keyPressed, int x, int y) {
 		glPolygonMode (GL_FRONT_AND_BACK, mode[1] ==  GL_FILL ? GL_LINE : GL_FILL);
         break;
     case 'r':
-        if (!rotate) {
+        if (transformState != ROTATE) {
 		if(boundingMesh->getTriangleSelection().size()>0){
-                	boundingMesh->release(false);
-			vertexMoving=false;
-			translate = false;
-            		scale = false;
+            boundingMesh->release(true);
 			lastX = x;
 			lastY = y;
-            		beginTransformX = x;
-            		beginTransformY = y;
-            		rotate = true;
+    		beginTransformX = x;
+    		beginTransformY = y;
+            transformState = ROTATE;
 		}
         }
         else {
-		boundingMesh->release(false);
-        	rotate = false;
+            boundingMesh->release(false);
+        	transformState = NONE;
         }
         break;
     case 't':
-    	if (!translate) {
-            if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
-                boundingMesh->release(false);
-                rotate = false;
-                scale = false;
-                glutSetWindowTitle("Translation");
-                indexAimed=grabberVertex(x,y,boundingMesh,camera);
-                if(indexAimed>-1)//vertex grabbed
-                    vertexMoving=true;
-                beginTransformX = x;
-                    beginTransformY = y;
-                lastX=x;
-                    lastY=y;
-                    translate = true;
-            }
+    	if (transformState != TRANSLATE) {
+		if(boundingMesh->getTriangleSelection().size()>0){//don't go into translate mode is no triangle selected
+            boundingMesh->release(true);
+            glutSetWindowTitle("Translation");
+            indexAimed=grabberVertex(x,y,boundingMesh,camera);
+
+        	if(indexAimed>-1)//vertex grabbed
+            	vertexMoving=true;
+        	
+            beginTransformX = x;
+    	    beginTransformY = y;
+	        lastX=x;
+            lastY=y;
+            transformState = TRANSLATE;
+		}
         }
         else {
             glutSetWindowTitle("Translation canceled");
             boundingMesh->release(false);
-		vertexMoving=false;
-            translate = false;
+            transformState = NONE;
         }
         break;
 
     case 'e':
-        if (!scale) {
+        if (transformState != SCALE) {
 		if(boundingMesh->getTriangleSelection().size()>0){
-			boundingMesh->release(false);
-			vertexMoving=false;
-            		translate = false;
-            		rotate = false;
+			boundingMesh->release(true);
 			lastX = x;
 			lastY = y;
-            		beginTransformX = x;
-            		beginTransformY = y;
-            		scale = true;
+            beginTransformX = x;
+            beginTransformY = y;
+            transformState = SCALE;
 		}
         }
         else {
-		boundingMesh->release(false);
-            scale = false;
+            boundingMesh->release(false);
+            transformState = NONE;
+        }
+        break;
+
+    case 'c' :
+        if(transformState != SELECTION){
+            beginTransformX=x;
+            beginTransformY=y;
+            transformState = SELECTION;
+        }
+        else{
+            transformState = NONE;
         }
         break;
 
@@ -177,18 +179,6 @@ void Interface::keyUp(unsigned char keyReleased, int x, int y) {
     		glutSetWindowTitle ("Selection");
         	toggleSelect(x,y,boundingMesh,camera);
 		break;
-
-        case 'c' :
-            if(!selectionMode){
-                beginTransformX=x;
-                beginTransformY=y;
-                selectionMode=true;
-            }
-            else{
-                selectionMode = false;
-            }
-            break;
-
 	}
 }
 
@@ -200,20 +190,20 @@ void Interface::passiveMotion (int x, int y) {
     count++;
     if(count == 5)
         count = 0;
-    if (translate) {
-        translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving);
 
+    switch (transformState) {
+        case TRANSLATE:
+            translateStruct(lastX, lastY,beginTransformX,beginTransformY, boundingMesh,camera,indexAimed, vertexMoving,false);
+            break;
+        case ROTATE:
+            rotation(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
+            break;
+        case SCALE:
+            scaling(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
+            break;
     }
-    if (rotate) {
-        rotation(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
 
-    }
-
-    if (scale) {
-        scaling(camera,boundingMesh, lastX, lastY, beginTransformX, beginTransformY);
-
-    }
-    if(scale || rotate || translate)
+    if (transformState != NONE && transformState != SELECTION)
         if(!count)
             boundingMesh->makeChange();
     camera.handleMouseMoveEvent (x, y);
@@ -223,42 +213,18 @@ void Interface::passiveMotion (int x, int y) {
 
 void Interface::mouse (int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
-        if (translate){//last effective translation
+        if (transformState == SELECTION) 
+            selectSquare(lastX,lastY,beginTransformX,beginTransformY,boundingMesh);
+
+        else if (transformState != NONE) //last effective transformation
             boundingMesh->release(true);
-		vertexMoving=false;
-            translate = false;
-        }
-        else if (rotate){
-			boundingMesh->release(true);
-            rotate = false;
-	}
-	else if(scale){
-		boundingMesh->release(true);
-		scale = false;
-	}
-	else if (selectionMode){
-        selectSquare(lastX,lastY,beginTransformX,beginTransformY,boundingMesh);
-		selectionMode = false;
-	}
+
+        transformState = NONE;
     }
 
     else if (button == GLUT_RIGHT_BUTTON) {
-        if (translate) {//cancel translation
+        if (transformState != NONE && transformState != SELECTION)
             boundingMesh->release(false);
-		vertexMoving=false;
-            translate = false;
-        }
-        else if (rotate) {
-            boundingMesh->release(false);
-            rotate = false;
-        }
-
-        else if (scale) { // Cancel scale
-			boundingMesh->release(false);
-            scale = false ;
-        }
-	else if (selectionMode)
-		selectionMode = false;
     }
 
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {
