@@ -15,7 +15,7 @@ class BoundingMesh
         static BoundingMesh * generate(const char * modelFilename, const char * modelCage);
 
         void updateCage();
-        void draw(Vec3i selectedColor);
+        void draw(Vec3f selectedColor);
         void reset();
         void save(const std::string & filename);
 

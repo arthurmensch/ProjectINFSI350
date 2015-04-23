@@ -309,7 +309,7 @@ Vec3f barycenter(BoundingMesh *boundingMesh) {
     return res;
 }
 
-void glSphere (float x, float y, float z, float radius, Vec3i col) {
+void glSphere (float x, float y, float z, float radius, Vec3f col) {
     float step = 1 / (2*M_PI);
 
     glMatrixMode(GL_MODELVIEW);

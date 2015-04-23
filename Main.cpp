@@ -122,20 +122,20 @@ void init (const char * modelFilename, const char * modelCage) {
 }
 
 void drawScene () {
-    Vec3i selectedColor;
+    Vec3f selectedColor;
 
     switch (transformState) {
         case ROTATE:
-            selectedColor = Vec3i(255,0,0);
+            selectedColor = Vec3f(1.0f,0,0);
             break;
         case SCALE:
-            selectedColor = Vec3i(255,165,0);
+            selectedColor = Vec3f(1.0f,0.5f,0);
             break;
         case TRANSLATE:
-            selectedColor = Vec3i(255,255,0);
+            selectedColor = Vec3f(1.0f,1.0f,0);
             break;
         default:
-            selectedColor = Vec3i(0,255,0);
+            selectedColor = Vec3f(0,1.0f,0);
             break;
     }
 

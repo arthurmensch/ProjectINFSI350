@@ -251,6 +251,7 @@ void Interface::mouse (int button, int state, int x, int y) {
     else if (button == GLUT_RIGHT_BUTTON) {
         if (transformState != NONE && transformState != SELECTION)
             boundingMesh->release(false);
+        transformState = NONE;
     }
 
     if (glutGetModifiers() != GLUT_ACTIVE_SHIFT) {

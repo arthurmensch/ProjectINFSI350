@@ -90,7 +90,7 @@ La selection triangle par triangle s'effectue en pointant un triangle à l'aide 
 La sélection par carré, elle, permet de dessiner un carré sur l'écran de l'utilisateur. Alors, tous les triangles projetés dans le \textit{near plane} étant contenus dans ce carré seront ajoutés à la sélection, ce qui permet de sélectionner facilement toute une zone de notre cage de contrôle.\\
 Une fois ces triangles sélectionnés, il est alors possible de les modifier, ce qui resulte en une modification du modèle $3D$.
 
-\paragraph{}L'interface est faite pour être la plus intuitive possible et repose sur le même modèle d'interaction que \texttt{Blender} : on navigue rapidement entre les différents modes par des touches, un clic gauche valide la transformation et un clic droit l'annule.
+\paragraphL'interface est faite pour être la plus intuitive possible et repose sur le même modèle d'interaction que \texttt{Blender} : on navigue rapidement entre les différents modes par des touches, un clic gauche valide la transformation et un clic droit l'annule.
 Les différents modes de transformation sont identifiés par une couleur variable de la sélection.
 
 \paragraph{Translation}L'ensemble des triangles sélectionnés de notre cage peut être translaté en passant en mode translation. Cette translation s'effectue dans le plan parallèle au plan de l'écran (\textit{near plane}) et suit les mouvements de la souris de l'utilisateur jusqu'à ce que celui-ci mette fin au mode de translation.\\
