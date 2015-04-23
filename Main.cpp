@@ -110,7 +110,7 @@ void init (const char * modelFilename, const char * modelCage) {
 	initLighting ();
 	glLineWidth (2.0); // Set the width of edges in GL_LINE polygon mode
 	initMaterial ();
-    glClearColor (0.0f, 0.0f, 0.0f, 1.0f); // Background color
+    glClearColor (0.2f, 0.2f, 0.2f, 1.0f); // Background color
 	glDisable (GL_COLOR_MATERIAL);
     glPolygonOffset(-1,-1);
     boundingMesh = BoundingMesh::generate(modelFilename, modelCage);
