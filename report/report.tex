@@ -22,9 +22,11 @@ Nous présentons dans ce rapport notre implémentation de l'article \cite{lipman
 \end{abstract}
 \section*{Introduction}
 
-\section{Principe}
+\section{Principes théoriques}
+\label{section:theory}
 
-\subsection{Fonctions coordonnées}
+\subsection{Déformation par cage}
+
 L'objectif est de contrôler la déformation d'un grand nombre de sommets par la déformation d'une structure simple. On décrit pour chaque sommet du maillage cible comme une combinaison linéaire des sommets du maillage de contrôle, ainsi que des normales de ses faces (c'est la contribution de \cite{lipman2008green}). On écrit donc, pour tout sommet $\mathbf{\eta}$ :
 \begin{equation}
 \label{eq:linear}
@@ -36,9 +38,7 @@ en notant $\mathbb{V}$ et $\mathbb{T}$ l'ensemble des sommets et des faces du ma
 
 Ils existent plusieurs familles de fonctions coordonnées : on peut les prendre toutes nulles sauf quatre $\phi_i$ correspondant à quatre $\mathbf{v}_i$ non alignés. Il s'agit alors des coordonnées barycentrique dans le repère barycentrique $\left( \mathbf{v}_i \right)_{1 \leq i \leq 4}$. Cependant ces coordonnées ne sont pas bonnes au sens où les déformations de la cage induisent des déformations non plausible physiquement sur le maillage.
 
-\subsection{Coordonnées de Green}
-
-Les coordonnées utilisées dans l'article sont les coordonnées de Green. Elle repose sur le fait que la fonction identité soit harmonique (i.e. de Laplacien nulle), et sur la troisième identité de Green, corollaire direct du théorème de la divergence, qui stipule, pour $u = \mathrm{Id}$ harmonique et $G_\eta$ solution fondamentale de l'équation de Laplace $\left\lbrace \Delta G_\eta = \delta_\eta \right\rbrace$ :
+\paragraph{Coordonnées de Green}Les coordonnées utilisées dans l'article sont les coordonnées de Green. Elle repose sur le fait que la fonction identité soit harmonique (i.e. de Laplacien nulle), et sur la troisième identité de Green, corollaire direct du théorème de la divergence, qui stipule, pour $u = \mathrm{Id}$ harmonique et $G_\eta$ solution fondamentale de l'équation de Laplace $\left\lbrace \Delta G_\eta = \delta_\eta \right\rbrace$ :
 \begin{equation}
 \boldsymbol\eta = \int_{\partial D} \left(
 	\boldsymbol\xi
@@ -59,39 +59,57 @@ L'avantage de cette méthode est que les fonctions coordonnées fournies sont ha
 
 On cherche à répercuter la déformation de la cage sur le maillage cible. Soit $\left( v'_i \right)_i$ et $\left( t'_i \right)_i$ les nouveaux élements du maillage cage. On écrit alors :
 \begin{equation}
+\label{eq:def}
 \mathbf{\eta'} = \sum_{\mathbf{v'_i} \in \mathbb{V}'} \phi_i \left( \mathbf{\eta} \right) \mathbf{v'_i} 
-+ \sum_{t'_i \in \mathbb{T}'} \psi_i \left( \mathbf{\eta} \right) s \left(t'_i, t_i \right) mathbf{n} \left( t'_i \right)
++ \sum_{t'_i \in \mathbb{T}'} \psi_i \left( \mathbf{\eta} \right) s \left(t'_i, t_i \right) \mathbf{n} \left( t'_i \right)
 \end{equation}
 
 où $s \left(t'_i, t_i \right)$ est un terme dépendant explicitement des triangles pré et post-déformation.
 
-La définition des $\left( \phi_i \right)_i$ et $\left( \psi_i \right)_i$ puis de la fonction $s$ s'assure alors des éléments suivant pour la déformation $\boldsymbol\eta \rightarrow \boldsymbol\eta'$ :
+\paragraph{Qualité de la déformation}La définition des $\left( \phi_i \right)_i$ et $\left( \psi_i \right)_i$ puis de la fonction $s$ s'assure alors des éléments suivant pour la déformation $\boldsymbol\eta \rightarrow \boldsymbol\eta'$ :
 \begin{itemize}
 \item Toute similitudes appliqué à la cage se traduit par une similitude appliqué au maillage cible.
 \item La déformation du maillage cible est $\mathcal{C}^\infty$ et quasi-conforme (le cisaillement est encadré, i.e la modification locale des angles est bornée).
 \end{itemize}
 
 \section{Démonstration}
-S'il existe des méthodes pour \textit{encadrer} automatiquement un modèle $3D$ d'une cage de contrôle, celleq-ci ne sont pas adaptées à notre problème. En effet il est difficile de définir à  priori la complexité de la cage voulue (i.e. le nombre de triangles utilisés) et la proximité avec laquelle la cage doit suivre la surface exterieure du modèle. Ainsi, pour chaque modèle, la cage de contrôle a été dessinée manuellement afin de pouvoir réaliser facilement les déformations voulues.
+S'il existe des méthodes pour \textit{encadrer} automatiquement un modèle $3D$ d'une cage de contrôle, celle-ci ne sont pas adaptées à notre problème. En effet il est difficile de définir à  priori la complexité de la cage voulue (i.e. le nombre de triangles utilisés) et la proximité avec laquelle la cage doit suivre la surface exterieure du modèle. Ainsi, pour chaque modèle, la cage de contrôle a été dessinée manuellement, à l'aide du logiciel \textit{Blender}, afin de pouvoir réaliser facilement les déformations voulues.
  
-\subsection{Fonctionnalités}
+\subsection{Fonctionnalités utilisateur}
 Afin de montrer l'interêt d'une telle méthode, il était donc nécéssaire de pouvoir appliquer des déformations intuitives pour l'utilisateur. Pour cela deux grands problèmes surviennent : la \textbf{selection} des points de la cage que l'on cherche à déformer et la \textbf{déformation} à proprement parler. Nous sommes donc partis du moteur graphique utilisé à partir du deuxieme TP où les mouvements de caméra controlables grâce a la souris étaient déjà implémentés.
 
-\paragraph{Selection\newline}
-La selection peut se faire de deux manières différentes : une sélection triangle par triangle et une selection par carré.\\
+\paragraph{Sélection}La selection peut se faire de deux manières différentes : une sélection triangle par triangle et une selection par carré.\\
 La selection triangle par triangle s'effectue en pointant un triangle à l'aide de la souris, un rayon est alors tracé entre le \textit{near plane} et le \textit{far plane} ayant pour coordonnées dans le plan celles de notre souris. Ce rayon nous permet alors de déterminer le triangle ayant une intersection avec ce rayon et étant le plus proche du \textit{near plane}. Celui-ci est alors ajouté à l'ensemble des triangles selectionnés. Inversement, si ce triangle visé était déjà selectionné, il est alors enlevé de l'ensemble des triangles selectionnés.\\
 La selection par carré elle permet de dessiner un carré sur l'écran de l'utilisateur. Alors, tous les triangles projetés dans le \textit{near plane} étant contenus dans ce carré seront ajoutés à la selection, ce qui permet de selectionner facilement tout une zone de notre cage de contrôle.\\
 Une fois ces triangles selectionnés, il est alors possible de les modifier ce qui resulte par une modification du model $3D$.
 
-\paragraph{Translation\newline}
-L'ensemble des triangles selectionnés de notre cage peut être translaté en passant dans le mode translation. Cette translation s'effectue dans le plan parallèle au plan de l'écran (\textit{near plane}) et suit les mouvements de la souris de l'utilisateur jusqu'à ce que celui-ci mette fin au mode de translation.\\
+\paragraph{Translation}L'ensemble des triangles selectionnés de notre cage peut être translaté en passant dans le mode translation. Cette translation s'effectue dans le plan parallèle au plan de l'écran (\textit{near plane}) et suit les mouvements de la souris de l'utilisateur jusqu'à ce que celui-ci mette fin au mode de translation.\\
 Pour pouvoir permettre d'effectuer des modification plus précises, il est aussi possible d'effectuer une translation point par point en selectionnant un point parmis ceux des triangles selectionnés. 
 
-\paragraph{Rotation\newline}
+\paragraph{Rotation}
 
-\paragraph{Agrandissement(trouve une meilleure dénomination)\newline}
-\subsection{Fonctionnement}
+\paragraph{Homothétie)}
 
+\subsection{Fonctionnement algorithmique}
+
+Les déformations sont basés sur la théorie présenté en Section. \ref{section:theory}. Les algorithmes de mise à jour des coordonnées et de gestion de la selection sont encapsulé dans une classe \texttt{BoundingMesh}.
+
+\paragraph{Calcul des coordonnées}Au chargement du maillage, on calcule les coordonnées de Green de chacun de ses sommets, puis on remplace les sommets données en entrée par les sommets calculés à partir de ces coordonnées. On utilise dans cette phase les algorithmes présentés en \cite{lipman2008green}.
+
+\paragraph{Mise à jour}Une fonction de mise à jour totale calcule la position de chaque sommet en effectuant le calcul entier de l'Eq. \ref{eq:def}. Cependant, lorsqu'on agit seulement sur une partie de la cage, on peut effectuer une mise à jour des position en ligne, en ne modifiant qu'une partie de la somme de l'Eq. \ref{eq:def}.
+
+Pour permettre une mise à jour en temps réel, on a donc recours à la stratégie suivante :
+\begin{itemize}
+\item Lors de la sélection, on sauvegarde les positions des sommets actuelles en leur soustrayant la partie de la somme concernée par la partie de la cage sélectionnée.
+\item Lors du déplacement, on met à jour le mesh actuel à parti de cette sauvegarde, auquel on ajoute la partie de la somme concernée par la sélection, dans la nouvelle configuration.
+\item Lorsqu'on cesse le déplacement, les positions sont recalculés par mise à jour totale (pour éviter les dérives numériques).
+\end{itemize}
+
+\paragraph{Optimisation}Les calculs de position pour chacun des sommets peuvent être parallélisés. Par souci de simplicité, nous avons simplement utilisés les annotations de \texttt{OpenMP}, ce qui permet un gain de performance de l'ordre d'un facteur $5$ sur un processeur à quatre coeur. On peut envisager de paralléliser ce calcul sur GPU. Nous avons essayé d'optimiser les calculs en utilisant les instructions \texttt{SSE} pour les opération sur les vecteurs, mais la migration s'est montrée plus compliqué que prévu.
+
+\subsection{Résultats}
+
+Notre démonstrateur permet d'éditer la cage de manière relativement complète et intuitive, à la manière de la fonction d'édition de maillage du logiciel \textit{Blender}. La méthode utilisée permet, avec un code optimisé, de montrer à l'utilisateur la déformation du maillage cible en \emph{temps réel}, ce qui est particulièrement satisfaisant en terme d'ergonomie.
 \section*{Conclusion}
 
 \section*{Référence}
