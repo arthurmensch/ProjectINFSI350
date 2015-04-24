@@ -219,7 +219,7 @@ void Interface::motion (int x, int y) {
 
 void Interface::passiveMotion (int x, int y) {
     countSwap++;
-    if(countSwap >= boundingMesh->getTriangleSelection().size()*4)
+    if(countSwap >= boundingMesh->getTriangleSelection().size()*2)
         countSwap = 0;
     switch (transformState) {
         case TRANSLATE:
